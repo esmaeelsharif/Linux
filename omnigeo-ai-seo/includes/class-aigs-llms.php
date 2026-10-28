@@ -241,21 +241,58 @@ class AIGS_LLMS {
 	 * @return string
 	 */
 	public function robots( $output ) {
-		$mode = aigs_get( 'ai_access', 'allow' );
-		$bots = array_keys( AIGS_Tracker::bot_map() );
-		$bots = array_unique( $bots );
+		// Never loosen a site that asked search engines to stay away.
+		if ( '0' === (string) get_option( 'blog_public' ) ) {
+			return $output;
+		}
+		$mode   = aigs_get( 'ai_access', 'allow' );
+		$blocks = self::blocked_tokens( $mode );
 
 		$output .= "\n# AI crawler rules (OmniGEO Ai SEO)\n";
-		if ( 'disallow' === $mode ) {
-			foreach ( $bots as $bot ) {
-				$output .= 'User-agent: ' . $bot . "\nDisallow: /\n";
+		if ( $blocks ) {
+			// One group with several User-agent lines (RFC 9309), so bots not listed
+			// keep following the default "User-agent: *" rules above.
+			foreach ( $blocks as $bot ) {
+				$output .= 'User-agent: ' . $bot . "\n";
 			}
+			$output .= "Disallow: /\n";
 		} else {
-			foreach ( $bots as $bot ) {
-				$output .= 'User-agent: ' . $bot . "\nAllow: /\n";
+			$output .= "# All AI crawlers follow the default rules above.\n";
+		}
+		if ( aigs_get( 'enable_llms', 1 ) ) {
+			$output .= "\n# llms.txt: " . home_url( '/llms.txt' ) . "\n";
+		}
+		return $output;
+	}
+
+	/**
+	 * User-agent tokens to block for an access mode.
+	 *
+	 * allow       : none (bots use the site's default rules)
+	 * search_only : block model-training crawlers, keep AI search and user fetches
+	 * disallow    : block every known AI crawler
+	 *
+	 * @param string $mode Mode.
+	 * @return array
+	 */
+	public static function blocked_tokens( $mode ) {
+		$out = array();
+		if ( 'search_only' === $mode || 'disallow' === $mode ) {
+			foreach ( AIGS_Tracker::bot_map() as $bot => $info ) {
+				// Never block classic search engines through this setting.
+				if ( in_array( $bot, array( 'bingbot', 'Applebot' ), true ) ) {
+					continue;
+				}
+				if ( 'disallow' === $mode || 'training' === $info[2] ) {
+					$out[] = $bot;
+				}
+			}
+			foreach ( AIGS_Tracker::robots_only_tokens() as $token => $class ) {
+				if ( 'disallow' === $mode || 'training' === $class ) {
+					$out[] = $token;
+				}
 			}
 		}
-		$output .= "\n# llms.txt\n# " . home_url( '/llms.txt' ) . "\n";
-		return $output;
+		return array_values( array_unique( $out ) );
 	}
 }

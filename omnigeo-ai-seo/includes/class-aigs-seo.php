@@ -112,6 +112,117 @@ class AIGS_SEO {
 	}
 
 	/**
+	 * SEO title set in the active SEO plugin, falling back to the post title.
+	 * Template variables (%%title%%, %title%) mean "use the default" and are ignored.
+	 *
+	 * @param int $post_id Post ID.
+	 * @return string
+	 */
+	public static function seo_title( $post_id ) {
+		$t = '';
+		switch ( self::active() ) {
+			case 'yoast':
+				$t = (string) get_post_meta( $post_id, '_yoast_wpseo_title', true );
+				break;
+			case 'rankmath':
+				$t = (string) get_post_meta( $post_id, 'rank_math_title', true );
+				break;
+			case 'seopress':
+				$t = (string) get_post_meta( $post_id, '_seopress_titles_title', true );
+				break;
+			case 'aioseo':
+				$t = (string) self::aioseo_column( $post_id, 'title' );
+				break;
+		}
+		$t = trim( $t );
+		if ( '' === $t || false !== strpos( $t, '%' ) || false !== strpos( $t, '#' ) ) {
+			$t = wp_strip_all_tags( get_the_title( $post_id ) );
+		}
+		return trim( html_entity_decode( $t, ENT_QUOTES, 'UTF-8' ) );
+	}
+
+	/**
+	 * Is the post set to noindex in the active SEO plugin?
+	 *
+	 * @param int $post_id Post ID.
+	 * @return bool
+	 */
+	public static function is_noindex( $post_id ) {
+		switch ( self::active() ) {
+			case 'yoast':
+				return '1' === (string) get_post_meta( $post_id, '_yoast_wpseo_meta-robots-noindex', true );
+			case 'rankmath':
+				$r = get_post_meta( $post_id, 'rank_math_robots', true );
+				return is_array( $r ) && in_array( 'noindex', $r, true );
+			case 'seopress':
+				return 'yes' === (string) get_post_meta( $post_id, '_seopress_robots_index', true );
+			case 'aioseo':
+				return '1' === (string) self::aioseo_column( $post_id, 'robots_noindex' );
+		}
+		return false;
+	}
+
+	/**
+	 * Custom canonical URL set in the SEO plugin ('' when default).
+	 *
+	 * @param int $post_id Post ID.
+	 * @return string
+	 */
+	public static function canonical( $post_id ) {
+		$c = '';
+		switch ( self::active() ) {
+			case 'yoast':
+				$c = (string) get_post_meta( $post_id, '_yoast_wpseo_canonical', true );
+				break;
+			case 'rankmath':
+				$c = (string) get_post_meta( $post_id, 'rank_math_canonical_url', true );
+				break;
+			case 'seopress':
+				$c = (string) get_post_meta( $post_id, '_seopress_robots_canonical', true );
+				break;
+			case 'aioseo':
+				$c = (string) self::aioseo_column( $post_id, 'canonical_url' );
+				break;
+		}
+		$c = trim( $c );
+		return ( '' !== $c && wp_http_validate_url( $c ) ) ? $c : '';
+	}
+
+	/**
+	 * Does the active SEO plugin generate a description automatically when the
+	 * field is empty (so an empty field is not a problem)?
+	 *
+	 * @return bool
+	 */
+	public static function auto_description() {
+		return in_array( self::active(), array( 'rankmath', 'aioseo' ), true );
+	}
+
+	/**
+	 * Read one column of the AIOSEO posts table (best effort, cached per request).
+	 *
+	 * @param int    $post_id Post ID.
+	 * @param string $column  Column (whitelisted).
+	 * @return string
+	 */
+	private static function aioseo_column( $post_id, $column ) {
+		static $cache = array();
+		if ( ! in_array( $column, array( 'title', 'robots_noindex', 'canonical_url' ), true ) ) {
+			return '';
+		}
+		if ( ! isset( $cache[ $post_id ] ) ) {
+			global $wpdb;
+			$table = $wpdb->prefix . 'aioseo_posts';
+			$wpdb->suppress_errors( true );
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- optional read of AIOSEO table; value prepared, table name from $wpdb->prefix.
+			$row = $wpdb->get_row( $wpdb->prepare( "SELECT title, robots_noindex, canonical_url FROM {$table} WHERE post_id = %d", $post_id ), ARRAY_A );
+			$wpdb->suppress_errors( false );
+			$cache[ $post_id ] = is_array( $row ) ? $row : array();
+		}
+		return isset( $cache[ $post_id ][ $column ] ) ? (string) $cache[ $post_id ][ $column ] : '';
+	}
+
+	/**
 	 * Read AIOSEO meta description from its custom table (best effort).
 	 *
 	 * @param int $post_id Post ID.

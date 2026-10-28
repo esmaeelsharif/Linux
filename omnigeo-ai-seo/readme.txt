@@ -1,35 +1,72 @@
 === OmniGEO Ai SEO ===
 Contributors: deepwp24
-Tags: ai seo, geo, aeo, ai visibility, generative engine optimization
+Tags: ai seo, geo, aeo, ai visibility, answer engine optimization
 Requires at least: 5.8
 Tested up to: 7.0
 Requires PHP: 7.2
-Stable tag: 1.0.0
+Stable tag: 1.1.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-AI SEO toolkit for GEO and AEO. Score content for AI search, fix schema, track AI bots, and see if ChatGPT and Perplexity cite you.
+Find what stops search engines and AI assistants from quoting your site, fix it with guided tasks, and track AI visibility.
 
 == Description ==
 
-AI search is the new SEO. People now ask ChatGPT, Perplexity, Gemini, Claude and Google AI Overviews instead of typing into a search box, and those tools quote a small set of pages. This is an AI SEO toolkit that gets your WordPress content ready for that world through Generative Engine Optimization (GEO) and Answer Engine Optimization (AEO).
+People now ask ChatGPT, Perplexity, Gemini, Claude and Google AI Overviews instead of typing into a search box, and those tools quote a small set of pages. OmniGEO checks your WordPress site for search engines and AI answer engines, explains every problem and opportunity in plain language, proposes safe fixes, and confirms when they are fixed.
 
-The standout feature is the live Content Extractability analyzer. As you write a post or product, it scores how easily an AI can lift a clean answer from your text, and it tells you what to fix: answer first openings, semantic chunking, comparison tables, clear headings and more. It runs in real time inside the editor, and it reads non Latin content correctly, so it scores Persian, Arabic and CJK writing too.
+It is built around one simple loop: **scan → fix the most valuable task → re-check → see your progress**.
 
-Everything works locally and free. The only feature that calls an outside service is the optional AI visibility check, and that uses your own API key, so there is no extra subscription.
+Everything core runs locally on your site and is free. Optional AI features use your own API key, with a hard monthly limit you control.
 
-= What you get =
+= Growth Center and Action Center =
 
-* Live Content Extractability score in the editor, plus an AI Score column on your Posts and Products lists so you can fix the weak pages first.
-* GEO and AEO audit that gives any page a score out of 100 with plain, fixable advice.
-* Schema and JSON-LD output: Organization, Person and Author, Article, FAQ, HowTo, Product and Speakable, linked together with sameAs and @id for a clean entity graph.
-* AI bot and referral tracking. It detects GPTBot, ChatGPT-User, ClaudeBot, PerplexityBot, Google-Extended and more, and it splits user triggered fetches (a real person reading you inside an AI answer) from index crawls.
-* AI Traffic dashboard with a ready made GA4 channel and regex so you can finally track AI clicks in Google Analytics.
-* Site health checks plus IndexNow submission.
-* llms.txt manager and AI crawler access rules for robots.txt.
-* Live AI visibility check. Add your own OpenAI, Anthropic or Perplexity key and ask a buyer style question to see whether AI mentions your brand or links your site.
-* Yoast SEO and Rank Math integration. It reads your focus keyword and avoids duplicate schema so two plugins never fight over the same graph.
-* WooCommerce support. It defers to WooCommerce Product schema to prevent conflicts and adds product specific checks for the short description, specs, reviews and images.
+* **Site-wide scan** of posts, pages, products and custom post types, read straight from WordPress in small batches, so it is safe on shared hosting. Unchanged pages are skipped on re-scans. A light background scan runs weekly (can be turned off).
+* **Action Center**: every issue grouped into clear tasks, ordered by impact (severity × page importance), each with why it matters, how to fix it, the affected pages and a Re-check button that confirms the fix.
+* **Page importance** is calculated for you: front page, menu links, internal links, AI bot reads, sales, freshness, plus a star to mark your money pages.
+* **Internal link opportunities**: orphan pages and pages without internal links, with suggested related pages.
+* **Duplicate titles, meta descriptions and product descriptions** across the site.
+* **Mark as intentional** for deliberate choices, so they stop counting against your score.
+* **Score history, recent wins** and an optional **weekly email** report.
+
+= Answer Optimizer (in the editor) =
+
+* Detects the main question a page should answer (from the title or focus keyword, in Persian or English).
+* Checks whether the opening actually answers it, and flags filler openings such as “In this article…” or “در این مقاله…”.
+* Finds question headings without a direct answer, comparison pages without a table and how-to pages without numbered steps.
+* Turns answered question headings into **FAQ schema** with one click.
+* Optional: **drafts a 40–60 word direct answer** from your own text with your AI key, for you to review and insert. Revisions keep your previous version.
+* Live **answer-readiness score** while you write, plus an AI Score column on your lists.
+
+= WooCommerce Catalog Copilot =
+
+* Checks every product: short and full description, specifications, images and alt text, category, price, GTIN/EAN and copied descriptions.
+* **Bulk fixes with preview, approval and undo**: alt text from product name, short description from the full description, or AI-drafted summaries for up to 10 selected products at a time. Existing values are never overwritten.
+* Adds your brand to WooCommerce Product schema when it has none, and lets WooCommerce own Product schema to avoid duplicates.
+
+= AI Visibility monitoring =
+
+* Save the questions buyers ask, your brand spellings (for example Persian and Latin) and up to 10 competitors.
+* Each check stores the full answers and measures **mentions, recommendations, citations, position and share of voice**, compared with the previous check.
+* Shows the **sources assistants cited** and labels them as yours, a competitor or an opportunity.
+* Questions where competitors appear and you do not become tasks, with a one-click **draft page** outline.
+* Answers from providers without live web search are labelled as model knowledge, not web citations.
+* Matching handles Persian script variants (ی/ي, ک/ك), half-spaces and Persian digits.
+
+= AI Traffic (Bot & Referral Intelligence) =
+
+* Three separate layers: bots that claim to be AI bots, **verified bots** (optional reverse-DNS and published IP-range checks), and **visitors from AI answers** (Referer or utm_source such as chatgpt.com).
+* Bots are grouped by purpose: reading pages for a user right now, AI search indexing, or model training.
+* Lists the pages assistants fetched for users and the **missing pages (404) AI bots requested**.
+* Raw logs are kept for a period you choose, then summarised into daily totals.
+* Ready-made GA4 channel regex.
+
+= Technical and schema =
+
+* Organization, WebSite, Person and Article schema linked with @id and sameAs; FAQ and Product on demand. Steps aside when Yoast, Rank Math, SEOPress or All in One SEO already output a graph, and never prints a second FAQ when an SEO plugin FAQ block is present.
+* Reads focus keywords, titles, descriptions, noindex and canonical settings from Yoast, Rank Math, SEOPress and All in One SEO.
+* robots.txt modes: allow all, **allow AI search but block AI training**, or block all AI crawlers. Never loosens a site that discourages search engines.
+* Optional meta description fallback when no SEO plugin is active.
+* URL audit of any page's live HTML, site health checks, IndexNow (manual or automatic on publish) and an optional llms.txt.
 
 = Who it is for =
 
@@ -37,24 +74,31 @@ Bloggers, publishers, agencies, shop owners and anyone who wants to be the sourc
 
 == External Services ==
 
-This plugin connects to a few third party services, and only when you choose to use the related feature.
+This plugin connects to third-party services only when you turn on or use the related feature. Nothing is sent in the background unless you enable a schedule or option listed here.
 
-AI visibility check (optional, off by default): when you enable it and add your own API key, the plugin sends your test prompt to the provider you pick so it can check whether your brand appears in AI answers.
+AI features (optional, off until you add your own API key): AI visibility checks, direct-answer drafts and product summaries send the question or the page/product text you chose to the provider you select. Scheduled visibility checks run only if you enable them, and every request counts against the monthly limit you set.
 
-* OpenAI: requests go to https://api.openai.com. Terms: https://openai.com/policies/terms-of-use Privacy: https://openai.com/policies/privacy-policy
-* Anthropic: requests go to https://api.anthropic.com. Terms: https://www.anthropic.com/legal/consumer-terms Privacy: https://www.anthropic.com/legal/privacy
-* Perplexity: requests go to https://api.perplexity.ai. Terms: https://www.perplexity.ai/hub/legal/terms-of-service Privacy: https://www.perplexity.ai/hub/legal/privacy-policy
+* OpenAI: https://api.openai.com. Terms: https://openai.com/policies/terms-of-use Privacy: https://openai.com/policies/privacy-policy
+* Anthropic: https://api.anthropic.com. Terms: https://www.anthropic.com/legal/consumer-terms Privacy: https://www.anthropic.com/legal/privacy
+* Perplexity: https://api.perplexity.ai. Terms: https://www.perplexity.ai/hub/legal/terms-of-service Privacy: https://www.perplexity.ai/hub/legal/privacy-policy
 
-IndexNow (optional): when you submit a URL, the plugin sends that URL and your key to https://api.indexnow.org so participating search engines learn about the change. IndexNow is an open protocol used by Microsoft Bing and Yandex. More info and protocol terms: https://www.indexnow.org Bing Webmaster terms: https://www.bing.com/webmasters/help/webmaster-guidelines-30fba23a Microsoft privacy statement: https://privacy.microsoft.com/privacystatement
+Bot identity verification (optional, off by default): when enabled, the plugin downloads the public crawler IP lists published by OpenAI (https://openai.com/gptbot.json, https://openai.com/searchbot.json, https://openai.com/chatgpt-user.json) and Perplexity (https://www.perplexity.ai/perplexitybot.json, https://www.perplexity.ai/perplexity-user.json) at most once a day, and performs reverse DNS lookups of bot IP addresses through your server's resolver. No data about your site or visitors is sent.
 
-Your test prompts and submitted URLs are only sent when you trigger these features. No data is sent in the background.
+IndexNow (optional): when you submit a URL, or when you enable automatic pings, the plugin sends that URL and your key to https://api.indexnow.org so participating search engines learn about the change. More info: https://www.indexnow.org Microsoft privacy statement: https://privacy.microsoft.com/privacystatement
+
+= Data the plugin stores =
+
+* AI bot requests: URL, user agent, status and (for bots only) IP address, kept for the retention period you set (90 days by default), then summarised into daily totals.
+* Visits from AI products: URL, referrer and user agent. No IP address and no cookies.
+* Scan findings, AI visibility answers and settings, in your own database. Everything is removed when you delete the plugin.
 
 == Installation ==
 
 1. Upload the plugin folder to /wp-content/plugins/ or install it from the Plugins screen.
 2. Activate it.
-3. Open AI SEO in the admin menu and fill in your brand details under Settings.
-4. Open any post or product and watch the Content Extractability box as you write.
+3. Open OmniGEO Ai SEO → Settings and fill in your brand details.
+4. On the Growth Center, click Scan site, then work through the Action Center.
+5. Open any post or product to use the Answer Optimizer while you write.
 
 == Frequently Asked Questions ==
 
@@ -62,7 +106,16 @@ Your test prompts and submitted URLs are only sent when you trigger these featur
 SEO helps you rank in classic search results. GEO (generative engine optimization) and AEO (answer engine optimization) help AI tools understand and quote your content. They overlap a lot, and this plugin focuses on the AI side while staying friendly to your normal SEO setup.
 
 = Will this make ChatGPT or Perplexity cite my site? =
-Nothing can guarantee that. What this plugin does is remove the technical and structural blockers, so your content is easy for AI to read, trust and quote. The rest is good content and a real, findable brand.
+Nothing can guarantee that. What this plugin does is find and help you remove the technical and structural blockers, so your content is easy to read, trust and quote, and then measure what changes. The rest is good content and a real, findable brand.
+
+= Is the scan heavy for my hosting? =
+No. It reads content from WordPress directly instead of crawling your site over HTTP, processes a dozen pages per request, and skips pages that did not change since the last scan. You can turn the weekly background scan off in Settings.
+
+= Does llms.txt help me appear in Google AI Overviews? =
+Google says no special files or AI-specific markup are needed for AI Overviews and AI Mode; normal SEO fundamentals apply. OmniGEO keeps llms.txt as an optional extra for tools that read it, and does not treat it as a ranking factor.
+
+= Does it work for Persian (Farsi) sites? =
+Yes. Word counts, question detection, filler-opening detection and brand matching handle Persian and Arabic script, including ی/ي and ک/ك variants, half-spaces (ZWNJ), Persian digits and Solar Hijri years in titles. The admin supports right-to-left layouts.
 
 = Does it work with Yoast SEO and Rank Math? =
 Yes. It reads your focus keyword from Yoast, Rank Math, SEOPress or All in One SEO, and it steps aside on schema so you never get a duplicate entity graph.
@@ -71,7 +124,7 @@ Yes. It reads your focus keyword from Yoast, Rank Math, SEOPress or All in One S
 Yes. On product pages it lets WooCommerce own the Product schema to avoid conflicts, and it adds product specific extractability checks.
 
 = Does it cost money or need a cloud account? =
-No. Everything runs on your own site. The only outside calls are the optional AI visibility check, which uses your own API key, and IndexNow.
+No. Everything runs on your own site. The only outside calls are the optional AI features, which use your own API key and a monthly limit you set, the optional bot verification, and IndexNow.
 
 = Does it work for non English content? =
 Yes. The extractability analyzer counts and reads non Latin text correctly, including Persian, Arabic and CJK.
@@ -87,6 +140,28 @@ Yes. The extractability analyzer counts and reads non Latin text correctly, incl
 
 == Changelog ==
 
+= 1.1.0 =
+New:
+* Growth Center dashboard with answer-readiness score, trend, today's top tasks, recent wins and a getting-started checklist.
+* Site-wide scanner (batched, cached by content hash, weekly background run) with a versioned rule engine.
+* Action Center: prioritised tasks with explanations, affected pages, link suggestions, Re-check to verify fixes, mark as intentional, and important-page flag.
+* Answer Optimizer in the editor: main question, direct-answer check, filler-opening detection (English and Persian), unanswered question headings, one-click FAQ schema, optional AI draft of a direct answer.
+* WooCommerce Catalog Copilot: product checks and bulk fixes with preview, approval and undo.
+* AI Visibility monitoring: tracked questions, brand aliases, competitors, run history, mentions, recommendations, citations, position, share of voice, cited sources and visibility gaps as tasks.
+* Bot & Referral Intelligence: bot purpose classes, optional identity verification, 404s requested by AI bots, utm_source detection, log retention with daily roll-ups.
+* robots.txt mode "Allow AI search, block AI training".
+* Optional meta description fallback, automatic IndexNow pings and weekly email report.
+* Persian/Arabic-aware text handling throughout, and right-to-left admin styles.
+
+Fixes and hardening:
+* robots.txt: the plugin no longer adds "Allow: /" groups for AI bots. Those groups overrode your default rules (such as Disallow: /wp-admin/), and on sites set to discourage search engines they re-opened the site to AI bots. "Block all" no longer blocks Bing and Apple search.
+* URL audit: redirects are re-validated against private addresses, response size is limited, word counts are correct for Persian/Arabic text, and FAQ/Speakable markup is reported as optional instead of failing. New checks: noindex (meta and header), canonical and AI search crawler access.
+* The saved API key is no longer printed into the settings page; it can be removed or set in wp-config.php (AIGS_AI_API_KEY). Provider values are validated. AI requests have a monthly limit.
+* Anthropic requests use a current model and read the text block of the reply correctly.
+* FAQ schema is skipped when a Yoast or Rank Math FAQ block already outputs it. HowTo nodes without steps are no longer printed.
+* Fixed a stray translator comment that was printed on the Settings page.
+* Database schema upgrades now run automatically after an update; scheduled jobs are removed on deactivation and everything is removed on uninstall.
+
 = 1.0.0 =
 First public release. Includes:
 * Live Content Extractability analyzer in the editor, with an AI Score column on Posts and Products. Reads non Latin content, including Persian, Arabic and CJK.
@@ -99,6 +174,9 @@ First public release. Includes:
 * Yoast SEO and Rank Math integration with schema de duplication, and WooCommerce support with product specific checks.
 
 == Upgrade Notice ==
+
+= 1.1.0 =
+Big update: site-wide scan, Action Center, Answer Optimizer, WooCommerce bulk fixes and AI visibility monitoring. Also fixes robots.txt rules that could override your defaults. Run your first scan from the new Growth Center.
 
 = 1.0.0 =
 First public release.

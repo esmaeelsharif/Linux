@@ -44,12 +44,16 @@ class AIGS_Loader {
 	 * Constructor.
 	 */
 	private function __construct() {
+		$this->modules['db']            = new AIGS_DB();
 		$this->modules['tracker']       = new AIGS_Tracker();
 		$this->modules['schema']        = new AIGS_Schema();
 		$this->modules['entity']        = new AIGS_Entity();
 		$this->modules['llms']          = new AIGS_LLMS();
 		$this->modules['audit']         = new AIGS_Audit();
+		$this->modules['answer']        = new AIGS_Answer();
 		$this->modules['extract']       = new AIGS_Extract();
+		$this->modules['scanner']       = new AIGS_Scanner();
+		$this->modules['actions']       = new AIGS_Actions();
 		$this->modules['visibility']    = new AIGS_Visibility();
 		$this->modules['ai_visibility'] = new AIGS_AI_Visibility();
 		$this->modules['woocommerce']   = new AIGS_WooCommerce();

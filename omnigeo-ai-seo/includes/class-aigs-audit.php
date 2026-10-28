@@ -53,12 +53,16 @@ class AIGS_Audit {
 			);
 		}
 
-		$response = wp_remote_get(
+		// wp_safe_remote_get() re-validates every redirect hop, so a public URL
+		// cannot bounce the request to a private/loopback address.
+		$response = wp_safe_remote_get(
 			$url,
 			array(
-				'timeout'    => 20,
-				'user-agent' => 'OmniGEO-Ai-SEO-Audit/1.0 (+' . home_url() . ')',
-				'sslverify' => true,
+				'timeout'             => 20,
+				'redirection'         => 3,
+				'limit_response_size' => 3 * MB_IN_BYTES,
+				'user-agent'          => 'OmniGEO-Ai-SEO-Audit/' . AIGS_VERSION . ' (+' . home_url() . ')',
+				'sslverify'           => true,
 			)
 		);
 
@@ -93,7 +97,9 @@ class AIGS_Audit {
 		}
 		$dom = $this->load_dom( $html );
 
-		$checks = array();
+		$checks   = array();
+		$checks[] = $this->c_indexable( $dom, $response );
+		$checks[] = $this->c_canonical( $dom, $url );
 		$checks[] = $this->c_title( $dom );
 		$checks[] = $this->c_meta_description( $dom );
 		$checks[] = $this->c_h1( $dom );
@@ -108,6 +114,7 @@ class AIGS_Audit {
 		$checks[] = $this->c_quick_answer( $dom );
 		$checks[] = $this->c_eeat( $dom, $html );
 		$checks[] = $this->c_robots();
+		$checks[] = $this->c_ai_robots();
 		$checks[] = $this->c_https( $url );
 
 		$max   = 0;
@@ -247,15 +254,147 @@ class AIGS_Audit {
 	}
 
 	private function c_faq_speakable( $html ) {
+		// Optional markup: reported, never penalised (weight 0). Google limits FAQ
+		// rich results to authoritative health/government sites.
 		$faq   = ( false !== stripos( $html, '"FAQPage"' ) || false !== stripos( $html, '"Question"' ) );
 		$speak = ( false !== stripos( $html, 'speakable' ) );
-		if ( $faq && $speak ) {
-			return $this->row( __( 'FAQ / Speakable schema', 'omnigeo-ai-seo' ), 2, __( 'Both FAQ and Speakable markup detected.', 'omnigeo-ai-seo' ) );
-		}
 		if ( $faq || $speak ) {
-			return $this->row( __( 'FAQ / Speakable schema', 'omnigeo-ai-seo' ), 1, __( 'One of FAQ/Speakable present; add the other.', 'omnigeo-ai-seo' ) );
+			$row = $this->row( __( 'FAQ / Speakable schema (optional)', 'omnigeo-ai-seo' ), 2, __( 'Optional Q&A or Speakable markup detected.', 'omnigeo-ai-seo' ), 0 );
+		} else {
+			$row = $this->row( __( 'FAQ / Speakable schema (optional)', 'omnigeo-ai-seo' ), 1, __( 'Optional. Add FAQ markup only when the page really has questions and answers.', 'omnigeo-ai-seo' ), 0 );
 		}
-		return $this->row( __( 'FAQ / Speakable schema', 'omnigeo-ai-seo' ), 0, __( 'No FAQ or Speakable markup.', 'omnigeo-ai-seo' ) );
+		$row['info'] = true;
+		return $row;
+	}
+
+	/**
+	 * Visible text of a node, skipping script/style/noscript content.
+	 *
+	 * @param DOMNode $node Node.
+	 * @return string
+	 */
+	private function visible_text( $node ) {
+		$out = '';
+		foreach ( $node->childNodes as $child ) {
+			if ( XML_TEXT_NODE === $child->nodeType ) {
+				$out .= ' ' . $child->nodeValue;
+			} elseif ( XML_ELEMENT_NODE === $child->nodeType && ! in_array( strtolower( $child->nodeName ), array( 'script', 'style', 'noscript', 'template', 'svg' ), true ) ) {
+				$out .= ' ' . $this->visible_text( $child );
+			}
+		}
+		return $out;
+	}
+
+	private function c_indexable( $dom, $response ) {
+		$robots = strtolower( $this->meta( $dom, 'name', 'robots' ) );
+		$header = strtolower( (string) wp_remote_retrieve_header( $response, 'x-robots-tag' ) );
+		if ( false !== strpos( $robots, 'noindex' ) || false !== strpos( $header, 'noindex' ) ) {
+			return $this->row( __( 'Indexable', 'omnigeo-ai-seo' ), 0, __( 'The page says noindex (meta robots or X-Robots-Tag). Search engines and search-based AI answers will skip it.', 'omnigeo-ai-seo' ), 3 );
+		}
+		return $this->row( __( 'Indexable', 'omnigeo-ai-seo' ), 2, __( 'No noindex directive found.', 'omnigeo-ai-seo' ), 3 );
+	}
+
+	private function c_canonical( $dom, $url ) {
+		$canon = '';
+		foreach ( $dom->getElementsByTagName( 'link' ) as $l ) {
+			if ( 'canonical' === strtolower( $l->getAttribute( 'rel' ) ) ) {
+				$canon = trim( $l->getAttribute( 'href' ) );
+				break;
+			}
+		}
+		if ( '' === $canon ) {
+			return $this->row( __( 'Canonical URL', 'omnigeo-ai-seo' ), 1, __( 'No canonical link. Add one so engines know the preferred URL.', 'omnigeo-ai-seo' ) );
+		}
+		if ( AIGS_Rules::same_url( $canon, $url ) ) {
+			return $this->row( __( 'Canonical URL', 'omnigeo-ai-seo' ), 2, __( 'Canonical points to this page.', 'omnigeo-ai-seo' ) );
+		}
+		/* translators: %s: canonical URL. */
+		return $this->row( __( 'Canonical URL', 'omnigeo-ai-seo' ), 1, sprintf( __( 'Canonical points elsewhere (%s). That URL will be indexed and cited instead.', 'omnigeo-ai-seo' ), $canon ) );
+	}
+
+	private function c_ai_robots() {
+		$resp = wp_safe_remote_get( home_url( '/robots.txt' ), array( 'timeout' => 10 ) );
+		if ( is_wp_error( $resp ) || 200 !== (int) wp_remote_retrieve_response_code( $resp ) ) {
+			return $this->row( __( 'AI search crawlers allowed', 'omnigeo-ai-seo' ), 1, __( 'Could not read robots.txt to check AI crawler access.', 'omnigeo-ai-seo' ), 2 );
+		}
+		$blocked = $this->robots_blocked( wp_remote_retrieve_body( $resp ), array( 'OAI-SearchBot', 'ChatGPT-User', 'PerplexityBot', 'Claude-SearchBot' ) );
+		if ( $blocked ) {
+			/* translators: %s: bot names. */
+			return $this->row( __( 'AI search crawlers allowed', 'omnigeo-ai-seo' ), 0, sprintf( __( 'robots.txt blocks AI search bots: %s. They power answers in ChatGPT search and Perplexity.', 'omnigeo-ai-seo' ), implode( ', ', $blocked ) ), 2 );
+		}
+		return $this->row( __( 'AI search crawlers allowed', 'omnigeo-ai-seo' ), 2, __( 'AI search bots are not blocked by robots.txt.', 'omnigeo-ai-seo' ), 2 );
+	}
+
+	/**
+	 * Which of the given bots are fully disallowed by a robots.txt body.
+	 *
+	 * @param string $body robots.txt.
+	 * @param array  $bots Bot tokens.
+	 * @return array
+	 */
+	private function robots_blocked( $body, $bots ) {
+		$groups = array();
+		$agents = array();
+		$rules  = array();
+		$last   = '';
+		foreach ( preg_split( '/\r\n|\r|\n/', (string) $body ) as $line ) {
+			$line = trim( preg_replace( '/#.*$/', '', $line ) );
+			if ( '' === $line || false === strpos( $line, ':' ) ) {
+				continue;
+			}
+			list( $k, $v ) = array_map( 'trim', explode( ':', $line, 2 ) );
+			$k = strtolower( $k );
+			if ( 'user-agent' === $k ) {
+				if ( 'rule' === $last ) {
+					$groups[] = array( $agents, $rules );
+					$agents   = array();
+					$rules    = array();
+				}
+				$agents[] = strtolower( $v );
+				$last     = 'agent';
+			} elseif ( in_array( $k, array( 'allow', 'disallow' ), true ) ) {
+				$rules[] = array( $k, $v );
+				$last    = 'rule';
+			}
+		}
+		if ( $agents ) {
+			$groups[] = array( $agents, $rules );
+		}
+		$out = array();
+		foreach ( $bots as $bot ) {
+			$match = null;
+			foreach ( $groups as $g ) {
+				if ( in_array( strtolower( $bot ), $g[0], true ) ) {
+					$match = $g[1];
+					break;
+				}
+			}
+			if ( null === $match ) {
+				foreach ( $groups as $g ) {
+					if ( in_array( '*', $g[0], true ) ) {
+						$match = $g[1];
+						break;
+					}
+				}
+			}
+			if ( null === $match ) {
+				continue;
+			}
+			$all_blocked = false;
+			$allow_root  = false;
+			foreach ( $match as $r ) {
+				if ( 'disallow' === $r[0] && '/' === $r[1] ) {
+					$all_blocked = true;
+				}
+				if ( 'allow' === $r[0] && '/' === $r[1] ) {
+					$allow_root = true;
+				}
+			}
+			if ( $all_blocked && ! $allow_root ) {
+				$out[] = $bot;
+			}
+		}
+		return $out;
 	}
 
 	private function c_alt( $dom ) {
@@ -326,8 +465,8 @@ class AIGS_Audit {
 
 	private function c_word_count( $dom ) {
 		$body  = $dom->getElementsByTagName( 'body' );
-		$text  = $body->length ? $body->item( 0 )->textContent : '';
-		$words = str_word_count( wp_strip_all_tags( $text ) );
+		$text  = $body->length ? $this->visible_text( $body->item( 0 ) ) : '';
+		$words = AIGS_Text::word_count( $text );
 		if ( $words >= 600 ) {
 			/* translators: %d is a value inserted into the message. */
 			return $this->row( __( 'Content depth', 'omnigeo-ai-seo' ), 2, sprintf( __( '~%d words, enough context for AI.', 'omnigeo-ai-seo' ), $words ) );
@@ -374,7 +513,7 @@ class AIGS_Audit {
 	}
 
 	private function c_robots() {
-		$resp = wp_remote_get( home_url( '/robots.txt' ), array( 'timeout' => 10, 'sslverify' => true ) );
+		$resp = wp_safe_remote_get( home_url( '/robots.txt' ), array( 'timeout' => 10 ) );
 		if ( ! is_wp_error( $resp ) && 200 === (int) wp_remote_retrieve_response_code( $resp ) ) {
 			return $this->row( __( 'robots.txt present', 'omnigeo-ai-seo' ), 2, __( 'robots.txt is reachable.', 'omnigeo-ai-seo' ) );
 		}

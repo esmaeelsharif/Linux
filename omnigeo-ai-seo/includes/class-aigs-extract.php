@@ -85,7 +85,10 @@ class AIGS_Extract {
 		}
 		$score = get_post_meta( $post_id, '_aigs_extract_score', true );
 		if ( '' === $score ) {
-			echo '<span style="color:#9a9aa0" title="' . esc_attr__( 'Not analyzed yet, open the editor to score it.', 'omnigeo-ai-seo' ) . '">, </span>';
+			$score = get_post_meta( $post_id, '_aigs_page_score', true );
+		}
+		if ( '' === $score ) {
+			echo '<span style="color:#9a9aa0" title="' . esc_attr__( 'Not analyzed yet. Open the editor or run a site scan.', 'omnigeo-ai-seo' ) . '">—</span>';
 			return;
 		}
 		$score = (int) $score;
@@ -157,6 +160,7 @@ class AIGS_Extract {
 		echo '<label style="font-size:12.5px;color:#5f5f63;display:inline-flex;gap:6px;align-items:center"><input type="checkbox" id="aigs-extract-auto" checked /> ' . esc_html__( 'Auto-update as I edit', 'omnigeo-ai-seo' ) . '</label>';
 		echo '</div>';
 		echo '<p class="aigs-muted" style="font-size:12.5px;margin:9px 0 0">' . esc_html__( 'Analyzes the live editor content, no save required.', 'omnigeo-ai-seo' ) . '</p>';
+		echo '<div id="aigs-answer-panel" class="aigs-answer" data-ai="' . ( AIGS_AI_Client::ready() ? '1' : '0' ) . '" style="margin-top:14px"></div>';
 		echo '<div id="aigs-extract-result" style="margin-top:14px">';
 		if ( '' !== $score ) {
 			/* translators: %d is a value inserted into the message. */
@@ -196,6 +200,25 @@ class AIGS_Extract {
 
 		$keyword = class_exists( 'AIGS_SEO' ) ? AIGS_SEO::focus_keyword( $post_id ) : '';
 		$report  = self::analyze( $html, $title, $keyword );
+
+		// Answer Optimizer: what question is this page for, and is it answered?
+		$answer = AIGS_Answer::analyze( AIGS_Answer::structure( $html ), $title, $keyword );
+		if ( ! AIGS_WooCommerce::is_product_id( $post_id ) && count( $report['checks'] ) > 1 ) {
+			$report['checks'] = array_merge( AIGS_Answer::check_rows( $answer ), $report['checks'] );
+			$report['score']  = self::score_from_checks( $report['checks'] );
+			$report['grade']  = self::grade( $report['score'] );
+		}
+		$report['answer'] = $answer;
+		$report['open']   = array();
+		foreach ( AIGS_Findings::query( array( 'post_id' => $post_id, 'limit' => 30 ) ) as $f ) {
+			$m = AIGS_Rules::meta( $f['rule'] );
+			if ( $m ) {
+				$report['open'][] = array(
+					'title' => $m['title'],
+					'sev'   => (int) $f['severity'],
+				);
+			}
+		}
 
 		// Merge WooCommerce product-specific checks when analyzing a product.
 		if ( class_exists( 'AIGS_WooCommerce' ) && AIGS_WooCommerce::is_product_id( $post_id ) ) {
@@ -347,8 +370,8 @@ class AIGS_Extract {
 		$found   = array();
 		foreach ( array( $h2, $h3 ) as $set ) {
 			foreach ( $set as $hn ) {
-				$t = strtolower( trim( $hn->textContent ) );
-				if ( in_array( $t, $generic, true ) ) {
+				$t = AIGS_Text::normalize( $hn->textContent );
+				if ( in_array( $t, array_map( array( 'AIGS_Text', 'normalize' ), $generic ), true ) ) {
 					$found[] = $hn->textContent;
 				}
 			}
@@ -374,18 +397,18 @@ class AIGS_Extract {
 		}
 
 		/* 6) Comparison table (intent-aware). */
-		$tl  = function_exists( 'mb_strtolower' ) ? mb_strtolower( $title ) : strtolower( $title );
-		$cmp = preg_match( '/(best|top|vs\b|versus|compare|comparison|alternativ|بهترین|مقایسه)/u', $tl );
+		$intent = AIGS_Answer::intent( $title );
+		$cmp    = $intent['comparison'];
 		if ( $cmp ) {
 			if ( $tables->length >= 1 ) {
-				$checks[] = self::row( __( 'Comparison table', 'omnigeo-ai-seo' ), 2, __( 'Comparison content includes a table (cited ~2.5× more often).', 'omnigeo-ai-seo' ), 2 );
+				$checks[] = self::row( __( 'Comparison table', 'omnigeo-ai-seo' ), 2, __( 'Comparison content includes a table, the easiest format for assistants to reuse.', 'omnigeo-ai-seo' ), 2 );
 			} else {
-				$checks[] = self::row( __( 'Comparison table', 'omnigeo-ai-seo' ), 0, __( 'This looks like “best/compare” content but has no table. A comparison table earns far more AI citations.', 'omnigeo-ai-seo' ), 2 );
+				$checks[] = self::row( __( 'Comparison table', 'omnigeo-ai-seo' ), 0, __( 'This looks like “best/compare” content but has no table. Add one that compares options on real criteria.', 'omnigeo-ai-seo' ), 2 );
 			}
 		} elseif ( $tables->length >= 1 ) {
 			$checks[] = self::row( __( 'Tables', 'omnigeo-ai-seo' ), 2, __( 'Structured table present, great for data extraction.', 'omnigeo-ai-seo' ), 1 );
 		} else {
-			$checks[] = self::row( __( 'Tables', 'omnigeo-ai-seo' ), 1, __( 'Where you compare options or list specs, a table boosts citations.', 'omnigeo-ai-seo' ), 1 );
+			$checks[] = self::row( __( 'Tables', 'omnigeo-ai-seo' ), 1, __( 'Where you compare options or list specs, a table makes the data easy to extract.', 'omnigeo-ai-seo' ), 1 );
 		}
 
 		/* 7) Key-claim emphasis. */
@@ -473,14 +496,7 @@ class AIGS_Extract {
 	 * @return bool
 	 */
 	private static function contains( $haystack, $needle ) {
-		$needle = trim( (string) $needle );
-		if ( '' === $needle ) {
-			return false;
-		}
-		if ( function_exists( 'mb_stripos' ) ) {
-			return false !== mb_stripos( (string) $haystack, $needle );
-		}
-		return false !== stripos( (string) $haystack, $needle );
+		return AIGS_Text::contains_term( $haystack, $needle );
 	}
 
 	/**
@@ -490,12 +506,7 @@ class AIGS_Extract {
 	 * @return int
 	 */
 	private static function wc( $text ) {
-		$text = trim( (string) $text );
-		if ( '' === $text ) {
-			return 0;
-		}
-		$parts = preg_split( '/\s+/u', $text, -1, PREG_SPLIT_NO_EMPTY );
-		return is_array( $parts ) ? count( $parts ) : 0;
+		return AIGS_Text::word_count( $text );
 	}
 
 	/**
@@ -522,7 +533,7 @@ class AIGS_Extract {
 	 * @param int $s Score.
 	 * @return string
 	 */
-	private static function grade( $s ) {
+	public static function grade( $s ) {
 		if ( $s >= 90 ) {
 			return 'A';
 		}

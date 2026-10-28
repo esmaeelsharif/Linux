@@ -60,6 +60,280 @@ class AIGS_WooCommerce {
 			add_filter( 'woocommerce_structured_data_product', array( $this, 'enrich_product' ), 20, 2 );
 		}
 		add_filter( 'aigs_llms_sections', array( $this, 'llms_sections' ) );
+		add_action( 'wp_ajax_aigs_woo_preview', array( $this, 'ajax_preview' ) );
+		add_action( 'wp_ajax_aigs_woo_apply', array( $this, 'ajax_apply' ) );
+		add_action( 'wp_ajax_aigs_woo_undo', array( $this, 'ajax_undo' ) );
+	}
+
+	/* ============================================================
+	 * Catalog Copilot: bulk fixes with preview, approval and undo
+	 * ============================================================ */
+
+	/**
+	 * Available bulk fixes.
+	 *
+	 * @return array id => [label, description, rule, ai]
+	 */
+	public static function fixes() {
+		return array(
+			'alt_from_name'   => array(
+				'label' => __( 'Alt text from product name', 'omnigeo-ai-seo' ),
+				'desc'  => __( 'Sets the main image alt text to the product name where it is empty.', 'omnigeo-ai-seo' ),
+				'rule'  => 'product_image_alt',
+				'ai'    => false,
+			),
+			'short_from_long' => array(
+				'label' => __( 'Short description from full description', 'omnigeo-ai-seo' ),
+				'desc'  => __( 'Uses the first sentences (up to 50 words) of the full description where the short description is empty.', 'omnigeo-ai-seo' ),
+				'rule'  => 'product_short_desc',
+				'ai'    => false,
+			),
+			'short_ai'        => array(
+				'label' => __( 'Short description drafted by AI', 'omnigeo-ai-seo' ),
+				'desc'  => __( 'Drafts a 25–50 word summary from the product’s own data with your AI key. Up to 10 products per run.', 'omnigeo-ai-seo' ),
+				'rule'  => 'product_short_desc',
+				'ai'    => true,
+			),
+		);
+	}
+
+	/**
+	 * Products that a fix applies to (from open findings).
+	 *
+	 * @param string $fix   Fix id.
+	 * @param int    $limit Max.
+	 * @return array IDs
+	 */
+	private static function candidates( $fix, $limit ) {
+		$fixes = self::fixes();
+		if ( ! isset( $fixes[ $fix ] ) ) {
+			return array();
+		}
+		$rows = AIGS_Findings::query(
+			array(
+				'rule'  => $fixes[ $fix ]['rule'],
+				'limit' => $limit,
+			)
+		);
+		$ids = array();
+		foreach ( $rows as $r ) {
+			if ( current_user_can( 'edit_post', (int) $r['post_id'] ) ) {
+				$ids[] = (int) $r['post_id'];
+			}
+		}
+		return $ids;
+	}
+
+	/**
+	 * Proposed value for one product.
+	 *
+	 * @param string     $fix     Fix id.
+	 * @param WC_Product $product Product.
+	 * @return string|WP_Error Empty string when nothing can be proposed.
+	 */
+	private static function propose( $fix, $product ) {
+		switch ( $fix ) {
+			case 'alt_from_name':
+				return $product->get_image_id() ? wp_strip_all_tags( $product->get_name() ) : '';
+			case 'short_from_long':
+				$long = trim( wp_strip_all_tags( strip_shortcodes( $product->get_description() ) ) );
+				return AIGS_Text::word_count( $long ) >= 12 ? AIGS_Text::excerpt_sentences( $long, 50 ) : '';
+			case 'short_ai':
+				$facts = array( 'Name: ' . $product->get_name() );
+				$long  = trim( wp_strip_all_tags( strip_shortcodes( $product->get_description() ) ) );
+				if ( '' !== $long ) {
+					$facts[] = 'Description: ' . wp_trim_words( $long, 400, '' );
+				}
+				foreach ( $product->get_attributes() as $attr ) {
+					if ( is_object( $attr ) && method_exists( $attr, 'get_name' ) ) {
+						$vals    = $attr->is_taxonomy() ? wc_get_product_terms( $product->get_id(), $attr->get_name(), array( 'fields' => 'names' ) ) : $attr->get_options();
+						$facts[] = wc_attribute_label( $attr->get_name() ) . ': ' . implode( ', ', array_map( 'strval', (array) $vals ) );
+					}
+				}
+				$cats = wp_get_post_terms( $product->get_id(), 'product_cat', array( 'fields' => 'names' ) );
+				if ( ! is_wp_error( $cats ) && $cats ) {
+					$facts[] = 'Category: ' . implode( ', ', $cats );
+				}
+				if ( count( $facts ) < 2 ) {
+					return '';
+				}
+				$plain = implode( "\n", $facts );
+				$lang  = AIGS_Text::is_rtl_script( $plain ) ? 'Persian/Arabic script, the same language as the data' : 'the same language as the data';
+				$res   = AIGS_AI_Client::ask(
+					"Product data:\n{$plain}\n\nWrite a 25 to 50 word product summary: what it is, who it is for and the most important specification. Return only the summary text.",
+					array(
+						'system'     => 'You write e-commerce product summaries in ' . $lang . '. Use only the facts provided. Never invent prices, materials, sizes, certifications or claims.',
+						'max_tokens' => 300,
+					)
+				);
+				if ( is_wp_error( $res ) ) {
+					return $res;
+				}
+				return trim( wp_strip_all_tags( (string) $res['text'] ), " \t\n\r\"“”«»" );
+		}
+		return '';
+	}
+
+	/**
+	 * Guard for catalog endpoints.
+	 */
+	private function guard() {
+		check_ajax_referer( 'aigs_admin', 'nonce' );
+		if ( ! current_user_can( 'edit_products' ) && ! current_user_can( 'manage_options' ) ) {
+			wp_send_json_error( array( 'message' => __( 'Permission denied.', 'omnigeo-ai-seo' ) ) );
+		}
+	}
+
+	/**
+	 * AJAX: preview a fix (nothing is saved).
+	 */
+	public function ajax_preview() {
+		$this->guard();
+		$fix   = isset( $_POST['fix'] ) ? sanitize_key( wp_unslash( $_POST['fix'] ) ) : '';
+		$fixes = self::fixes();
+		if ( ! isset( $fixes[ $fix ] ) ) {
+			wp_send_json_error( array( 'message' => __( 'Unknown fix.', 'omnigeo-ai-seo' ) ) );
+		}
+		if ( $fixes[ $fix ]['ai'] && ! AIGS_AI_Client::ready() ) {
+			wp_send_json_error( array( 'message' => __( 'Add your AI API key in Settings first.', 'omnigeo-ai-seo' ) ) );
+		}
+		$limit = $fixes[ $fix ]['ai'] ? min( 10, max( 1, AIGS_AI_Client::remaining() ) ) : 200;
+		$items = array();
+		$error = '';
+		foreach ( self::candidates( $fix, $limit ) as $id ) {
+			$product = wc_get_product( $id );
+			if ( ! $product ) {
+				continue;
+			}
+			$value = self::propose( $fix, $product );
+			if ( is_wp_error( $value ) ) {
+				$error = $value->get_error_message();
+				break;
+			}
+			if ( '' === $value ) {
+				continue;
+			}
+			$items[] = array(
+				'id'    => $id,
+				'name'  => wp_strip_all_tags( $product->get_name() ),
+				'edit'  => get_edit_post_link( $id, 'raw' ),
+				'value' => $value,
+			);
+		}
+		wp_send_json_success(
+			array(
+				'fix'   => $fix,
+				'items' => $items,
+				'error' => $error,
+			)
+		);
+	}
+
+	/**
+	 * AJAX: apply approved items (values come back from the reviewed preview).
+	 */
+	public function ajax_apply() {
+		$this->guard();
+		$fix   = isset( $_POST['fix'] ) ? sanitize_key( wp_unslash( $_POST['fix'] ) ) : '';
+		$fixes = self::fixes();
+		if ( ! isset( $fixes[ $fix ] ) ) {
+			wp_send_json_error( array( 'message' => __( 'Unknown fix.', 'omnigeo-ai-seo' ) ) );
+		}
+		$raw   = isset( $_POST['items'] ) && is_array( $_POST['items'] ) ? wp_unslash( $_POST['items'] ) : array(); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- each field sanitized below.
+		$log   = array();
+		$count = 0;
+		foreach ( array_slice( $raw, 0, 200 ) as $row ) {
+			$id    = isset( $row['id'] ) ? absint( $row['id'] ) : 0;
+			$value = isset( $row['value'] ) ? sanitize_textarea_field( $row['value'] ) : '';
+			if ( ! $id || '' === $value || ! current_user_can( 'edit_post', $id ) ) {
+				continue;
+			}
+			$product = wc_get_product( $id );
+			if ( ! $product ) {
+				continue;
+			}
+			if ( 'alt_from_name' === $fix ) {
+				$img = (int) $product->get_image_id();
+				$old = $img ? (string) get_post_meta( $img, '_wp_attachment_image_alt', true ) : '';
+				if ( ! $img || '' !== $old ) {
+					continue; // Never overwrite an alt someone already wrote.
+				}
+				update_post_meta( $img, '_wp_attachment_image_alt', $value );
+				$log[] = array(
+					'id'    => $id,
+					'field' => 'alt',
+					'obj'   => $img,
+					'old'   => $old,
+				);
+			} else {
+				$old = (string) $product->get_short_description();
+				if ( '' !== trim( wp_strip_all_tags( $old ) ) ) {
+					continue; // Never overwrite an existing short description.
+				}
+				$product->set_short_description( wp_kses_post( $value ) );
+				$product->save();
+				$log[] = array(
+					'id'    => $id,
+					'field' => 'short',
+					'obj'   => $id,
+					'old'   => $old,
+				);
+			}
+			AIGS_Scanner::scan_post( $id, true );
+			$count++;
+		}
+		if ( $log ) {
+			$ops = get_option( 'aigs_bulk_log', array() );
+			$ops = is_array( $ops ) ? $ops : array();
+			array_unshift(
+				$ops,
+				array(
+					'op'    => uniqid( 'op', false ),
+					'fix'   => $fix,
+					'time'  => time(),
+					'user'  => get_current_user_id(),
+					'items' => $log,
+				)
+			);
+			update_option( 'aigs_bulk_log', array_slice( $ops, 0, 15 ), false );
+		}
+		wp_send_json_success( array( 'applied' => $count ) );
+	}
+
+	/**
+	 * AJAX: undo a bulk operation (restores previous values).
+	 */
+	public function ajax_undo() {
+		$this->guard();
+		$op  = isset( $_POST['op'] ) ? sanitize_key( wp_unslash( $_POST['op'] ) ) : '';
+		$ops = get_option( 'aigs_bulk_log', array() );
+		$ops = is_array( $ops ) ? $ops : array();
+		foreach ( $ops as $i => $entry ) {
+			if ( $entry['op'] !== $op ) {
+				continue;
+			}
+			$n = 0;
+			foreach ( $entry['items'] as $it ) {
+				if ( ! current_user_can( 'edit_post', (int) $it['id'] ) ) {
+					continue;
+				}
+				if ( 'alt' === $it['field'] ) {
+					update_post_meta( (int) $it['obj'], '_wp_attachment_image_alt', $it['old'] );
+				} else {
+					$product = wc_get_product( (int) $it['id'] );
+					if ( $product ) {
+						$product->set_short_description( $it['old'] );
+						$product->save();
+					}
+				}
+				AIGS_Scanner::scan_post( (int) $it['id'], true );
+				$n++;
+			}
+			unset( $ops[ $i ] );
+			update_option( 'aigs_bulk_log', array_values( $ops ), false );
+			wp_send_json_success( array( 'restored' => $n ) );
+		}
+		wp_send_json_error( array( 'message' => __( 'That operation can no longer be undone.', 'omnigeo-ai-seo' ) ) );
 	}
 
 	/**

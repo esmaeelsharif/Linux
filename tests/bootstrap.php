@@ -1,0 +1,94 @@
+<?php
+/**
+ * Minimal WordPress stand-ins so the plugin's pure logic can be unit-tested
+ * with plain PHP (no database, no WordPress install).
+ *
+ * Only what the tested code paths call is stubbed; behaviour mirrors core
+ * closely enough for the logic under test.
+ */
+
+define( 'ABSPATH', __DIR__ . '/' );
+define( 'DAY_IN_SECONDS', 86400 );
+define( 'HOUR_IN_SECONDS', 3600 );
+define( 'MINUTE_IN_SECONDS', 60 );
+define( 'WEEK_IN_SECONDS', 604800 );
+define( 'KB_IN_BYTES', 1024 );
+define( 'MB_IN_BYTES', 1048576 );
+define( 'ARRAY_A', 'ARRAY_A' );
+
+$GLOBALS['__options'] = array();
+$GLOBALS['__home']    = 'https://example.ir';
+
+function __( $s ) { return $s; }
+function _n( $a, $b, $n ) { return 1 === (int) $n ? $a : $b; }
+function esc_html__( $s ) { return $s; }
+function esc_html( $s ) { return htmlspecialchars( (string) $s, ENT_QUOTES, 'UTF-8' ); }
+function esc_attr( $s ) { return htmlspecialchars( (string) $s, ENT_QUOTES, 'UTF-8' ); }
+function esc_url_raw( $u ) { return filter_var( trim( (string) $u ), FILTER_SANITIZE_URL ); }
+function esc_url( $u ) { return esc_url_raw( $u ); }
+function wp_strip_all_tags( $s ) { return trim( strip_tags( preg_replace( '@<(script|style)[^>]*?>.*?</\\1>@si', '', (string) $s ) ) ); }
+function sanitize_text_field( $s ) { return trim( preg_replace( '/[\r\n\t ]+/', ' ', wp_strip_all_tags( (string) $s ) ) ); }
+function sanitize_textarea_field( $s ) { return trim( wp_strip_all_tags( (string) $s ) ); }
+function sanitize_key( $s ) { return preg_replace( '/[^a-z0-9_\-]/', '', strtolower( (string) $s ) ); }
+function sanitize_email( $s ) { return filter_var( $s, FILTER_VALIDATE_EMAIL ) ? $s : ''; }
+function absint( $n ) { return abs( (int) $n ); }
+function wp_parse_args( $a, $d = array() ) { return array_merge( $d, (array) $a ); }
+function wp_parse_url( $u, $c = -1 ) { return parse_url( $u, $c ); }
+function wp_json_encode( $d ) { return json_encode( $d ); }
+function wp_kses_post( $s ) { return (string) $s; }
+function home_url( $p = '' ) { return rtrim( $GLOBALS['__home'], '/' ) . '/' . ltrim( $p, '/' ); }
+function get_bloginfo( $k ) { return 'Test Shop'; }
+function get_locale() { return 'fa_IR'; }
+function apply_filters( $h, $v ) { return $v; }
+function add_action() {}
+function add_filter() {}
+function current_time( $t ) { return 'mysql' === $t ? gmdate( 'Y-m-d H:i:s' ) : time(); }
+function get_option( $k, $d = false ) { return array_key_exists( $k, $GLOBALS['__options'] ) ? $GLOBALS['__options'][ $k ] : $d; }
+function update_option( $k, $v ) { $GLOBALS['__options'][ $k ] = $v; return true; }
+function delete_option( $k ) { unset( $GLOBALS['__options'][ $k ] ); }
+function wp_http_validate_url( $u ) { return (bool) preg_match( '#^https?://[^\s/]+#i', (string) $u ) ? $u : false; }
+function wp_trim_words( $text, $n = 55, $more = '…' ) {
+	$w = preg_split( '/\s+/u', trim( wp_strip_all_tags( $text ) ), -1, PREG_SPLIT_NO_EMPTY );
+	return count( $w ) > $n ? implode( ' ', array_slice( $w, 0, $n ) ) . $more : implode( ' ', $w );
+}
+function wp_generate_password( $n ) { return str_repeat( 'k', $n ); }
+function is_wp_error( $x ) { return $x instanceof WP_Error; }
+class WP_Error {
+	private $c;
+	private $m;
+	public function __construct( $c = '', $m = '' ) { $this->c = $c; $this->m = $m; }
+	public function get_error_code() { return $this->c; }
+	public function get_error_message() { return $this->m; }
+}
+
+/**
+ * Settings helper (copied from the main plugin file).
+ */
+function aigs_get( $key, $default = '' ) {
+	$s = get_option( 'aigs_settings', array() );
+	return isset( $s[ $key ] ) ? $s[ $key ] : $default;
+}
+function aigs_business_name() {
+	$n = trim( (string) aigs_get( 'business_name', '' ) );
+	return '' !== $n ? $n : 'Test Shop';
+}
+
+$dir = dirname( __DIR__ ) . '/omnigeo-ai-seo/includes/';
+foreach ( array( 'text', 'db', 'ai-client', 'tracker', 'seo', 'answer', 'rules', 'findings', 'ai-visibility', 'llms', 'audit', 'woocommerce', 'admin', 'actions', 'scanner' ) as $f ) {
+	require_once $dir . 'class-aigs-' . $f . '.php';
+}
+
+/* ---------- tiny assertion helpers ---------- */
+$GLOBALS['__pass'] = 0;
+$GLOBALS['__fail'] = 0;
+function check( $name, $cond, $info = '' ) {
+	if ( $cond ) {
+		$GLOBALS['__pass']++;
+	} else {
+		$GLOBALS['__fail']++;
+		echo "FAIL: {$name}" . ( '' !== $info ? " -> {$info}" : '' ) . "\n";
+	}
+}
+function same( $name, $expected, $actual ) {
+	check( $name, $expected === $actual, 'expected ' . var_export( $expected, true ) . ', got ' . var_export( $actual, true ) );
+}

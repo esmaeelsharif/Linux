@@ -22,6 +22,53 @@ class AIGS_Visibility {
 		add_action( 'wp_ajax_aigs_indexnow', array( $this, 'ajax_indexnow' ) );
 		add_action( 'init', array( $this, 'serve_indexnow_key' ) );
 		add_filter( 'query_vars', array( $this, 'query_vars' ) );
+		if ( aigs_get( 'indexnow_auto', 0 ) ) {
+			add_action( 'transition_post_status', array( $this, 'queue_ping' ), 10, 3 );
+		}
+		add_action( 'aigs_indexnow_ping', array( $this, 'send_ping' ) );
+	}
+
+	/**
+	 * Queue an IndexNow ping when public content is published or updated.
+	 * Runs in the background so saving a post never waits on the network.
+	 *
+	 * @param string  $new  New status.
+	 * @param string  $old  Old status.
+	 * @param WP_Post $post Post.
+	 */
+	public function queue_ping( $new, $old, $post ) {
+		if ( 'publish' !== $new && 'publish' !== $old ) {
+			return;
+		}
+		if ( wp_is_post_revision( $post ) || wp_is_post_autosave( $post ) || '' !== $post->post_password ) {
+			return;
+		}
+		$type = get_post_type_object( $post->post_type );
+		if ( ! $type || ! $type->public || 'attachment' === $post->post_type ) {
+			return;
+		}
+		if ( '0' === (string) get_option( 'blog_public' ) ) {
+			return;
+		}
+		// One ping per post per 10 minutes, however often it is saved.
+		$key = 'aigs_inow_' . $post->ID;
+		if ( get_transient( $key ) ) {
+			return;
+		}
+		set_transient( $key, 1, 10 * MINUTE_IN_SECONDS );
+		wp_schedule_single_event( time() + 30, 'aigs_indexnow_ping', array( (int) $post->ID ) );
+	}
+
+	/**
+	 * Background: submit the post URL (also for unpublished posts, so engines drop them).
+	 *
+	 * @param int $post_id Post ID.
+	 */
+	public function send_ping( $post_id ) {
+		$url = get_permalink( $post_id );
+		if ( $url ) {
+			$this->submit_indexnow( array( $url ) );
+		}
 	}
 
 	/**
@@ -74,7 +121,7 @@ class AIGS_Visibility {
 		$out[] = array(
 			'label'  => __( 'HTTPS enabled', 'omnigeo-ai-seo' ),
 			'pass'   => is_ssl() || 0 === stripos( home_url(), 'https' ),
-			'remark' => __( 'AI engines down-rank insecure pages.', 'omnigeo-ai-seo' ),
+			'remark' => __( 'Browsers warn visitors on insecure pages and engines prefer HTTPS.', 'omnigeo-ai-seo' ),
 		);
 
 		// robots.txt.
@@ -103,9 +150,9 @@ class AIGS_Visibility {
 		// llms.txt.
 		$llms = wp_remote_head( home_url( '/llms.txt' ), array( 'timeout' => 10, 'sslverify' => true ) );
 		$out[] = array(
-			'label'  => __( 'llms.txt served', 'omnigeo-ai-seo' ),
+			'label'  => __( 'llms.txt served (optional)', 'omnigeo-ai-seo' ),
 			'pass'   => ! is_wp_error( $llms ) && 200 === (int) wp_remote_retrieve_response_code( $llms ),
-			'remark' => __( 'Guides LLMs to your most important content.', 'omnigeo-ai-seo' ),
+			'remark' => __( 'Optional. A map for AI tools; Google says it is not needed for AI Overviews.', 'omnigeo-ai-seo' ),
 		);
 
 		// Search engine visibility (blog_public).
@@ -146,7 +193,10 @@ class AIGS_Visibility {
 		if ( ! current_user_can( 'manage_options' ) ) {
 			wp_send_json_error();
 		}
-		$url    = isset( $_POST['url'] ) ? esc_url_raw( wp_unslash( $_POST['url'] ) ) : home_url( '/' );
+		$url = isset( $_POST['url'] ) ? esc_url_raw( wp_unslash( $_POST['url'] ) ) : home_url( '/' );
+		if ( ! AIGS_AI_Client::host_matches( $url, home_url() ) ) {
+			wp_send_json_error( array( 'message' => __( 'IndexNow only accepts URLs on this site.', 'omnigeo-ai-seo' ) ) );
+		}
 		$result = $this->submit_indexnow( array( $url ) );
 		if ( is_wp_error( $result ) ) {
 			wp_send_json_error( array( 'message' => $result->get_error_message() ) );
