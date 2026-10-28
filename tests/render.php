@@ -17,9 +17,9 @@ define( 'AIGS_URL', 'https://example.ir/wp-content/plugins/omnigeo-ai-seo/' );
 define( 'M_PI_TEST', M_PI );
 
 /* ---------- more WordPress stand-ins (render-only) ---------- */
-function esc_attr__( $s ) { return esc_attr( $s ); }
-function esc_html_e( $s ) { echo esc_html( $s ); }
-function esc_attr_e( $s ) { echo esc_attr( $s ); }
+function esc_attr__( $s ) { return esc_attr( __( $s ) ); }
+function esc_html_e( $s ) { echo esc_html( __( $s ) ); }
+function esc_attr_e( $s ) { echo esc_attr( __( $s ) ); }
 function esc_textarea( $s ) { return esc_html( $s ); }
 function wp_kses( $s ) { return (string) $s; }
 function selected( $a, $b, $echo = true ) { $r = (string) $a === (string) $b ? ' selected="selected"' : ''; if ( $echo ) { echo $r; } return $r; }
@@ -55,7 +55,7 @@ function get_pages() { return array(); }
 function get_posts() { return array(); }
 function wp_specialchars_decode( $s ) { return $s; }
 function wp_unslash( $s ) { return $s; }
-function class_exists_stub() {}
+function is_rtl() { return (bool) getenv( 'AIGS_LOCALE' ); }
 
 /**
  * Fake $wpdb answering by query pattern.
@@ -191,7 +191,7 @@ $_GET = array( 'status' => 'ignored' );
 ob_start();
 $admin->page_actions();
 $html = ob_get_clean();
-check( 'ignored view renders', false !== strpos( $html, 'Reopen' ) );
+check( 'ignored view renders', false !== strpos( $html, 'data-aigs-status="open"' ) );
 $_GET = array();
 
 // Menu + localized strings.

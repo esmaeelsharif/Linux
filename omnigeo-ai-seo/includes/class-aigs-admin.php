@@ -975,7 +975,7 @@ class AIGS_Admin {
 	private function render_task( $rule ) {
 		$meta = 'vis_gap' === $rule ? AIGS_Rules::meta( 'vis_gap_x' ) : AIGS_Rules::meta( $rule );
 		$back = admin_url( 'admin.php?page=aigs-actions' );
-		echo '<p><a class="aigs-back" href="' . esc_url( $back ) . '">← ' . esc_html__( 'All tasks', 'omnigeo-ai-seo' ) . '</a></p>';
+		echo '<p><a class="aigs-back" href="' . esc_url( $back ) . '">' . ( is_rtl() ? '→ ' : '← ' ) . esc_html__( 'All tasks', 'omnigeo-ai-seo' ) . '</a></p>';
 		if ( ! $meta ) {
 			echo '<div class="aigs-card"><p>' . esc_html__( 'Unknown task.', 'omnigeo-ai-seo' ) . '</p></div>';
 			return;
@@ -1112,7 +1112,7 @@ class AIGS_Admin {
 	 * Items marked as intentional (can be reopened).
 	 */
 	private function render_ignored() {
-		echo '<p><a class="aigs-back" href="' . esc_url( admin_url( 'admin.php?page=aigs-actions' ) ) . '">← ' . esc_html__( 'All tasks', 'omnigeo-ai-seo' ) . '</a></p>';
+		echo '<p><a class="aigs-back" href="' . esc_url( admin_url( 'admin.php?page=aigs-actions' ) ) . '">' . ( is_rtl() ? '→ ' : '← ' ) . esc_html__( 'All tasks', 'omnigeo-ai-seo' ) . '</a></p>';
 		$rows = AIGS_Findings::query(
 			array(
 				'status' => 'ignored',

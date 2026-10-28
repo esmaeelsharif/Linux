@@ -19,9 +19,20 @@ define( 'ARRAY_A', 'ARRAY_A' );
 $GLOBALS['__options'] = array();
 $GLOBALS['__home']    = 'https://example.ir';
 
-function __( $s ) { return $s; }
-function _n( $a, $b, $n ) { return 1 === (int) $n ? $a : $b; }
-function esc_html__( $s ) { return $s; }
+// AIGS_LOCALE=fa_IR renders through the bundled .mo (used for screenshots).
+$GLOBALS['__mo'] = array();
+if ( getenv( 'AIGS_LOCALE' ) ) {
+	$d = file_get_contents( dirname( __DIR__ ) . '/omnigeo-ai-seo/languages/omnigeo-ai-seo-' . getenv( 'AIGS_LOCALE' ) . '.mo' );
+	$h = unpack( 'Vmagic/Vrev/Vn/Vo/Vt', substr( $d, 0, 20 ) );
+	for ( $i = 0; $i < $h['n']; $i++ ) {
+		$a = unpack( 'Vl/Vp', substr( $d, $h['o'] + 8 * $i, 8 ) );
+		$b = unpack( 'Vl/Vp', substr( $d, $h['t'] + 8 * $i, 8 ) );
+		$GLOBALS['__mo'][ substr( $d, $a['p'], $a['l'] ) ] = substr( $d, $b['p'], $b['l'] );
+	}
+}
+function __( $s ) { return isset( $GLOBALS['__mo'][ $s ] ) ? $GLOBALS['__mo'][ $s ] : $s; }
+function _n( $a, $b, $n ) { $k = $a . "\0" . $b; return isset( $GLOBALS['__mo'][ $k ] ) ? $GLOBALS['__mo'][ $k ] : ( 1 === (int) $n ? $a : $b ); }
+function esc_html__( $s ) { return __( $s ); }
 function esc_html( $s ) { return htmlspecialchars( (string) $s, ENT_QUOTES, 'UTF-8' ); }
 function esc_attr( $s ) { return htmlspecialchars( (string) $s, ENT_QUOTES, 'UTF-8' ); }
 function esc_url_raw( $u ) { return filter_var( trim( (string) $u ), FILTER_SANITIZE_URL ); }

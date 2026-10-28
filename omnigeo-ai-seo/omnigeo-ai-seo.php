@@ -84,6 +84,15 @@ function aigs_deactivate() {
 register_deactivation_hook( __FILE__, 'aigs_deactivate' );
 
 /**
+ * Load bundled translations (Persian ships with the plugin). Language packs
+ * from translate.wordpress.org in wp-content/languages take priority.
+ */
+function aigs_load_textdomain() {
+	load_plugin_textdomain( 'omnigeo-ai-seo', false, dirname( AIGS_BASENAME ) . '/languages' ); // phpcs:ignore PluginCheck.CodeAnalysis.DiscouragedFunctions.load_plugin_textdomainFound -- bundled fa_IR until it is published as a language pack.
+}
+add_action( 'init', 'aigs_load_textdomain' );
+
+/**
  * Boot the plugin.
  */
 function aigs_run() {
