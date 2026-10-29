@@ -4,7 +4,7 @@ Tags: ai seo, geo, aeo, ai visibility, answer engine optimization
 Requires at least: 5.8
 Tested up to: 7.0
 Requires PHP: 7.2
-Stable tag: 1.4.0
+Stable tag: 1.5.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -85,6 +85,17 @@ Everything core runs locally on your site and is free. Optional AI features use 
 * Raw logs are kept for a period you choose, then summarised into daily totals.
 * **CDN and firewall check**: OmniGEO requests your homepage as a browser and as AI search crawlers. If Cloudflare, Sucuri, Imperva, CloudFront, Akamai or another edge network blocks or challenges the crawlers that your robots.txt allows, you get a task with where to change it. It also warns when no AI search crawler has visited for three weeks.
 * Ready-made GA4 channel regex.
+
+= Toolbox =
+
+One page with four tabs and plain on/off switches, so the extras never get in the way.
+
+* **AI access**: four presets (open, be found but don't train, closed, choose per crawler) and a switch for every known AI crawler, with how often each one visited. Optional **Content Signals** line in robots.txt (search, AI answers, training) and your own robots.txt lines, checked so a typo cannot break the file.
+* **Markdown copies for AI**: every public page is also available as clean Markdown at its address plus ?format=markdown, and **/llms-full.txt** bundles your main pages. Same words as the page, never indexed, with a canonical link to the real page.
+* **Redirects and 404 log**: 301, 302, 307 and 410 rules, chains flattened and loops refused, automatic redirect when a slug, parent page or date changes, and a log of broken addresses people and AI bots tried, each with a suggested page and one-click fix. CSV import and export.
+* **Search and social** (when no SEO plugin is active): a snippet box with a live Google-style preview, a bulk snippet editor, Open Graph and X cards, last-updated dates in the WordPress sitemap. Titles and descriptions left by a removed SEO plugin are used automatically.
+* **Verification and analytics**: Google, Bing, Yandex, Baidu and Pinterest codes (paste the code or the whole meta tag), GA4 or Google Tag Manager. Skipped when Site Kit is active.
+* **Tools**: a setup check that explains problems in plain words and repairs the safe ones, external link options (new tab, nofollow), duplicate as draft, and a settings backup file you can restore on any site.
 
 = Technical and schema =
 
@@ -176,6 +187,9 @@ Yes. Word counts and brand matching work across languages and scripts, including
 
 == Changelog ==
 
+= 1.5.0 =
+* New: Toolbox. Control each AI crawler, add Content Signals, offer pages as Markdown with /llms-full.txt, manage redirects with a 404 log and one-click fixes, edit search snippets in bulk, add social cards, verification and analytics, and check your setup in plain words.
+
 = 1.4.0 =
 * New: AI revenue attribution for WooCommerce. See the orders and revenue that came from AI assistants, with a breakdown by assistant, landing page and product.
 
@@ -230,6 +244,9 @@ First public release. Includes:
 * Yoast SEO and Rank Math integration with schema de duplication, and WooCommerce support with product specific checks.
 
 == Upgrade Notice ==
+
+= 1.5.0 =
+New Toolbox: per-crawler AI access, Markdown copies for AI, redirects and 404 fixes, snippets, social cards and a setup check.
 
 = 1.4.0 =
 New AI revenue report for WooCommerce stores.

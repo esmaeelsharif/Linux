@@ -305,13 +305,16 @@ $out   = $admin->sanitize_settings( array( 'section_settings' => 1, 'ai_api_key'
 same( 'empty key keeps saved key', 'secret', $out['ai_api_key'] );
 same( 'other section untouched', 'keep me', $out['llms_txt'] );
 same( 'provider saved', 'perplexity', $out['ai_provider'] );
-same( 'access mode saved', 'search_only', $out['ai_access'] );
+check( 'settings page no longer owns access mode', ! isset( $out['ai_access'] ) );
 same( 'cap clamped', 5000, $out['ai_monthly_cap'] );
 same( 'retention clamped', 7, $out['retention_days'] );
 check( 'marker not stored', ! isset( $out['section_settings'] ) );
 $out = $admin->sanitize_settings( array( 'section_settings' => 1, 'ai_remove_key' => 1, 'ai_access' => 'bogus' ) );
 same( 'remove key', '', $out['ai_api_key'] );
+$out = $admin->sanitize_settings( array( 'section_toolbox' => 'ai', 'ai_access' => 'bogus' ) );
 same( 'invalid access falls back', 'allow', $out['ai_access'] );
+$out = $admin->sanitize_settings( array( 'section_toolbox' => 'ai', 'ai_access' => 'search_only' ) );
+same( 'access mode saved in toolbox', 'search_only', $out['ai_access'] );
 $out = $admin->sanitize_settings( array( 'meta_fallback' => 1 ) );
 same( 'programmatic merge', 1, $out['meta_fallback'] );
 same( 'programmatic merge keeps key', 'secret', $out['ai_api_key'] );
@@ -622,6 +625,99 @@ same( 'revenue products quantities', array( 7 => 3, 9 => 1 ), $rs['products'] );
 same( 'revenue conversion', 10.0, $rs['conversion'] );
 $empty = AIGS_Revenue::summarize( array(), 0 );
 check( 'revenue empty safe', 0 === $empty['ai_orders'] && 0 === $empty['share'] && null === $empty['conversion'] );
+
+
+/* ============================================================
+ * Toolbox (1.5.0): redirects, Markdown, head tags, robots, backup
+ * ============================================================ */
+if ( ! function_exists( 'user_trailingslashit' ) ) {
+	function user_trailingslashit( $s ) { return rtrim( $s, '/' ) . '/'; }
+}
+$h = rtrim( $GLOBALS['__home'], '/' );
+same( 'redirect key from path', '/old-page', AIGS_Redirects::key( '/Old-Page/?x=1' ) );
+same( 'redirect key from own url', '/a/b', AIGS_Redirects::key( $h . '/a/b/' ) );
+same( 'redirect key other host', '', AIGS_Redirects::key( 'https://other.example/a/' ) );
+same( 'redirect key root', '', AIGS_Redirects::key( '/' ) );
+same( 'redirect key decodes', '/سلام', AIGS_Redirects::key( '/%D8%B3%D9%84%D8%A7%D9%85/' ) );
+$r = AIGS_Redirects::add_rule( array(), '/b/', '/c/', 301 );
+$r = AIGS_Redirects::add_rule( $r, '/a/', '/b/', 301 );
+same( 'chain resolved forward', $h . '/c/', $r['/a']['to'] );
+$r = AIGS_Redirects::add_rule( $r, '/c/', '/d/', 302 );
+same( 'older rules repointed', $h . '/d/', $r['/a']['to'] );
+same( 'older rules repointed b', $h . '/d/', $r['/b']['to'] );
+check( 'loop refused', is_wp_error( AIGS_Redirects::add_rule( $r, '/d/', '/a/', 301 ) ) );
+check( 'self loop refused', is_wp_error( AIGS_Redirects::add_rule( array(), '/x/', '/x', 301 ) ) );
+check( 'empty target refused', is_wp_error( AIGS_Redirects::add_rule( array(), '/x/', '', 301 ) ) );
+$g = AIGS_Redirects::add_rule( array(), '/gone/', 'ignored', 410 );
+same( '410 has no target', '', $g['/gone']['to'] );
+same( 'bad code becomes 301', 301, AIGS_Redirects::add_rule( array(), '/q/', '/w/', 999 )['/q']['code'] );
+check( '404 log skips php probes', ! AIGS_Redirects::worth_logging( '/wp-config.php.bak' ) && ! AIGS_Redirects::worth_logging( '/.env' ) && ! AIGS_Redirects::worth_logging( '/wp-admin/x' ) );
+check( '404 log keeps real pages', AIGS_Redirects::worth_logging( '/blog/best-coffee-mugs' ) );
+same( 'slug similarity', 0.67, AIGS_Redirects::similarity( 'best-coffee-mugs', 'best-tea-mugs' ) );
+list( $cr, $added, $skipped ) = AIGS_Redirects::from_csv( array(), "from,to,code\n/one/,/two/\n/three/\t/four/\t302\n=evil,/x/\nbroken line\n" );
+same( 'csv added', 3, $added );
+same( 'csv tab code', 302, $cr['/three']['code'] );
+check( 'csv export formula safe', false !== strpos( AIGS_Redirects::to_csv( array( '/=x' => array( 'to' => '=HYPERLINK()', 'code' => 301 ) ) ), "'=HYPERLINK" ) );
+
+$md = AIGS_Markdown::from_html( '<h2>Price</h2><p>It costs <strong>$5</strong>, see <a href="/pricing/">pricing</a>.</p><ul><li>One<ul><li>Sub</li></ul></li><li>Two</li></ul><script>x()</script><table><tr><th>A</th><th>B</th></tr><tr><td>1</td><td>2|3</td></tr></table><blockquote><p>Quote</p></blockquote><img src="/a.png" alt="Cup">' );
+check( 'md heading', false !== strpos( $md, "## Price\n" ) );
+check( 'md bold and link', false !== strpos( $md, 'It costs **$5**, see [pricing](' . $h . '/pricing/).' ) );
+check( 'md nested list', false !== strpos( $md, "- One\n  - Sub\n- Two\n" ) );
+check( 'md drops script', false === strpos( $md, 'x()' ) );
+check( 'md table', false !== strpos( $md, "| A | B |\n| --- | --- |\n| 1 | 2\\|3 |" ) );
+check( 'md quote', false !== strpos( $md, '> Quote' ) );
+check( 'md image alt', false !== strpos( $md, '![Cup](/a.png)' ) );
+same( 'md h1 becomes h2', "## T\n", AIGS_Markdown::from_html( '<h1>T</h1>' ) );
+same( 'md empty', '', AIGS_Markdown::from_html( '' ) );
+
+$html = '<a href="https://other.com/x">o</a> <a href="' . $h . '/in">i</a> <a href="https://sub.' . wp_parse_url( $h, PHP_URL_HOST ) . '/y">s</a> <a href="https://ad.com" rel="sponsored">ad</a> <a href="/rel">r</a>';
+$host = wp_parse_url( $h, PHP_URL_HOST );
+$o = AIGS_Head::external_links( $html, 'blank_nofollow', $host );
+check( 'ext link new tab + nofollow', false !== strpos( $o, '<a href="https://other.com/x" target="_blank" rel="noopener nofollow">' ) );
+check( 'own link untouched', false !== strpos( $o, '<a href="' . $h . '/in">' ) );
+check( 'subdomain untouched', false !== strpos( $o, 'sub.' . $host . '/y">' ) );
+check( 'sponsored not nofollowed', false !== strpos( $o, 'rel="sponsored noopener"' ) );
+check( 'relative untouched', false !== strpos( $o, '<a href="/rel">' ) );
+same( 'ext links off', $html, AIGS_Head::external_links( $html, 'off', $host ) );
+check( 'nofollow only keeps tab', false === strpos( AIGS_Head::external_links( $html, 'nofollow', $host ), '_blank' ) );
+same( 'verification from meta tag', 'abc123XYZ', AIGS_Head::verification_code( '<meta name="google-site-verification" content="abc123XYZ" />' ) );
+same( 'verification bare', 'abc123XYZ', AIGS_Head::verification_code( ' abc123XYZ ' ) );
+same( 'verification rejects html', '', AIGS_Head::verification_code( '"><script>' ) );
+same( 'ga4 id', 'G-ABC1234', AIGS_Head::tag_id( ' g-abc1234 ', 'G' ) );
+same( 'gtm id wrong prefix', '', AIGS_Head::tag_id( 'G-ABC1234', 'GTM' ) );
+check( 'yoast variable not plain', ! AIGS_Head::is_plain( '%%title%% %%sep%% %%sitename%%' ) && ! AIGS_Head::is_plain( '#post_title' ) );
+check( 'plain text is plain', AIGS_Head::is_plain( 'Best mugs in 2026' ) );
+check( 'desc trimmed at word', mb_strlen( AIGS_Head::trim_desc( str_repeat( 'word ', 60 ) ) ) <= 156 );
+
+update_option( 'aigs_settings', array( 'cs_enabled' => 1, 'cs_ai_train' => 'no' ) );
+same( 'content signal line', 'Content-Signal: search=yes, ai-input=yes, ai-train=no', AIGS_LLMS::content_signal_line() );
+same( 'signal goes in star group', "User-agent: *\nContent-Signal: x\nDisallow: /wp-admin/\n", AIGS_LLMS::add_to_star_group( "User-agent: *\nDisallow: /wp-admin/\n", 'Content-Signal: x' ) );
+check( 'star group created when missing', false !== strpos( AIGS_LLMS::add_to_star_group( '', 'Content-Signal: x' ), "User-agent: *\nContent-Signal: x\nAllow: /" ) );
+same( 'custom blocks drop unknown tokens', array( 'GPTBot' ), AIGS_LLMS::custom_blocks( array( 'GPTBot', 'EvilBot' ) ) );
+update_option( 'aigs_settings', array( 'ai_access' => 'custom', 'ai_blocked' => array( 'CCBot' ), 'robots_extra' => "User-agent: X\nDisallow: /p/" ) );
+$rob = ( new AIGS_LLMS() )->robots( "User-agent: *\nDisallow: /wp-admin/\n" );
+check( 'custom mode blocks only chosen', false !== strpos( $rob, "User-agent: CCBot\nDisallow: /" ) && false === strpos( $rob, 'GPTBot' ) );
+check( 'extra robots lines appended', false !== strpos( $rob, "User-agent: X\nDisallow: /p/" ) );
+
+update_option( 'aigs_settings', array( 'ai_api_key' => 'secret' ) );
+$tb = AIGS_Admin::sanitize_toolbox( array(), array( 'ai_access' => 'custom', 'ai_allowed' => array( 'GPTBot', 'OAI-SearchBot' ), 'robots_extra' => "Disallow: /x/\n<script>bad</script>\nnot a rule\nSitemap: https://a.b/s.xml" ), 'ai' );
+check( 'unchecked crawlers stored as blocked', in_array( 'ClaudeBot', $tb['ai_blocked'], true ) && ! in_array( 'GPTBot', $tb['ai_blocked'], true ) );
+check( 'bing never blocked', ! in_array( 'bingbot', $tb['ai_blocked'], true ) );
+same( 'robots extra keeps only rules', "Disallow: /x/\nSitemap: https://a.b/s.xml", $tb['robots_extra'] );
+$tb = AIGS_Admin::sanitize_toolbox( array(), array( 'verify_google' => '<meta name="google-site-verification" content="tok_123" />', 'twitter_site' => '@my_brand', 'ga4_id' => 'nope' ), 'search' );
+same( 'toolbox verification parsed', 'tok_123', $tb['verify_google'] );
+same( 'toolbox twitter handle', 'my_brand', $tb['twitter_site'] );
+same( 'toolbox bad ga4 dropped', '', $tb['ga4_id'] );
+same( 'toolbox ext link whitelist', 'off', AIGS_Admin::sanitize_toolbox( array(), array( 'tb_ext_links' => 'evil' ), 'tools' )['tb_ext_links'] );
+
+$res = AIGS_Tools::restore( array( 'ai_api_key' => 'secret', 'industry' => 'old' ), array( 'plugin' => 'omnigeo-ai-seo', 'settings' => array( 'ai_api_key' => 'stolen', 'industry' => '<b>Coffee</b>', 'tb_social' => 1, 'ai_blocked' => array( 'GPTBot', array( 'x' ) ) ), 'redirects' => array( '/old' => array( 'to' => '/new/', 'code' => 301 ) ) ) );
+same( 'restore keeps secret', 'secret', $res[0]['ai_api_key'] );
+same( 'restore sanitizes', 'Coffee', $res[0]['industry'] );
+same( 'restore keeps ints', 1, $res[0]['tb_social'] );
+same( 'restore drops nested arrays', array( 'GPTBot' ), $res[0]['ai_blocked'] );
+same( 'restore redirects', $h . '/new/', $res[1]['/old']['to'] );
+check( 'restore rejects other files', is_wp_error( AIGS_Tools::restore( array(), array( 'settings' => array() ) ) ) );
+check( 'duplicate copies author fields only', AIGS_Tools::copy_meta_key( '_aigs_faqs' ) && ! AIGS_Tools::copy_meta_key( '_aigs_scan_hash' ) && ! AIGS_Tools::copy_meta_key( '_edit_lock' ) && AIGS_Tools::copy_meta_key( '_thumbnail_id' ) );
 
 echo "\n{$GLOBALS['__pass']} passed, {$GLOBALS['__fail']} failed\n";
 exit( $GLOBALS['__fail'] ? 1 : 0 );

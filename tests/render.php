@@ -27,7 +27,16 @@ function checked( $a, $b = true, $echo = true ) { $r = (string) $a === (string) 
 function disabled( $a, $b = true, $echo = true ) { $r = (bool) $a === (bool) $b ? ' disabled="disabled"' : ''; if ( $echo ) { echo $r; } return $r; }
 function settings_fields() {}
 function admin_url( $p = '' ) { return 'https://example.ir/wp-admin/' . $p; }
-function add_query_arg( $k, $v, $u ) { return $u . ( false === strpos( $u, '?' ) ? '?' : '&' ) . $k . '=' . rawurlencode( $v ); }
+function add_query_arg( $k, $v, $u = null ) {
+	if ( is_array( $k ) ) {
+		$u = $v;
+		foreach ( $k as $kk => $vv ) {
+			$u = add_query_arg( $kk, $vv, $u );
+		}
+		return $u;
+	}
+	return $u . ( false === strpos( $u, '?' ) ? '?' : '&' ) . $k . '=' . rawurlencode( $v );
+}
 function wp_list_pluck( $list, $field ) { return array_map( static function ( $r ) use ( $field ) { return is_array( $r ) ? $r[ $field ] : $r->$field; }, $list ); }
 function get_post( $id ) { return (object) array( 'ID' => $id, 'post_type' => 'post', 'post_title' => 'Post ' . $id, 'post_content' => '<p>x</p>' ); }
 function get_post_meta( $id, $k = '', $single = false ) { $m = array( '_aigs_importance' => '70', '_aigs_page_score' => '58', '_aigs_important' => '' ); return isset( $m[ $k ] ) ? $m[ $k ] : ''; }
@@ -261,6 +270,50 @@ ob_start();
 $admin->page_actions();
 $html = ob_get_clean();
 check( 'ignored view renders', false !== strpos( $html, 'data-aigs-status="open"' ) );
+$_GET = array();
+
+
+// Toolbox: every tab renders, with real data in the redirect and 404 tables.
+if ( ! function_exists( 'wp_nonce_url' ) ) {
+	function wp_nonce_url( $u ) { return $u . '&_wpnonce=n'; }
+	function wp_nonce_field() { echo '<input type="hidden" name="_wpnonce" value="n" />'; }
+	function get_post_types() { return array( 'post' => 'post', 'page' => 'page' ); }
+	function wp_next_scheduled() { return time() + 60; }
+	function sanitize_title( $s ) { return strtolower( preg_replace( '/[^a-z0-9]+/i', '-', $s ) ); }
+	function has_blocks() { return false; }
+	function strip_shortcodes( $s ) { return $s; }
+	function wp_attachment_pages_stub() {}
+	function user_trailingslashit( $s ) { return rtrim( $s, '/' ) . '/'; }
+}
+if ( ! class_exists( 'WP_Query' ) ) {
+	class WP_Query {
+		public $posts = array();
+		public $max_num_pages = 2;
+		public function __construct( $a ) { $this->posts = array( (object) array( 'ID' => 5, 'post_type' => 'post', 'post_title' => 'Mugs', 'post_excerpt' => 'Best mugs.', 'post_content' => '<p>Mugs</p>' ) ); }
+		public function have_posts() { return (bool) $this->posts; }
+	}
+}
+update_option( AIGS_Redirects::RULES, array( '/old' => array( 'to' => 'https://example.ir/new/', 'code' => 301, 'src' => 'auto', 'created' => time() ) ) );
+update_option( AIGS_Redirects::LOG, array( '/missing-page' => array( 'count' => 4, 'first' => time(), 'last' => time(), 'ref' => 'https://chatgpt.com/', 'bot' => 'GPTBot' ) ) );
+foreach ( array( 'ai', 'redirects', 'search', 'tools' ) as $tab ) {
+	$_GET = array( 'tab' => $tab );
+	ob_start();
+	$admin->page_toolbox();
+	$html = ob_get_clean();
+	check( "toolbox {$tab} renders", false !== strpos( $html, 'aigs-tab is-active' ) && substr_count( $html, '<form' ) === substr_count( $html, '</form>' ) );
+	if ( 'ai' === $tab ) {
+		check( 'toolbox ai has crawler switches', false !== strpos( $html, 'ai_allowed][]" value="GPTBot"' ) && false !== strpos( $html, 'value="custom"' ) );
+	}
+	if ( 'redirects' === $tab ) {
+		check( 'toolbox shows redirect + 404', false !== strpos( $html, '<code>/old</code>' ) && false !== strpos( $html, '<code>/missing-page</code>' ) && false !== strpos( $html, 'GPTBot' ) );
+	}
+	if ( 'search' === $tab ) {
+		check( 'toolbox search has verification + bulk', false !== strpos( $html, 'verify_google' ) && false !== strpos( $html, 'data-aigs-snippet-save' ) );
+	}
+	if ( 'tools' === $tab ) {
+		check( 'toolbox tools has diagnostics', false !== strpos( $html, 'aigs-diag' ) && false !== strpos( $html, 'aigs_export' ) );
+	}
+}
 $_GET = array();
 
 // Menu + localized strings.

@@ -108,7 +108,7 @@ class AIGS_SEO {
 			case 'aioseo':
 				return self::aioseo_description( $post_id );
 		}
-		return '';
+		return AIGS_Head::snippet( $post_id, 'desc' );
 	}
 
 	/**
@@ -133,6 +133,8 @@ class AIGS_SEO {
 			case 'aioseo':
 				$t = (string) self::aioseo_column( $post_id, 'title' );
 				break;
+			default:
+				$t = AIGS_Head::snippet( $post_id, 'title' );
 		}
 		$t = trim( $t );
 		if ( '' === $t || false !== strpos( $t, '%' ) || false !== strpos( $t, '#' ) ) {

@@ -17,6 +17,8 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 class AIGS_Admin {
 
+	use AIGS_Admin_Toolbox;
+
 	/**
 	 * Module references.
 	 *
@@ -192,6 +194,7 @@ class AIGS_Admin {
 			'aigs-audit'         => array( __( 'URL Audit', 'omnigeo-ai-seo' ), 'page_audit', __( 'URL Audit', 'omnigeo-ai-seo' ) ),
 			'aigs-visibility'    => array( __( 'Site Health', 'omnigeo-ai-seo' ), 'page_visibility', __( 'Site Health', 'omnigeo-ai-seo' ) ),
 			'aigs-llms'          => array( __( 'llms.txt', 'omnigeo-ai-seo' ), 'page_llms', __( 'llms.txt', 'omnigeo-ai-seo' ) ),
+			'aigs-toolbox'       => array( __( 'Toolbox', 'omnigeo-ai-seo' ), 'page_toolbox', __( 'Toolbox', 'omnigeo-ai-seo' ) ),
 			'aigs-settings'      => array( __( 'Settings', 'omnigeo-ai-seo' ), 'page_settings', __( 'Settings', 'omnigeo-ai-seo' ) ),
 			'aigs-help'          => array( __( 'Guide', 'omnigeo-ai-seo' ), 'page_help', __( 'Guide', 'omnigeo-ai-seo' ) ),
 		);
@@ -355,14 +358,13 @@ class AIGS_Admin {
 		$out   = is_array( $old ) ? $old : array();
 		$input = is_array( $input ) ? $input : array();
 
-		if ( ! isset( $input['section_settings'] ) && ! isset( $input['section_llms'] ) && ! isset( $input['section_visibility'] ) ) {
+		if ( ! isset( $input['section_settings'] ) && ! isset( $input['section_llms'] ) && ! isset( $input['section_visibility'] ) && ! isset( $input['section_toolbox'] ) ) {
 			return array_merge( $out, $input );
 		}
 
 		if ( isset( $input['section_settings'] ) ) {
 			$out['enable_schema']   = empty( $input['enable_schema'] ) ? 0 : 1;
 			$out['enable_tracking'] = empty( $input['enable_tracking'] ) ? 0 : 1;
-			$out['meta_fallback']   = empty( $input['meta_fallback'] ) ? 0 : 1;
 			$out['indexnow_auto']   = empty( $input['indexnow_auto'] ) ? 0 : 1;
 			$out['digest_email']    = empty( $input['digest_email'] ) ? 0 : 1;
 			$out['digest_to']       = isset( $input['digest_to'] ) ? sanitize_email( $input['digest_to'] ) : '';
@@ -396,8 +398,6 @@ class AIGS_Admin {
 			$out['org_founded']     = isset( $input['org_founded'] ) ? sanitize_text_field( $input['org_founded'] ) : '';
 			$out['org_sameas']      = isset( $input['org_sameas'] ) ? sanitize_textarea_field( $input['org_sameas'] ) : '';
 			$out['dedupe_schema']   = ( isset( $input['dedupe_schema'] ) && 'off' === $input['dedupe_schema'] ) ? 'off' : 'auto';
-			$access                 = isset( $input['ai_access'] ) ? sanitize_key( $input['ai_access'] ) : 'allow';
-			$out['ai_access']       = in_array( $access, array( 'allow', 'search_only', 'disallow' ), true ) ? $access : 'allow';
 			$prov                   = isset( $input['ai_provider'] ) ? sanitize_key( $input['ai_provider'] ) : 'openai';
 			$out['ai_provider']     = array_key_exists( $prov, AIGS_AI_Client::providers() ) ? $prov : 'openai';
 			$out['ai_model']        = isset( $input['ai_model'] ) ? preg_replace( '/[^A-Za-z0-9._:\/-]/', '', (string) $input['ai_model'] ) : '';
@@ -441,10 +441,80 @@ class AIGS_Admin {
 			$out['vis_schedule']  = in_array( $vs, array( 'off', 'weekly', 'monthly' ), true ) ? $vs : 'off';
 		}
 
+		if ( isset( $input['section_toolbox'] ) ) {
+			$out = self::sanitize_toolbox( $out, $input, sanitize_key( $input['section_toolbox'] ) );
+		}
+
 		if ( empty( $out['indexnow_key'] ) ) {
 			$out['indexnow_key'] = wp_generate_password( 32, false, false );
 		}
-		unset( $out['section_settings'], $out['section_llms'], $out['section_visibility'], $out['ai_remove_key'] );
+		unset( $out['section_settings'], $out['section_llms'], $out['section_visibility'], $out['section_toolbox'], $out['ai_remove_key'] );
+		return $out;
+	}
+
+	/**
+	 * Sanitize one Toolbox tab (pure; tested).
+	 *
+	 * @param array  $out   Settings so far.
+	 * @param array  $input Raw input.
+	 * @param string $tab   ai|redirects|search|tools.
+	 * @return array
+	 */
+	public static function sanitize_toolbox( $out, $input, $tab ) {
+		$flag = static function ( $k ) use ( $input ) {
+			return empty( $input[ $k ] ) ? 0 : 1;
+		};
+		if ( 'ai' === $tab ) {
+			$access           = isset( $input['ai_access'] ) ? sanitize_key( $input['ai_access'] ) : 'allow';
+			$out['ai_access'] = in_array( $access, array( 'allow', 'search_only', 'disallow', 'custom' ), true ) ? $access : 'allow';
+			// The switches say "allowed"; everything known and not switched on is stored as blocked.
+			$allowed           = isset( $input['ai_allowed'] ) && is_array( $input['ai_allowed'] ) ? array_map( 'sanitize_text_field', $input['ai_allowed'] ) : array();
+			$known             = array_merge( array_keys( AIGS_Tracker::bot_map() ), array_keys( AIGS_Tracker::robots_only_tokens() ) );
+			$out['ai_blocked'] = AIGS_LLMS::custom_blocks( array_diff( $known, $allowed, array( 'bingbot', 'Applebot' ) ) );
+			$out['cs_enabled'] = $flag( 'cs_enabled' );
+			foreach ( array( 'cs_search', 'cs_ai_input', 'cs_ai_train' ) as $k ) {
+				$out[ $k ] = ( isset( $input[ $k ] ) && 'no' === $input[ $k ] ) ? 'no' : 'yes';
+			}
+			$out['tb_markdown'] = $flag( 'tb_markdown' );
+			$lines              = array();
+			$raw                = isset( $input['robots_extra'] ) ? sanitize_textarea_field( $input['robots_extra'] ) : '';
+			foreach ( preg_split( '/\r\n|\r|\n/', $raw ) as $line ) {
+				$line = trim( $line );
+				// Only real robots.txt lines survive, so a typo cannot break the file.
+				if ( ! preg_match( '/^(#.*|(user-agent|allow|disallow|crawl-delay|sitemap|content-signal)\s*:.*)$/i', $line ) ) {
+					continue;
+				}
+				// Keep one blank line before each new group for readability.
+				if ( $lines && preg_match( '/^user-agent\s*:/i', $line ) && ! preg_match( '/^user-agent\s*:/i', end( $lines ) ) ) {
+					$lines[] = '';
+				}
+				$lines[] = $line;
+			}
+			$out['robots_extra'] = trim( implode( "\n", array_slice( $lines, 0, 100 ) ) );
+		}
+		if ( 'redirects' === $tab ) {
+			$out['tb_redirects']     = $flag( 'tb_redirects' );
+			$out['tb_auto_redirect'] = $flag( 'tb_auto_redirect' );
+		}
+		if ( 'search' === $tab ) {
+			$out['tb_snippets']   = $flag( 'tb_snippets' );
+			$out['meta_fallback'] = $flag( 'meta_fallback' );
+			$out['tb_social']     = $flag( 'tb_social' );
+			$out['tb_lastmod']    = $flag( 'tb_lastmod' );
+			$out['og_image']      = isset( $input['og_image'] ) ? esc_url_raw( trim( (string) $input['og_image'] ), array( 'http', 'https' ) ) : '';
+			$handle               = isset( $input['twitter_site'] ) ? ltrim( trim( sanitize_text_field( $input['twitter_site'] ) ), '@' ) : '';
+			$out['twitter_site']  = preg_match( '/^[A-Za-z0-9_]{1,15}$/', $handle ) ? $handle : '';
+			foreach ( AIGS_Head::verification_tags() as $setting ) {
+				$out[ $setting ] = isset( $input[ $setting ] ) ? AIGS_Head::verification_code( $input[ $setting ] ) : '';
+			}
+			$out['ga4_id'] = isset( $input['ga4_id'] ) ? AIGS_Head::tag_id( $input['ga4_id'], 'G' ) : '';
+			$out['gtm_id'] = isset( $input['gtm_id'] ) ? AIGS_Head::tag_id( $input['gtm_id'], 'GTM' ) : '';
+		}
+		if ( 'tools' === $tab ) {
+			$mode               = isset( $input['tb_ext_links'] ) ? sanitize_key( $input['tb_ext_links'] ) : 'off';
+			$out['tb_ext_links'] = in_array( $mode, array( 'off', 'blank', 'blank_nofollow', 'nofollow' ), true ) ? $mode : 'off';
+			$out['tb_duplicate'] = $flag( 'tb_duplicate' );
+		}
 		return $out;
 	}
 
@@ -2156,7 +2226,6 @@ a former company name or an old price", 'omnigeo-ai-seo' ); ?>"><?php echo esc_t
 			<div class="aigs-card">
 				<div class="aigs-card__head"><?php self::i( 'sliders' ); ?><h2><?php esc_html_e( 'Output & automation', 'omnigeo-ai-seo' ); ?></h2></div>
 				<div class="aigs-fieldrow"><label><input type="checkbox" name="aigs_settings[enable_schema]" value="1" <?php checked( aigs_get( 'enable_schema', 1 ), 1 ); ?> /> <?php esc_html_e( 'Output Schema / JSON-LD on the front end', 'omnigeo-ai-seo' ); ?></label></div>
-				<div class="aigs-fieldrow"><label><input type="checkbox" name="aigs_settings[meta_fallback]" value="1" <?php checked( aigs_get( 'meta_fallback', 0 ), 1 ); ?> /> <?php esc_html_e( 'Print a meta description from the excerpt or first paragraph when no SEO plugin is active', 'omnigeo-ai-seo' ); ?></label></div>
 				<div class="aigs-fieldrow"><label><input type="checkbox" name="aigs_settings[indexnow_auto]" value="1" <?php checked( aigs_get( 'indexnow_auto', 0 ), 1 ); ?> /> <?php esc_html_e( 'Ping IndexNow automatically when content is published or updated', 'omnigeo-ai-seo' ); ?></label></div>
 				<table class="form-table" role="presentation">
 					<tr><th><label for="aigs_ssched"><?php esc_html_e( 'Background site scan', 'omnigeo-ai-seo' ); ?></label></th><td>
@@ -2207,18 +2276,8 @@ a former company name or an old price", 'omnigeo-ai-seo' ); ?>"><?php echo esc_t
 
 			<div class="aigs-card">
 				<div class="aigs-card__head"><?php self::i( 'shield' ); ?><h2><?php esc_html_e( 'AI crawler access (robots.txt)', 'omnigeo-ai-seo' ); ?></h2></div>
-				<?php
-				$mode  = aigs_get( 'ai_access', 'allow' );
-				$modes = array(
-					'allow'       => array( __( 'Allow all AI crawlers', 'omnigeo-ai-seo' ), __( 'AI bots follow your normal robots.txt rules.', 'omnigeo-ai-seo' ) ),
-					'search_only' => array( __( 'Allow AI search, block AI training', 'omnigeo-ai-seo' ), __( 'Blocks training crawlers (GPTBot, ClaudeBot, Google-Extended, CCBot…) and keeps the bots that show you in AI answers (OAI-SearchBot, ChatGPT-User, PerplexityBot…).', 'omnigeo-ai-seo' ) ),
-					'disallow'    => array( __( 'Block all AI crawlers', 'omnigeo-ai-seo' ), __( 'You will not appear in AI search answers. Bing and Apple search are never blocked by this setting.', 'omnigeo-ai-seo' ) ),
-				);
-				foreach ( $modes as $val => $m ) :
-					?>
-					<label class="aigs-radio"><input type="radio" name="aigs_settings[ai_access]" value="<?php echo esc_attr( $val ); ?>" <?php checked( $mode, $val ); ?> /> <span><strong><?php echo esc_html( $m[0] ); ?></strong><em><?php echo esc_html( $m[1] ); ?></em></span></label>
-				<?php endforeach; ?>
-				<p class="description"><?php esc_html_e( 'If Settings → Reading discourages search engines, OmniGEO adds no rules. robots.txt is a request that reputable bots honour; it is not access control.', 'omnigeo-ai-seo' ); ?></p>
+				<p class="aigs-card__desc"><?php esc_html_e( 'Which AI crawlers may read your site, per crawler, plus Content Signals and your own robots.txt lines.', 'omnigeo-ai-seo' ); ?></p>
+				<a class="button" href="<?php echo esc_url( admin_url( 'admin.php?page=aigs-toolbox&tab=ai' ) ); ?>"><?php esc_html_e( 'Open in Toolbox', 'omnigeo-ai-seo' ); ?></a>
 			</div>
 
 			<div class="aigs-card" id="aigs-tracking">

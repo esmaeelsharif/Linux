@@ -25,41 +25,6 @@ class AIGS_Schema {
 		if ( aigs_get( 'enable_schema', 1 ) ) {
 			add_action( 'wp_head', aigs_guard( array( $this, 'output' ) ), 20 );
 		}
-		if ( aigs_get( 'meta_fallback', 0 ) ) {
-			add_action( 'wp_head', aigs_guard( array( $this, 'meta_description' ) ), 1 );
-		}
-	}
-
-	/**
-	 * Print a meta description when no SEO plugin is active (opt-in).
-	 * Built from the excerpt, else the first paragraph; nothing on archives.
-	 */
-	public function meta_description() {
-		if ( '' !== AIGS_SEO::active() || ! is_singular() ) {
-			return;
-		}
-		$post = get_queried_object();
-		if ( ! $post instanceof WP_Post || post_password_required( $post ) ) {
-			return;
-		}
-		$text = trim( (string) $post->post_excerpt );
-		if ( '' === $text ) {
-			$text = (string) $post->post_content;
-			if ( function_exists( 'has_blocks' ) && has_blocks( $text ) ) {
-				$text = excerpt_remove_blocks( $text );
-			}
-			$text = strip_shortcodes( $text );
-		}
-		$text = trim( preg_replace( '/\s+/u', ' ', wp_strip_all_tags( $text ) ) );
-		if ( '' === $text ) {
-			return;
-		}
-		if ( mb_strlen( $text ) > 158 ) {
-			$text = mb_substr( $text, 0, 155 );
-			$sp   = mb_strrpos( $text, ' ' );
-			$text = ( $sp ? mb_substr( $text, 0, $sp ) : $text ) . '…';
-		}
-		echo '<meta name="description" content="' . esc_attr( $text ) . '" />' . "\n";
 	}
 
 	/**

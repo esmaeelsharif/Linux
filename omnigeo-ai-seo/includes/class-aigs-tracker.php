@@ -48,6 +48,7 @@ class AIGS_Tracker {
 			'Claude-User'           => array( 'Anthropic', 'fetch', 'fetch' ),
 			'MistralAI-User'        => array( 'Mistral', 'fetch', 'fetch' ),
 			'Meta-ExternalFetcher'  => array( 'Meta', 'fetch', 'fetch' ),
+			'Google-NotebookLM'     => array( 'Google', 'fetch', 'fetch' ),
 			// AI search / answer indexing.
 			'OAI-SearchBot'         => array( 'OpenAI', 'crawl', 'search' ),
 			'Claude-SearchBot'      => array( 'Anthropic', 'crawl', 'search' ),
@@ -57,6 +58,7 @@ class AIGS_Tracker {
 			'Amazonbot'             => array( 'Amazon', 'crawl', 'search' ),
 			'Applebot'              => array( 'Apple', 'crawl', 'search' ),
 			'bingbot'               => array( 'Microsoft', 'crawl', 'search' ),
+			'Meta-WebIndexer'       => array( 'Meta', 'crawl', 'search' ),
 			// Model training / bulk data collection.
 			'GPTBot'                => array( 'OpenAI', 'crawl', 'training' ),
 			'ClaudeBot'             => array( 'Anthropic', 'crawl', 'training' ),
@@ -70,6 +72,10 @@ class AIGS_Tracker {
 			'cohere-ai'             => array( 'Cohere', 'crawl', 'training' ),
 			'cohere-training-data-crawler' => array( 'Cohere', 'crawl', 'training' ),
 			'Diffbot'               => array( 'Diffbot', 'crawl', 'training' ),
+			'AI2Bot'                => array( 'Ai2', 'crawl', 'training' ),
+			'PanguBot'              => array( 'Huawei', 'crawl', 'training' ),
+			'Timpibot'              => array( 'Timpi', 'crawl', 'training' ),
+			'ImagesiftBot'          => array( 'ImageSift', 'crawl', 'training' ),
 		);
 	}
 
@@ -714,10 +720,15 @@ class AIGS_Tracker {
 		$table = self::table();
 		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- custom table.
 		$rows = $wpdb->get_results( $wpdb->prepare( "SELECT url, COUNT(*) AS c FROM {$table} WHERE hit_type <> 'referral' AND status = 404 AND verified <> 2 AND created_at >= %s GROUP BY url ORDER BY c DESC LIMIT %d", AIGS_DB::since( $days ), absint( $limit ) ), ARRAY_A );
-		$out  = array();
+		$out   = array();
+		$rules = class_exists( 'AIGS_Redirects' ) ? AIGS_Redirects::rules() : array();
 		foreach ( (array) $rows as $r ) {
 			// Ignore obvious probes for files that never existed.
 			if ( preg_match( '#(\.(php|env|sql|bak|zip|git)|wp-login|xmlrpc|/\.well-known/)#i', $r['url'] ) ) {
+				continue;
+			}
+			// Already handled with a redirect in the Toolbox.
+			if ( $rules && isset( $rules[ AIGS_Redirects::key( $r['url'] ) ] ) ) {
 				continue;
 			}
 			$out[ $r['url'] ] = (int) $r['c'];

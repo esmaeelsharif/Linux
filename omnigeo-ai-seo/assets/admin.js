@@ -870,4 +870,119 @@
 		}
 	} );
 
+	/* ---------- Toolbox: AI crawler presets ---------- */
+	function applyPreset( mode ) {
+		if ( 'custom' === mode ) {
+			return;
+		}
+		$( '[data-aigs-bots] .aigs-bot' ).each( function () {
+			var cls = $( this ).data( 'class' );
+			var on = 'allow' === mode || ( 'search_only' === mode && 'training' !== cls );
+			$( this ).find( 'input' ).prop( 'checked', on );
+		} );
+	}
+	$( document ).on( 'change', 'input[name="aigs_settings[ai_access]"]', function () {
+		applyPreset( this.value );
+	} );
+	$( document ).on( 'change', '[data-aigs-bots] input', function () {
+		// Touching a single crawler means "I choose myself".
+		$( 'input[name="aigs_settings[ai_access]"][value="custom"]' ).prop( 'checked', true );
+	} );
+
+	/* ---------- Toolbox: redirects ---------- */
+	function saveRedirect( from, to, code, src, $btn ) {
+		$btn.prop( 'disabled', true );
+		return post( 'aigs_redirect_save', { from: from, to: to, code: code, src: src || 'manual' } ).done( function ( res ) {
+			if ( res && res.success ) {
+				toast( res.data.message );
+				setTimeout( function () { window.location.reload(); }, 600 );
+			} else {
+				toast( errMsg( res ), true );
+				$btn.prop( 'disabled', false );
+			}
+		} ).fail( function () {
+			toast( t( 'requestFailed' ), true );
+			$btn.prop( 'disabled', false );
+		} );
+	}
+	$( document ).on( 'click', '#aigs-r-add', function () {
+		saveRedirect( $( '#aigs-r-from' ).val(), $( '#aigs-r-to' ).val(), $( '#aigs-r-code' ).val(), 'manual', $( this ) );
+	} );
+	$( document ).on( 'change', '#aigs-r-code', function () {
+		$( '#aigs-r-to' ).prop( 'disabled', '410' === this.value );
+	} );
+	$( document ).on( 'click', '[data-aigs-r-del]', function () {
+		var $tr = $( this ).closest( 'tr' );
+		post( 'aigs_redirect_delete', { key: $tr.data( 'key' ) } ).done( function ( res ) {
+			if ( res && res.success ) {
+				$tr.fadeOut( 200, function () { $tr.remove(); } );
+			} else {
+				toast( errMsg( res ), true );
+			}
+		} );
+	} );
+	$( document ).on( 'click', '[data-aigs-404-fix]', function () {
+		var $tr = $( this ).closest( 'tr' );
+		saveRedirect( $tr.data( 'key' ), $tr.find( '.aigs-input' ).val(), 301, '404', $( this ) );
+	} );
+	$( document ).on( 'click', '[data-aigs-404-gone]', function () {
+		var $tr = $( this ).closest( 'tr' );
+		saveRedirect( $tr.data( 'key' ), '', 410, '404', $( this ) );
+	} );
+	$( document ).on( 'click', '[data-aigs-404-clear]', function () {
+		var key = $( this ).attr( 'data-aigs-404-clear' ) || '';
+		var $tr = $( this ).closest( 'tr' );
+		post( 'aigs_404_clear', { key: key } ).done( function ( res ) {
+			if ( ! res || ! res.success ) {
+				toast( errMsg( res ), true );
+			} else if ( key ) {
+				$tr.fadeOut( 200, function () { $tr.remove(); } );
+			} else {
+				window.location.reload();
+			}
+		} );
+	} );
+	$( document ).on( 'input', '[data-aigs-filter]', function () {
+		var q = this.value.toLowerCase();
+		$( $( this ).data( 'aigs-filter' ) ).each( function () {
+			$( this ).toggle( -1 !== $( this ).text().toLowerCase().indexOf( q ) );
+		} );
+	} );
+
+	/* ---------- Snippet preview (editor + bulk) ---------- */
+	function countState( $field, $count ) {
+		var len = ( $field.val() || '' ).length;
+		var min = parseInt( $count.data( 'min' ), 10 ), max = parseInt( $count.data( 'max' ), 10 );
+		$count.text( len ? len + ' / ' + max : '' );
+		$count.toggleClass( 'is-ok', len >= min && len <= max ).toggleClass( 'is-warn', len > 0 && ( len < min || len > max ) );
+	}
+	function refreshSnippet( $box ) {
+		var $title = $box.find( '.aigs-snippet__title' ), $desc = $box.find( '.aigs-snippet__desc' );
+		var $pt = $box.find( '.aigs-serp__title' ), $pd = $box.find( '.aigs-serp__desc' );
+		var site = $box.data( 'site' );
+		$pt.text( $title.val() || ( $pt.data( 'default' ) + ( site ? ' - ' + site : '' ) ) );
+		$pd.text( $desc.val() || $pd.data( 'default' ) );
+		countState( $title, $title.siblings( '.aigs-count' ) );
+		countState( $desc, $desc.siblings( '.aigs-count' ) );
+	}
+	$( '.aigs-snippet' ).each( function () { refreshSnippet( $( this ) ); } );
+	$( document ).on( 'input', '.aigs-snippet input, .aigs-snippet textarea', function () {
+		refreshSnippet( $( this ).closest( '.aigs-snippet' ) );
+	} );
+	$( document ).on( 'click', '[data-aigs-snippet-save]', function () {
+		var $row = $( this ).closest( '.aigs-bulk__row' ), $btn = $( this );
+		$btn.prop( 'disabled', true );
+		post( 'aigs_snippet_save', {
+			post_id: $row.data( 'post' ),
+			title: $row.find( '.aigs-snippet__title' ).val(),
+			desc: $row.find( '.aigs-snippet__desc' ).val()
+		} ).done( function ( res ) {
+			toast( res && res.success ? t( 'saved' ) : errMsg( res ), ! ( res && res.success ) );
+		} ).fail( function () {
+			toast( t( 'requestFailed' ), true );
+		} ).always( function () {
+			$btn.prop( 'disabled', false );
+		} );
+	} );
+
 } )( jQuery );

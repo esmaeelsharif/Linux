@@ -29,6 +29,20 @@ class AIGS_LLMS {
 	 */
 	public function add_rewrite() {
 		add_rewrite_rule( '^llms\.txt$', 'index.php?aigs_llms=1', 'top' );
+		add_rewrite_rule( '^llms-full\.txt$', 'index.php?aigs_llms=full', 'top' );
+		// New addresses arrive with updates: refresh the rules once per version.
+		// Flushed on wp_loaded so rules other plugins add later on init are kept.
+		if ( is_admin() && AIGS_VERSION !== get_option( 'aigs_rewrite_ver' ) ) {
+			add_action( 'wp_loaded', array( __CLASS__, 'refresh_rewrites' ) );
+		}
+	}
+
+	/**
+	 * Rebuild rewrite rules once after an update.
+	 */
+	public static function refresh_rewrites() {
+		flush_rewrite_rules( false );
+		update_option( 'aigs_rewrite_ver', AIGS_VERSION, false );
 	}
 
 	/**
@@ -46,15 +60,18 @@ class AIGS_LLMS {
 	 * Serve llms.txt when requested.
 	 */
 	public function maybe_serve() {
-		if ( ! get_query_var( 'aigs_llms' ) ) {
+		$which = get_query_var( 'aigs_llms' );
+		if ( ! $which ) {
 			return;
 		}
-		if ( ! aigs_get( 'enable_llms', 1 ) ) {
+		$full = 'full' === $which;
+		if ( ! aigs_get( 'enable_llms', 1 ) || ( $full && ! aigs_get( 'tb_markdown', 1 ) ) ) {
 			status_header( 404 );
 			exit;
 		}
 		header( 'Content-Type: text/plain; charset=utf-8' );
-		echo $this->get_content(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- plain-text (text/plain) file body; HTML escaping would corrupt the markdown and URLs.
+		header( 'X-Robots-Tag: noindex' );
+		echo $full ? AIGS_Markdown::full( $this ) : $this->get_content(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- plain-text (text/plain) file body; HTML escaping would corrupt the markdown and URLs.
 		exit;
 	}
 
@@ -149,6 +166,9 @@ class AIGS_LLMS {
 		$out .= "## Optional\n\n";
 		foreach ( $optional as $p ) {
 			$out .= $this->link_line( $p );
+		}
+		if ( aigs_get( 'tb_markdown', 1 ) ) {
+			$out .= '- [Full text](' . home_url( '/llms-full.txt' ) . "): The main pages as one Markdown file. Add ?format=markdown to any page address for its Markdown copy.\n";
 		}
 		$out .= '- [Sitemap](' . home_url( '/sitemap.xml' ) . "): Full XML list of site URLs.\n";
 
@@ -246,7 +266,12 @@ class AIGS_LLMS {
 			return $output;
 		}
 		$mode   = aigs_get( 'ai_access', 'allow' );
-		$blocks = self::blocked_tokens( $mode );
+		$blocks = 'custom' === $mode ? self::custom_blocks( aigs_get( 'ai_blocked', array() ) ) : self::blocked_tokens( $mode );
+
+		$signal = self::content_signal_line();
+		if ( '' !== $signal ) {
+			$output = self::add_to_star_group( $output, $signal );
+		}
 
 		$output .= "\n# AI crawler rules (OmniGEO Ai SEO)\n";
 		if ( $blocks ) {
@@ -259,10 +284,56 @@ class AIGS_LLMS {
 		} else {
 			$output .= "# All AI crawlers follow the default rules above.\n";
 		}
+		$extra = trim( (string) aigs_get( 'robots_extra', '' ) );
+		if ( '' !== $extra ) {
+			$output .= "\n# Custom rules (OmniGEO Ai SEO)\n" . $extra . "\n";
+		}
 		if ( aigs_get( 'enable_llms', 1 ) ) {
 			$output .= "\n# llms.txt: " . home_url( '/llms.txt' ) . "\n";
 		}
 		return $output;
+	}
+
+	/**
+	 * Content Signals line (contentsignals.org) from the settings, or ''.
+	 *
+	 * @return string
+	 */
+	public static function content_signal_line() {
+		if ( ! aigs_get( 'cs_enabled', 0 ) ) {
+			return '';
+		}
+		$parts = array();
+		foreach ( array( 'search' => 'cs_search', 'ai-input' => 'cs_ai_input', 'ai-train' => 'cs_ai_train' ) as $signal => $key ) {
+			$parts[] = $signal . '=' . ( aigs_get( $key, 'ai-train' === $signal ? 'no' : 'yes' ) === 'no' ? 'no' : 'yes' );
+		}
+		return 'Content-Signal: ' . implode( ', ', $parts );
+	}
+
+	/**
+	 * Put a line inside the first "User-agent: *" group, or add that group.
+	 *
+	 * @param string $output robots.txt.
+	 * @param string $line   Line to add.
+	 * @return string
+	 */
+	public static function add_to_star_group( $output, $line ) {
+		if ( preg_match( '/^User-agent:\s*\*\s*$/mi', $output, $m, PREG_OFFSET_CAPTURE ) ) {
+			$at = $m[0][1] + strlen( $m[0][0] );
+			return substr( $output, 0, $at ) . "\n" . $line . substr( $output, $at );
+		}
+		return rtrim( $output ) . "\n\nUser-agent: *\n" . $line . "\nAllow: /\n";
+	}
+
+	/**
+	 * Tokens to block in "choose per crawler" mode (only known tokens survive).
+	 *
+	 * @param array $chosen Tokens the user switched off.
+	 * @return array
+	 */
+	public static function custom_blocks( $chosen ) {
+		$known = array_merge( array_keys( AIGS_Tracker::bot_map() ), array_keys( AIGS_Tracker::robots_only_tokens() ) );
+		return array_values( array_intersect( $known, (array) $chosen ) );
 	}
 
 	/**
