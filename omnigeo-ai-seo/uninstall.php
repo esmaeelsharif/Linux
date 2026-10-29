@@ -11,7 +11,7 @@ if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 
 global $wpdb;
 
-foreach ( array( 'aigs_settings', 'aigs_db_version', 'aigs_scan_state', 'aigs_scan_summary', 'aigs_score_history', 'aigs_vis_state', 'aigs_vis_last_batch', 'aigs_vis_last_run', 'aigs_ai_usage', 'aigs_bulk_log', 'aigs_onboarding_done', 'aigs_link_log', 'aigs_tracking_since' ) as $aigs_opt ) {
+foreach ( array( 'aigs_settings', 'aigs_db_version', 'aigs_scan_state', 'aigs_scan_summary', 'aigs_score_history', 'aigs_vis_state', 'aigs_vis_last_batch', 'aigs_vis_last_run', 'aigs_ai_usage', 'aigs_bulk_log', 'aigs_onboarding_done', 'aigs_link_log', 'aigs_tracking_since', 'aigs_error_log', 'aigs_upgrade_lock', 'aigs_backfill_pending', 'aigs_backfill_done' ) as $aigs_opt ) {
 	delete_option( $aigs_opt );
 }
 

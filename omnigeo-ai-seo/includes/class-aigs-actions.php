@@ -27,7 +27,7 @@ class AIGS_Actions {
 		add_action( 'wp_ajax_aigs_autofix', array( $this, 'ajax_autofix' ) );
 		add_action( 'wp_ajax_aigs_important', array( $this, 'ajax_important' ) );
 		add_action( 'wp_ajax_aigs_onboarding_dismiss', array( $this, 'ajax_onboarding_dismiss' ) );
-		add_action( 'aigs_scan_finalized', array( $this, 'maybe_send_digest' ), 10, 3 );
+		add_action( 'aigs_scan_finalized', aigs_guard( array( $this, 'maybe_send_digest' ) ), 10, 3 );
 	}
 
 	/**

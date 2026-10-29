@@ -28,7 +28,7 @@ class AIGS_Extract {
 		add_action( 'add_meta_boxes', array( $this, 'add_meta_box' ) );
 		add_action( 'wp_ajax_aigs_extract', array( $this, 'ajax_extract' ) );
 		add_action( 'admin_init', array( $this, 'setup_columns' ) );
-		add_action( 'pre_get_posts', array( $this, 'sort_query' ) );
+		add_action( 'pre_get_posts', aigs_guard( array( $this, 'sort_query' ) ) );
 	}
 
 	/**

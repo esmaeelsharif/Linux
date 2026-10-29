@@ -3,7 +3,7 @@
  * Plugin Name:       OmniGEO Ai SEO
  * Plugin URI:        https://wordpress.org/plugins/omnigeo-ai-seo/
  * Description:       AEO and GEO for WordPress: scan your site, fix prioritised tasks, optimise answers in the editor, improve WooCommerce products and track AI visibility.
- * Version:           1.2.0
+ * Version:           1.2.1
  * Requires at least: 5.8
  * Requires PHP:      7.2
  * Author:            Deepwp
@@ -20,7 +20,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'AIGS_VERSION', '1.2.0' );
+define( 'AIGS_VERSION', '1.2.1' );
 define( 'AIGS_FILE', __FILE__ );
 define( 'AIGS_DIR', plugin_dir_path( __FILE__ ) );
 define( 'AIGS_URL', plugin_dir_url( __FILE__ ) );
@@ -94,11 +94,76 @@ function aigs_load_textdomain() {
 add_action( 'init', 'aigs_load_textdomain' );
 
 /**
- * Boot the plugin.
+ * Record an error from the plugin without breaking the site. Kept to the last
+ * 20 entries and shown to admins as a notice.
+ *
+ * @param string    $where Context.
+ * @param Throwable $e     Error.
+ */
+function aigs_log_error( $where, $e ) {
+	$msg = $where . ': ' . $e->getMessage() . ' (' . basename( $e->getFile() ) . ':' . $e->getLine() . ')';
+	if ( defined( 'WP_DEBUG_LOG' ) && WP_DEBUG_LOG ) {
+		error_log( 'OmniGEO Ai SEO ' . $msg ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- only when the site owner enabled the debug log.
+	}
+	$log = get_option( 'aigs_error_log', array() );
+	$log = is_array( $log ) ? $log : array();
+	array_unshift(
+		$log,
+		array(
+			'time' => time(),
+			'msg'  => substr( $msg, 0, 500 ),
+		)
+	);
+	update_option( 'aigs_error_log', array_slice( $log, 0, 20 ), false );
+}
+
+/**
+ * Wrap a hook callback so an error inside the plugin can never take the site
+ * down. Filters get their first argument back unchanged when something fails.
+ *
+ * @param callable $callback Callback.
+ * @param bool     $filter   Is this a filter (return first arg on error)?
+ * @return Closure
+ */
+function aigs_guard( $callback, $filter = false ) {
+	return static function () use ( $callback, $filter ) {
+		$args = func_get_args();
+		try {
+			return call_user_func_array( $callback, $args );
+		} catch ( Throwable $e ) {
+			aigs_log_error( is_array( $callback ) ? ( is_object( $callback[0] ) ? get_class( $callback[0] ) : $callback[0] ) . '::' . $callback[1] : 'callback', $e );
+			return ( $filter && $args ) ? $args[0] : null;
+		}
+	};
+}
+
+/**
+ * Boot the plugin. If anything fails here, the site keeps running without it.
  */
 function aigs_run() {
-	AIGS_Loader::instance();
+	try {
+		AIGS_Loader::instance();
+	} catch ( Throwable $e ) {
+		aigs_log_error( 'boot', $e );
+	}
 }
+
+/**
+ * Tell administrators when the plugin caught an error (so it is not silent).
+ */
+function aigs_error_notice() {
+	if ( ! current_user_can( 'manage_options' ) ) {
+		return;
+	}
+	$log = get_option( 'aigs_error_log', array() );
+	if ( ! is_array( $log ) || ! $log || (int) $log[0]['time'] < time() - DAY_IN_SECONDS ) {
+		return;
+	}
+	echo '<div class="notice notice-warning is-dismissible"><p><strong>OmniGEO Ai SEO:</strong> ';
+	echo esc_html__( 'A feature hit an error and was skipped, so your site kept working. Please send this to support:', 'omnigeo-ai-seo' );
+	echo ' <code>' . esc_html( $log[0]['msg'] ) . '</code></p></div>';
+}
+add_action( 'admin_notices', 'aigs_error_notice' );
 add_action( 'plugins_loaded', 'aigs_run' );
 
 /**

@@ -25,7 +25,7 @@ class AIGS_Entity {
 	 */
 	public function hooks() {
 		if ( aigs_get( 'enable_schema', 1 ) ) {
-			add_action( 'wp_head', array( $this, 'output' ), 5 );
+			add_action( 'wp_head', aigs_guard( array( $this, 'output' ) ), 5 );
 		}
 		add_action( 'show_user_profile', array( $this, 'user_fields' ) );
 		add_action( 'edit_user_profile', array( $this, 'user_fields' ) );

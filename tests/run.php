@@ -488,5 +488,37 @@ same( 'invalid hours cleared', '', $out['biz_hours']['tu'] );
 $out = $admin->sanitize_settings( array( 'section_visibility' => 1, 'fact_founded' => '12', 'fact_phones' => "+1 555\n" ) );
 same( 'founded validated', '', $out['fact_founded'] );
 
+/* ============================================================
+ * 1.2.1: site safety
+ * ============================================================ */
+// Load the guard helpers from the main plugin file without running the rest of it.
+$main = file_get_contents( dirname( __DIR__ ) . '/omnigeo-ai-seo/omnigeo-ai-seo.php' );
+preg_match( '/function aigs_log_error\(.*?\n}\n/s', $main, $m1 );
+preg_match( '/function aigs_guard\(.*?\n}\n/s', $main, $m2 );
+eval( $m1[0] . $m2[0] ); // phpcs:ignore -- test harness.
+$boom   = function () { throw new RuntimeException( 'kaboom' ); };
+$filter = aigs_guard( $boom, true );
+same( 'guard returns filter input on error', "User-agent: *\n", $filter( "User-agent: *\n", 'x' ) );
+$action = aigs_guard( $boom );
+same( 'guard swallows action error', null, $action() );
+$log = get_option( 'aigs_error_log' );
+check( 'guard logs the error', is_array( $log ) && false !== strpos( $log[0]['msg'], 'kaboom' ) );
+$ok = aigs_guard( function ( $a, $b ) { return $a + $b; } );
+same( 'guard passes args and result', 5, $ok( 2, 3 ) );
+
+// Schema upgrade never runs on a visitor request.
+$GLOBALS['__is_admin'] = false;
+update_option( 'aigs_db_version', '1' );
+AIGS_DB::maybe_upgrade();
+same( 'no upgrade on front-end request', '1', get_option( 'aigs_db_version' ) );
+check( 'schema reported outdated', ! AIGS_DB::is_current() );
+// Locked: a second admin request while another upgrades does nothing.
+$GLOBALS['__is_admin'] = true;
+update_option( 'aigs_upgrade_lock', time() );
+AIGS_DB::maybe_upgrade();
+same( 'no upgrade while locked', '1', get_option( 'aigs_db_version' ) );
+delete_option( 'aigs_upgrade_lock' );
+$GLOBALS['__is_admin'] = false;
+
 echo "\n{$GLOBALS['__pass']} passed, {$GLOBALS['__fail']} failed\n";
 exit( $GLOBALS['__fail'] ? 1 : 0 );

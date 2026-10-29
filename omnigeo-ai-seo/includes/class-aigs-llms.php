@@ -18,10 +18,10 @@ class AIGS_LLMS {
 	 * Register hooks.
 	 */
 	public function hooks() {
-		add_action( 'init', array( $this, 'add_rewrite' ) );
-		add_filter( 'query_vars', array( $this, 'query_vars' ) );
-		add_action( 'template_redirect', array( $this, 'maybe_serve' ) );
-		add_filter( 'robots_txt', array( $this, 'robots' ), 20, 1 );
+		add_action( 'init', aigs_guard( array( $this, 'add_rewrite' ) ) );
+		add_filter( 'query_vars', aigs_guard( array( $this, 'query_vars' ), true ) );
+		add_action( 'template_redirect', aigs_guard( array( $this, 'maybe_serve' ) ) );
+		add_filter( 'robots_txt', aigs_guard( array( $this, 'robots' ), true ), 20, 1 );
 	}
 
 	/**

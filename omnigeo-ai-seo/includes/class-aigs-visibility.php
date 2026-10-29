@@ -20,12 +20,12 @@ class AIGS_Visibility {
 	public function hooks() {
 		add_action( 'wp_ajax_aigs_health', array( $this, 'ajax_health' ) );
 		add_action( 'wp_ajax_aigs_indexnow', array( $this, 'ajax_indexnow' ) );
-		add_action( 'init', array( $this, 'serve_indexnow_key' ) );
-		add_filter( 'query_vars', array( $this, 'query_vars' ) );
+		add_action( 'init', aigs_guard( array( $this, 'serve_indexnow_key' ) ) );
+		add_filter( 'query_vars', aigs_guard( array( $this, 'query_vars' ), true ) );
 		if ( aigs_get( 'indexnow_auto', 0 ) ) {
-			add_action( 'transition_post_status', array( $this, 'queue_ping' ), 10, 3 );
+			add_action( 'transition_post_status', aigs_guard( array( $this, 'queue_ping' ) ), 10, 3 );
 		}
-		add_action( 'aigs_indexnow_ping', array( $this, 'send_ping' ) );
+		add_action( 'aigs_indexnow_ping', aigs_guard( array( $this, 'send_ping' ) ) );
 	}
 
 	/**

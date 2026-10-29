@@ -40,8 +40,8 @@ class AIGS_AI_Visibility {
 		add_action( 'wp_ajax_aigs_vis_answer', array( $this, 'ajax_answer' ) );
 		add_action( 'wp_ajax_aigs_vis_draft', array( $this, 'ajax_create_draft' ) );
 		add_action( 'wp_ajax_aigs_facts_page', array( $this, 'ajax_facts_page' ) );
-		add_action( 'aigs_weekly', array( $this, 'cron_schedule' ) );
-		add_action( 'aigs_visibility_continue', array( $this, 'cron_continue' ) );
+		add_action( 'aigs_weekly', aigs_guard( array( $this, 'cron_schedule' ) ) );
+		add_action( 'aigs_visibility_continue', aigs_guard( array( $this, 'cron_continue' ) ) );
 	}
 
 	/* ============================================================

@@ -4,7 +4,7 @@ Tags: ai seo, geo, aeo, ai visibility, answer engine optimization
 Requires at least: 5.8
 Tested up to: 7.0
 Requires PHP: 7.2
-Stable tag: 1.2.0
+Stable tag: 1.2.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -167,6 +167,12 @@ Yes. The extractability analyzer counts and reads non Latin text correctly, incl
 
 == Changelog ==
 
+= 1.2.1 =
+Important stability fix, please update:
+* The database upgrade no longer runs during visitors' page loads. On sites with a large AI-bot log from 1.0, the upgrade could lock the table while every visitor tried to run it at the same time, making the site unresponsive. It now runs once, in the admin or cron, behind a lock, and old rows are updated in small background batches.
+* Bot logging pauses until the upgrade is done.
+* Every feature that runs on the public site or in cron is now isolated: if one fails, it is skipped and logged, and the site keeps working. Administrators see a notice with the error to report.
+
 = 1.2.0 =
 New:
 * Any AI provider: Google Gemini, OpenRouter, Mistral, DeepSeek and any OpenAI-compatible endpoint (company gateways, Groq, Together, local Ollama or LM Studio), plus a Test connection button. OpenAI requests now use max_completion_tokens so newer models work.
@@ -209,6 +215,9 @@ First public release. Includes:
 * Yoast SEO and Rank Math integration with schema de duplication, and WooCommerce support with product specific checks.
 
 == Upgrade Notice ==
+
+= 1.2.1 =
+Stability fix: prevents the site from becoming unresponsive while the database upgrades after updating from 1.0/1.1. Update recommended.
 
 = 1.2.0 =
 Adds one-click internal links, LocalBusiness schema, a CDN/firewall check for AI crawlers, brand fact accuracy checks and support for Gemini, OpenRouter, Mistral, DeepSeek and any OpenAI-compatible or local model.

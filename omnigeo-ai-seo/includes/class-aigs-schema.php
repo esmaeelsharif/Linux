@@ -21,12 +21,12 @@ class AIGS_Schema {
 	 */
 	public function hooks() {
 		add_action( 'add_meta_boxes', array( $this, 'add_meta_box' ) );
-		add_action( 'save_post', array( $this, 'save' ), 10, 2 );
+		add_action( 'save_post', aigs_guard( array( $this, 'save' ) ), 10, 2 );
 		if ( aigs_get( 'enable_schema', 1 ) ) {
-			add_action( 'wp_head', array( $this, 'output' ), 20 );
+			add_action( 'wp_head', aigs_guard( array( $this, 'output' ) ), 20 );
 		}
 		if ( aigs_get( 'meta_fallback', 0 ) ) {
-			add_action( 'wp_head', array( $this, 'meta_description' ), 1 );
+			add_action( 'wp_head', aigs_guard( array( $this, 'meta_description' ) ), 1 );
 		}
 	}
 

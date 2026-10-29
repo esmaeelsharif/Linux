@@ -31,9 +31,9 @@ class AIGS_Scanner {
 		add_action( 'wp_ajax_aigs_scan_start', array( $this, 'ajax_start' ) );
 		add_action( 'wp_ajax_aigs_scan_step', array( $this, 'ajax_step' ) );
 		add_action( 'wp_ajax_aigs_scan_post', array( $this, 'ajax_scan_post' ) );
-		add_action( 'aigs_weekly', array( $this, 'cron_weekly' ) );
-		add_action( 'aigs_scan_continue', array( $this, 'cron_continue' ) );
-		add_action( 'save_post', array( $this, 'on_save' ), 100, 2 );
+		add_action( 'aigs_weekly', aigs_guard( array( $this, 'cron_weekly' ) ) );
+		add_action( 'aigs_scan_continue', aigs_guard( array( $this, 'cron_continue' ) ) );
+		add_action( 'save_post', aigs_guard( array( $this, 'on_save' ) ), 100, 2 );
 	}
 
 	/* ============================================================

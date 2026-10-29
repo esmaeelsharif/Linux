@@ -243,6 +243,10 @@ msgstr "(بدون عنوان)"
 msgid "A concise lead paragraph is present (good for featured snippets)."
 msgstr "یک پاراگراف آغازین کوتاه وجود دارد (مناسب برای اسنیپت‌های ویژه)."
 
+#: omnigeo-ai-seo.php:163
+msgid "A feature hit an error and was skipped, so your site kept working. Please send this to support:"
+msgstr "یکی از قابلیت‌ها با خطا روبه‌رو شد و کنار گذاشته شد تا سایت شما کار کند. لطفاً این متن را برای پشتیبانی بفرستید:"
+
 #: includes/class-aigs-rules.php:84
 msgid "A featured image is used in Article schema, link previews and some AI answer cards."
 msgstr "تصویر شاخص در اسکیمای Article، پیش‌نمایش لینک‌ها و برخی کارت‌های پاسخ هوش مصنوعی استفاده می‌شود."
@@ -2291,7 +2295,7 @@ msgstr "در صفحات محصول، OmniGEO برای جلوگیری از تدا
 msgid "On the Growth Center, click Scan site. The scan reads your pages from WordPress itself in small batches, so it is safe on shared hosting and changes nothing."
 msgstr "در مرکز رشد روی «اسکن سایت» کلیک کنید. اسکن صفحات را مستقیم از خود وردپرس و در دسته‌های کوچک می‌خواند؛ برای هاست اشتراکی امن است و هیچ چیزی را تغییر نمی‌دهد."
 
-#: includes/class-aigs-db.php:182
+#: includes/class-aigs-db.php:223
 msgid "Once Weekly"
 msgstr "هفته‌ای یک بار"
 

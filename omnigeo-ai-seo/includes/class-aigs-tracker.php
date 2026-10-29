@@ -187,10 +187,10 @@ class AIGS_Tracker {
 	 */
 	public function hooks() {
 		if ( aigs_get( 'enable_tracking', 1 ) ) {
-			add_action( 'wp', array( $this, 'maybe_log_hit' ), 99 );
+			add_action( 'wp', aigs_guard( array( $this, 'maybe_log_hit' ) ), 99 );
 		}
-		add_action( 'aigs_hourly', array( $this, 'verify_pending' ) );
-		add_action( 'aigs_daily', array( $this, 'rollup_and_prune' ) );
+		add_action( 'aigs_hourly', aigs_guard( array( $this, 'verify_pending' ) ) );
+		add_action( 'aigs_daily', aigs_guard( array( $this, 'rollup_and_prune' ) ) );
 	}
 
 	/**
@@ -259,6 +259,10 @@ class AIGS_Tracker {
 	 */
 	public function maybe_log_hit() {
 		if ( is_admin() || wp_doing_ajax() || wp_doing_cron() || ( defined( 'REST_REQUEST' ) && REST_REQUEST ) ) {
+			return;
+		}
+		// Until an administrator visit has upgraded the table, do not write to it.
+		if ( ! AIGS_DB::is_current() ) {
 			return;
 		}
 

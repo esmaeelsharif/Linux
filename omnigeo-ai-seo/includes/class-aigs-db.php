@@ -3,7 +3,10 @@
  * Database schema, upgrades and scheduled jobs.
  *
  * The activation hook does not run when a plugin is updated in place, so the
- * schema version is compared on every load and dbDelta() runs once per upgrade.
+ * schema version is compared on load. The upgrade itself never runs during a
+ * visitor's request (altering a large table there can lock it and take the
+ * site down): only in wp-admin, cron or WP-CLI, and only one request at a time.
+ * Back-filling old rows happens in small batches in the background.
  *
  * @package OmniGEO_Ai_SEO
  */
@@ -28,7 +31,8 @@ class AIGS_DB {
 	public function hooks() {
 		add_action( 'init', array( __CLASS__, 'maybe_upgrade' ), 0 );
 		add_filter( 'cron_schedules', array( __CLASS__, 'cron_schedules' ) );
-		add_action( 'init', array( __CLASS__, 'ensure_events' ) );
+		add_action( 'init', aigs_guard( array( __CLASS__, 'ensure_events' ) ) );
+		add_action( 'aigs_hourly', aigs_guard( array( __CLASS__, 'backfill_step' ) ) );
 	}
 
 	/**
@@ -133,8 +137,10 @@ class AIGS_DB {
 			dbDelta( $q );
 		}
 
-		// Rows logged by 1.0.0 have no class; derive it from the bot map.
-		self::backfill_bot_class();
+		// Rows logged by 1.0.0 get their bot class in the background (backfill_step).
+		if ( ! get_option( 'aigs_backfill_done' ) ) {
+			update_option( 'aigs_backfill_pending', 1, false );
+		}
 
 		// When tracking started (used to tell "no AI bots yet" from "blocked").
 		if ( ! get_option( 'aigs_tracking_since' ) ) {
@@ -148,25 +154,60 @@ class AIGS_DB {
 	}
 
 	/**
-	 * Fill bot_class for legacy rows (one-off, cheap: grouped by bot).
+	 * Fill bot_class for rows logged by 1.0.0, a few thousand rows per bot per
+	 * run, so even a very large table never blocks the site.
 	 */
-	private static function backfill_bot_class() {
-		global $wpdb;
-		$hits = self::table( 'hits' );
-		foreach ( AIGS_Tracker::bot_map() as $needle => $info ) {
-			// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- one-off migration; table name from $wpdb->prefix.
-			$wpdb->query( $wpdb->prepare( "UPDATE {$hits} SET bot_class = %s, hit_type = %s WHERE bot = %s AND bot_class = ''", $info[2], ( 'fetch' === $info[2] ? 'fetch' : 'crawl' ), $needle ) );
+	public static function backfill_step() {
+		if ( ! get_option( 'aigs_backfill_pending' ) || ! self::is_current() ) {
+			return;
 		}
+		global $wpdb;
+		$hits    = self::table( 'hits' );
+		$changed = 0;
+		foreach ( AIGS_Tracker::bot_map() as $needle => $info ) {
+			// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- background migration in small batches; table name from $wpdb->prefix.
+			$changed += (int) $wpdb->query( $wpdb->prepare( "UPDATE {$hits} SET bot_class = %s, hit_type = %s WHERE bot = %s AND bot_class = '' LIMIT 2000", $info[2], ( 'fetch' === $info[2] ? 'fetch' : 'crawl' ), $needle ) );
+		}
+		if ( 0 === $changed ) {
+			delete_option( 'aigs_backfill_pending' );
+			update_option( 'aigs_backfill_done', 1, false );
+		}
+	}
+
+	/**
+	 * Is the database schema up to date?
+	 *
+	 * @return bool
+	 */
+	public static function is_current() {
+		return get_option( 'aigs_db_version' ) === self::SCHEMA_VERSION;
 	}
 
 	/**
 	 * Run install() when the stored schema is older than the code.
 	 */
 	public static function maybe_upgrade() {
-		if ( get_option( 'aigs_db_version' ) !== self::SCHEMA_VERSION ) {
+		if ( self::is_current() ) {
+			return;
+		}
+		// Never during a visitor's request.
+		if ( ! ( is_admin() || wp_doing_cron() || ( defined( 'WP_CLI' ) && WP_CLI ) ) ) {
+			return;
+		}
+		// One request at a time; a stale lock expires after 10 minutes.
+		if ( ! add_option( 'aigs_upgrade_lock', time(), '', 'no' ) ) {
+			if ( time() - (int) get_option( 'aigs_upgrade_lock' ) < 10 * MINUTE_IN_SECONDS ) {
+				return;
+			}
+			update_option( 'aigs_upgrade_lock', time(), false );
+		}
+		try {
 			self::install();
 			self::ensure_events();
+		} catch ( Throwable $e ) {
+			aigs_log_error( 'upgrade', $e );
 		}
+		delete_option( 'aigs_upgrade_lock' );
 	}
 
 	/**

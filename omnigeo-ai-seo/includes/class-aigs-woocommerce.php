@@ -57,9 +57,9 @@ class AIGS_WooCommerce {
 			return;
 		}
 		if ( 'off' !== aigs_get( 'enhance_woo', 'on' ) ) {
-			add_filter( 'woocommerce_structured_data_product', array( $this, 'enrich_product' ), 20, 2 );
+			add_filter( 'woocommerce_structured_data_product', aigs_guard( array( $this, 'enrich_product' ), true ), 20, 2 );
 		}
-		add_filter( 'aigs_llms_sections', array( $this, 'llms_sections' ) );
+		add_filter( 'aigs_llms_sections', aigs_guard( array( $this, 'llms_sections' ), true ) );
 		add_action( 'wp_ajax_aigs_woo_preview', array( $this, 'ajax_preview' ) );
 		add_action( 'wp_ajax_aigs_woo_apply', array( $this, 'ajax_apply' ) );
 		add_action( 'wp_ajax_aigs_woo_undo', array( $this, 'ajax_undo' ) );

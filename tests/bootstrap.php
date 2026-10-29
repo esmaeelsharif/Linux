@@ -63,6 +63,10 @@ function wp_trim_words( $text, $n = 55, $more = '…' ) {
 	return count( $w ) > $n ? implode( ' ', array_slice( $w, 0, $n ) ) . $more : implode( ' ', $w );
 }
 function wp_generate_password( $n ) { return str_repeat( 'k', $n ); }
+$GLOBALS['__is_admin'] = false;
+function is_admin() { return $GLOBALS['__is_admin']; }
+function wp_doing_cron() { return false; }
+function add_option( $k, $v ) { if ( array_key_exists( $k, $GLOBALS['__options'] ) ) { return false; } $GLOBALS['__options'][ $k ] = $v; return true; }
 function remove_accents( $s ) { return iconv( 'UTF-8', 'ASCII//TRANSLIT//IGNORE', $s ); }
 function number_format_i18n( $n, $d = 0 ) { return number_format( $n, $d ); }
 // Captures outgoing HTTP calls; tests set $GLOBALS['__http_reply'] to the fake response body.
