@@ -495,3 +495,11 @@ a.aigs-stat { color: inherit; text-decoration: none; display: block; }
 .aigs-callout--warn { background: var(--warn-bg); border-color: transparent; }
 .aigs-callout--warn svg, .aigs-callout--warn p { color: var(--warn); }
 .aigs-tag--warn { background: var(--warn-bg); color: var(--warn); }
+
+/* Passage citability */
+.aigs-cit__list { list-style: none !important; padding: 0 !important; margin: 6px 0 0 !important; }
+.aigs-cit__list li { display: flex; gap: 10px; align-items: flex-start; padding: 6px 0; border-bottom: 1px solid var(--border); }
+.aigs-cit__list li:last-child { border-bottom: 0; }
+.aigs-cit__list .aigs-badge { min-width: 34px; text-align: center; flex: none; }
+.aigs-cit__list strong { display: block; font-size: 13px; color: var(--fg); }
+.aigs-cit__list em { display: block; font-style: normal; font-size: 12.5px; color: var(--fg-2); }

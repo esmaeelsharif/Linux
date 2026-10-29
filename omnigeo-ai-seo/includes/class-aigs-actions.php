@@ -145,6 +145,16 @@ class AIGS_Actions {
 			case 'ai_read_weak':
 				/* translators: %d: reads. */
 				return sprintf( _n( 'Read %d time by AI assistants in 30 days', 'Read %d times by AI assistants in 30 days', isset( $e['reads'] ) ? (int) $e['reads'] : 0, 'omnigeo-ai-seo' ), isset( $e['reads'] ) ? (int) $e['reads'] : 0 );
+			case 'weak_passages':
+				$parts = array();
+				foreach ( isset( $e['sections'] ) ? (array) $e['sections'] : array() as $sec ) {
+					$parts[] = '“' . $sec[0] . '” (' . (int) $sec[1] . ')';
+				}
+				/* translators: 1: weak sections, 2: total sections, 3: list. */
+				return sprintf( __( '%1$d of %2$d sections are weak: %3$s', 'omnigeo-ai-seo' ), isset( $e['weak'] ) ? (int) $e['weak'] : 0, isset( $e['total'] ) ? (int) $e['total'] : 0, implode( ', ', $parts ) );
+			case 'no_evidence':
+				/* translators: %d: words. */
+				return sprintf( __( '%d words without a figure or a source', 'omnigeo-ai-seo' ), isset( $e['words'] ) ? (int) $e['words'] : 0 );
 			case 'edge_blocks_ai':
 				$who = ! empty( $e['cdn'] ) ? $e['cdn'] : __( 'an unknown edge network', 'omnigeo-ai-seo' );
 				/* translators: 1: CDN name, 2: bot names. */

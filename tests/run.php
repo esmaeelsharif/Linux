@@ -537,5 +537,60 @@ update_option( 'aigs_settings', array( 'industry' => 'dental clinic' ) );
 $sp = $vis->suggested_prompts();
 same( 'suggested prompt without location', 'What are the best dental clinic providers?', $sp[0] );
 
+/* ============================================================
+ * 1.3.0: passage citability
+ * ============================================================ */
+$GLOBALS['__home'] = 'https://example.com';
+$strong = 'Composting at home is the process of turning food scraps and garden waste into soil in about 8 to 12 weeks. '
+	. 'According to the <a href="https://www.epa.gov/recycle">US EPA</a>, food and yard waste make up 30% of what households throw away. '
+	. 'A balanced pile needs roughly 3 parts brown material for 1 part green material, kept at 40% to 60% moisture. '
+	. 'Turning the pile once a week adds oxygen and keeps the temperature between 55 °C and 65 °C, which kills most weed seeds. '
+	. 'Most beginners use a 200 litre bin, which fits a family of four and fills in about two months.';
+$html = '<p>Intro text that is not in a section.</p>'
+	. '<h2>How does home composting work?</h2><p>' . $strong . '</p>'
+	. '<h2>Common mistakes</h2><p>This is bad. It smells.</p>'
+	. '<h3>Tools</h3><ul><li><p>A bin</p></li><li>A fork</li></ul><p>You also need gloves for handling the compost safely at home.</p>';
+$ps = AIGS_Citability::passages( $html );
+same( 'citability passage count (text before first heading ignored)', 3, count( $ps ) );
+same( 'citability first heading', 'How does home composting work?', $ps[0]['heading'] );
+same( 'citability external link counted', 1, $ps[0]['links'] );
+check( 'citability list marks structure', $ps[2]['struct'] );
+check( 'citability english detected', AIGS_Citability::is_english( $strong ) );
+check( 'citability german not english', ! AIGS_Citability::is_english( 'Kompostieren ist ein Verfahren, bei dem Küchenabfälle und Gartenabfälle in etwa acht bis zwölf Wochen zu nährstoffreicher Erde werden, wenn man den Haufen regelmäßig wendet.' ) );
+check( 'citability data points', AIGS_Citability::data_points( $strong ) >= 6 );
+same( 'citability no data points', 0, AIGS_Citability::data_points( 'It is good and it helps a lot.' ) );
+$good = AIGS_Citability::score_passage( $ps[0], true );
+check( 'strong passage scores high', $good['score'] >= 85, (string) $good['score'] );
+same( 'strong passage has no tip', '', $good['tip'] );
+$bad = AIGS_Citability::score_passage( $ps[1], true );
+check( 'weak passage scores low', $bad['score'] < 40, (string) $bad['score'] );
+check( 'weak passage tip names the worst issue', '' !== $bad['tip'] );
+$de = array( 'heading' => 'Wie funktioniert Kompostieren?', 'text' => 'Kompostieren dauert etwa 8 bis 12 Wochen. Laut Umweltbundesamt bestehen 30% des Hausmülls aus Bioabfall. Ein Haufen braucht 3 Teile braunes Material auf 1 Teil grünes Material und sollte einmal pro Woche gewendet werden, damit genug Sauerstoff hineinkommt und die Temperatur hoch bleibt.', 'words' => 48, 'links' => 1, 'struct' => false );
+$sde = AIGS_Citability::score_passage( $de, false );
+same( 'non-English: standalone not applicable', null, $sde['checks']['standalone'][0] );
+check( 'non-English scored from applicable criteria, not zero', $sde['score'] >= 60, (string) $sde['score'] );
+$an = AIGS_Citability::analyze( $html );
+same( 'citability weak count (mistakes + 15-word tools section)', 2, $an['weak'] );
+check( 'citability page score in range', $an['score'] > 0 && $an['score'] <= 100 );
+same( 'citability empty html', 0, AIGS_Citability::analyze( '' )['score'] );
+
+$weak_html = '';
+foreach ( array( 'A', 'B', 'C', 'D' ) as $hh ) {
+	$weak_html .= '<h2>Section ' . $hh . '</h2><p>' . str_repeat( 'This thing is nice and that thing is fine too. ', 3 ) . '</p>';
+}
+$weak_html = '<p>' . str_repeat( 'Gardening tips for people who like plants. ', 15 ) . '</p>' . $weak_html . '<p>' . str_repeat( 'More words about plants and soil and care. ', 60 ) . '</p>';
+$cw = ctx( array( 'html' => $weak_html, 'title' => 'Gardening tips' ) );
+$cw['citability'] = AIGS_Citability::analyze( $weak_html );
+$f  = AIGS_Rules::evaluate_page( $cw );
+check( 'rule weak_passages', isset( $f['weak_passages'] ) && 3 === count( $f['weak_passages']['sections'] ), wp_json_encode( array_keys( $f ) ) );
+check( 'rule no_evidence', isset( $f['no_evidence'] ) );
+$strong_html = '<h2>How does home composting work?</h2><p>' . $strong . '</p><h2>How long does composting take at home?</h2><p>' . $strong . '</p><h2>What can you put in a compost bin?</h2><p>' . $strong . '</p><h2>Common mistakes</h2><p>This is bad. It smells.</p>';
+$cs = ctx( array( 'html' => $strong_html ) );
+$cs['citability'] = AIGS_Citability::analyze( $strong_html );
+$f  = AIGS_Rules::evaluate_page( $cs );
+check( 'no weak_passages when mostly strong', ! isset( $f['weak_passages'] ) );
+check( 'no no_evidence with sources', ! isset( $f['no_evidence'] ) );
+check( 'weak_passages evidence text', '' !== AIGS_Actions::evidence_text( 'weak_passages', array( 'weak' => 2, 'total' => 4, 'sections' => array( array( 'X', 20, 'tip' ) ) ) ) );
+
 echo "\n{$GLOBALS['__pass']} passed, {$GLOBALS['__fail']} failed\n";
 exit( $GLOBALS['__fail'] ? 1 : 0 );

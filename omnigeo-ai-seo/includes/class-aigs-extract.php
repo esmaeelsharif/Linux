@@ -208,7 +208,8 @@ class AIGS_Extract {
 			$report['score']  = self::score_from_checks( $report['checks'] );
 			$report['grade']  = self::grade( $report['score'] );
 		}
-		$report['answer'] = $answer;
+		$report['answer']     = $answer;
+		$report['citability'] = AIGS_Citability::analyze( $html );
 		$report['open']   = array();
 		foreach ( AIGS_Findings::query( array( 'post_id' => $post_id, 'limit' => 30 ) ) as $f ) {
 			$m = AIGS_Rules::meta( $f['rule'] );

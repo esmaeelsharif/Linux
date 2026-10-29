@@ -313,6 +313,11 @@ class AIGS_Admin {
 					'undo'          => __( 'Undo', 'omnigeo-ai-seo' ),
 					'undone'        => __( 'Restored the previous version.', 'omnigeo-ai-seo' ),
 					'wrongFacts'    => __( 'Wrong facts about you in this answer:', 'omnigeo-ai-seo' ),
+					'passages'      => __( 'Passage citability', 'omnigeo-ai-seo' ),
+					'passagesHelp'  => __( 'Assistants quote single sections. Each section under an H2/H3 is scored on whether it stands alone, its length, data and sources, sentence clarity, and answering first.', 'omnigeo-ai-seo' ),
+					'passagesNone'  => __( 'Add H2 or H3 headings to split the page into sections that can be quoted on their own.', 'omnigeo-ai-seo' ),
+					/* translators: 1: page score, 2: weak sections, 3: total sections. */
+					'passagesSum'   => __( 'Page %1$d/100 · %2$d of %3$d sections need work', 'omnigeo-ai-seo' ),
 				),
 			)
 		);

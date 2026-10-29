@@ -666,6 +666,22 @@
 				h += '<div class="aigs-ans__tips"><span class="aigs-ans__k">' + esc( t( 'faqFound' ) ) + ' (' + lastFaq.length + ')</span>'
 					+ '<p><button type="button" class="aigs-btn aigs-btn--sm" id="aigs-faq-import">' + esc( t( 'addFaq' ) ) + '</button></p></div>';
 			}
+			var cit = d.citability;
+			if ( cit ) {
+				h += '<div class="aigs-ans__tips aigs-cit"><span class="aigs-ans__k">' + esc( t( 'passages' ) ) + '</span>';
+				if ( ! cit.passages || ! cit.passages.length ) {
+					h += '<p class="aigs-muted aigs-small">' + esc( t( 'passagesNone' ) ) + '</p>';
+				} else {
+					h += '<p class="aigs-muted aigs-small" title="' + esc( t( 'passagesHelp' ) ) + '">' + esc( fmt( t( 'passagesSum' ), cit.score, cit.weak, cit.passages.length ) ) + '</p><ul class="aigs-cit__list">';
+					cit.passages.forEach( function ( ps ) {
+						var cls = ps.score >= 75 ? 'good' : ( ps.score >= 50 ? 'ok' : 'bad' );
+						h += '<li><span class="aigs-badge aigs-badge--' + cls + '">' + parseInt( ps.score, 10 ) + '</span><span><strong dir="auto">' + esc( ps.heading ) + '</strong>'
+							+ ( ps.tip ? '<em>' + esc( ps.tip ) + '</em>' : '' ) + '</span></li>';
+					} );
+					h += '</ul>';
+				}
+				h += '</div>';
+			}
 			if ( d.open && d.open.length ) {
 				h += '<div class="aigs-ans__tips"><span class="aigs-ans__k">' + esc( t( 'openTasks' ) ) + '</span><ul>';
 				d.open.forEach( function ( o ) { h += '<li>' + esc( o.title ) + '</li>'; } );

@@ -332,6 +332,7 @@ class AIGS_Scanner {
 			'url'             => get_permalink( $id ),
 			'structure'       => $structure,
 			'answer'          => AIGS_Answer::analyze( $structure, $post->post_title, $keyword ),
+			'citability'      => AIGS_Citability::analyze( $html ),
 			'keyword'         => $keyword,
 			'has_seo_plugin'  => '' !== AIGS_SEO::active(),
 			'seo_title'       => AIGS_SEO::seo_title( $id ),

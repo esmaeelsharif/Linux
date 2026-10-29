@@ -4,7 +4,7 @@ Tags: ai seo, geo, aeo, ai visibility, answer engine optimization
 Requires at least: 5.8
 Tested up to: 7.0
 Requires PHP: 7.2
-Stable tag: 1.2.1
+Stable tag: 1.3.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -36,6 +36,12 @@ Everything core runs locally on your site and is free. Optional AI features use 
 * Turns answered question headings into **FAQ schema** with one click.
 * Optional: **drafts a 40–60 word direct answer** from your own text with your AI key, for you to review and insert. Revisions keep your previous version.
 * Live **answer-readiness score** while you write, plus an AI Score column on your lists.
+
+= Passage citability =
+
+* AI answers quote one section of a page, not the whole page. Every section under an H2 or H3 gets a 0–100 citability score with one concrete tip.
+* Five transparent criteria: the section stands on its own, has a quotable length, includes data and a source, uses clear sentences, and answers first.
+* The site scan adds two tasks: “Strengthen passages AI can quote” and “Back up claims with data and sources”.
 
 = One-click internal links =
 
@@ -164,6 +170,9 @@ Yes. Word counts and brand matching work across languages and scripts, including
 
 == Changelog ==
 
+= 1.3.0 =
+* New: Passage citability. Every section of a page gets a citability score and a specific tip in the editor, and the site scan flags pages whose sections are hard for AI answers to quote or lack data and sources.
+
 = 1.2.1 =
 Important stability fix, please update:
 * The database upgrade no longer runs during visitors' page loads. On sites with a large AI-bot log from 1.0, the upgrade could lock the table while every visitor tried to run it at the same time, making the site unresponsive. It now runs once, in the admin or cron, behind a lock, and old rows are updated in small background batches.
@@ -212,6 +221,9 @@ First public release. Includes:
 * Yoast SEO and Rank Math integration with schema de duplication, and WooCommerce support with product specific checks.
 
 == Upgrade Notice ==
+
+= 1.3.0 =
+New Passage citability score for every section of your pages.
 
 = 1.2.1 =
 Stability fix: prevents the site from becoming unresponsive while the database upgrades after updating from 1.0/1.1. Update recommended.

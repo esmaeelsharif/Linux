@@ -28,7 +28,7 @@ class AIGS_Rules {
 	/**
 	 * Bump when rule logic changes so cached pages are re-evaluated.
 	 */
-	const VERSION = '1.1.0';
+	const VERSION = '1.3.0';
 
 	const LOW      = 1;
 	const MEDIUM   = 2;
@@ -75,6 +75,8 @@ class AIGS_Rules {
 			'wall_of_text'          => array( 'page', self::LOW, 'answers', __( 'Split very long paragraphs', 'omnigeo-ai-seo' ), __( 'Paragraphs over ~120 words mix several ideas, so no single passage answers one question.', 'omnigeo-ai-seo' ), __( 'Keep one idea per paragraph, about 40–80 words.', 'omnigeo-ai-seo' ), 'edit' ),
 			'comparison_no_table'   => array( 'page', self::MEDIUM, 'answers', __( 'Add a comparison table', 'omnigeo-ai-seo' ), __( 'The title promises a comparison or “best of”, but there is no table. Tables are the easiest format for assistants to read and reuse.', 'omnigeo-ai-seo' ), __( 'Add a table comparing the options on real criteria (price, features, pros and cons).', 'omnigeo-ai-seo' ), 'edit' ),
 			'howto_no_steps'        => array( 'page', self::LOW, 'answers', __( 'List the steps in order', 'omnigeo-ai-seo' ), __( 'How-to content is quoted step by step. Without a numbered list the steps are hard to extract.', 'omnigeo-ai-seo' ), __( 'Put the steps in a numbered list.', 'omnigeo-ai-seo' ), 'edit' ),
+			'weak_passages'         => array( 'page', self::MEDIUM, 'answers', __( 'Strengthen passages AI can quote', 'omnigeo-ai-seo' ), __( 'Assistants quote single sections, not whole pages. Several sections here are hard to quote on their own: they lean on earlier text, are too short or too long, or give no specifics.', 'omnigeo-ai-seo' ), __( 'Open the page and follow the tip shown for each weak section in the Passage citability list under the editor.', 'omnigeo-ai-seo' ), 'edit' ),
+			'no_evidence'           => array( 'page', self::MEDIUM, 'answers', __( 'Back up claims with data and sources', 'omnigeo-ai-seo' ), __( 'The page makes claims without figures or sources. In published research on generative engines, adding statistics and citing sources were among the changes that most increased how often content was used in answers.', 'omnigeo-ai-seo' ), __( 'Add specific numbers (prices, measurements, dates, results) and link to or name where they come from.', 'omnigeo-ai-seo' ), 'edit' ),
 			'outdated_year'         => array( 'page', self::MEDIUM, 'answers', __( 'Update the outdated year in the title', 'omnigeo-ai-seo' ), __( 'A past year in the title tells readers and engines the information may be stale.', 'omnigeo-ai-seo' ), __( 'Refresh the facts, then update the year (or remove it).', 'omnigeo-ai-seo' ), 'edit' ),
 			'stale_content'         => array( 'page', self::LOW, 'answers', __( 'Refresh content that has not been updated in a long time', 'omnigeo-ai-seo' ), __( 'Time-sensitive pages that have not changed in over a year lose trust.', 'omnigeo-ai-seo' ), __( 'Review facts, prices and examples, then update the page.', 'omnigeo-ai-seo' ), 'edit' ),
 
@@ -278,6 +280,32 @@ class AIGS_Rules {
 			}
 			if ( $a['intent']['howto'] && ! $a['has_steps'] && $words >= 200 ) {
 				$f['howto_no_steps'] = array();
+			}
+			if ( ! empty( $c['citability']['passages'] ) ) {
+				$cit    = $c['citability'];
+				$count  = count( $cit['passages'] );
+				if ( $count >= 3 && $cit['weak'] >= max( 2, (int) ceil( $count / 2 ) ) ) {
+					$weakest = $cit['passages'];
+					usort(
+						$weakest,
+						static function ( $x, $y ) {
+							return $x['score'] - $y['score'];
+						}
+					);
+					$f['weak_passages'] = array(
+						'weak'     => $cit['weak'],
+						'total'    => $count,
+						'sections' => array_map(
+							static function ( $r ) {
+								return array( $r['heading'], $r['score'], $r['tip'] );
+							},
+							array_slice( $weakest, 0, 3 )
+						),
+					);
+				}
+				if ( $words >= 500 && 0 === $cit['sourced'] && $cit['evidence_points'] < 2 ) {
+					$f['no_evidence'] = array( 'words' => $words );
+				}
 			}
 			$year = AIGS_Text::outdated_year( $c['title'] );
 			if ( $year ) {
