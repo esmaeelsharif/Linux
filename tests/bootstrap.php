@@ -99,7 +99,7 @@ function aigs_business_name() {
 }
 
 $dir = dirname( __DIR__ ) . '/omnigeo-ai-seo/includes/';
-foreach ( array( 'text', 'db', 'ai-client', 'tracker', 'seo', 'answer', 'rules', 'findings', 'ai-visibility', 'llms', 'audit', 'woocommerce', 'admin', 'actions', 'scanner', 'entity', 'links', 'visibility', 'citability' ) as $f ) {
+foreach ( array( 'text', 'db', 'ai-client', 'tracker', 'seo', 'answer', 'rules', 'findings', 'ai-visibility', 'llms', 'audit', 'woocommerce', 'admin', 'actions', 'scanner', 'entity', 'links', 'visibility', 'citability', 'revenue' ) as $f ) {
 	require_once $dir . 'class-aigs-' . $f . '.php';
 }
 

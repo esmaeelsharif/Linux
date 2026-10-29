@@ -820,6 +820,11 @@ class AIGS_Admin {
 			<?php $this->render_wins(); ?>
 			<?php $this->render_visibility_snapshot(); ?>
 		</div>
+		<?php
+		if ( 'ok' === AIGS_Revenue::status() ) {
+			$this->render_revenue( true );
+		}
+		?>
 
 		<?php
 		$series = $t->daily_series( 'crawl', 14 );
@@ -1699,6 +1704,8 @@ a former company name or an old price", 'omnigeo-ai-seo' ); ?>"><?php echo esc_t
 			<p><?php esc_html_e( 'Three separate layers, never added together: requests from bots that say they are AI bots (anyone can fake a user agent), bots whose identity was verified, and human visits that arrived from an AI product. A bot reading a page is not the same as your page being shown in an answer.', 'omnigeo-ai-seo' ); ?></p>
 		</div>
 
+		<?php $this->render_revenue(); ?>
+
 		<div class="aigs-stats aigs-stats--4">
 			<?php foreach ( array( 'fetch' => 'quote', 'search' => 'search', 'training' => 'bot' ) as $c => $ico ) : ?>
 				<div class="aigs-stat">
@@ -1825,6 +1832,131 @@ a former company name or an old price", 'omnigeo-ai-seo' ); ?>"><?php echo esc_t
 		</div>
 		<?php
 		$this->close();
+	}
+
+	/**
+	 * Money formatted in the store currency (plain text).
+	 *
+	 * @param float $amount Amount.
+	 * @return string
+	 */
+	private static function money( $amount ) {
+		if ( function_exists( 'wc_price' ) ) {
+			return html_entity_decode( wp_strip_all_tags( wc_price( $amount ) ), ENT_QUOTES, 'UTF-8' );
+		}
+		return number_format_i18n( $amount, 2 );
+	}
+
+	/**
+	 * AI revenue attribution card (WooCommerce).
+	 *
+	 * @param bool $compact Short version for the Growth Center.
+	 */
+	private function render_revenue( $compact = false ) {
+		if ( ! AIGS_WooCommerce::active() ) {
+			return;
+		}
+		$status = AIGS_Revenue::status();
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- view switch only.
+		$days   = ( ! $compact && isset( $_GET['rev'] ) && '90' === $_GET['rev'] ) ? 90 : 30;
+		echo '<div class="aigs-card aigs-revenue" id="aigs-revenue">';
+		echo '<div class="aigs-card__head">' . wp_kses( self::icon( 'cart', 17 ), self::svg_kses() ) . '<h2>' . esc_html__( 'Revenue from AI assistants', 'omnigeo-ai-seo' ) . '</h2>';
+		if ( ! $compact && 'ok' === $status ) {
+			$base = admin_url( 'admin.php?page=aigs-traffic' );
+			echo '<span class="aigs-seg">';
+			echo '<a class="' . ( 30 === $days ? 'is-active' : '' ) . '" href="' . esc_url( $base . '#aigs-revenue' ) . '">' . esc_html__( '30 days', 'omnigeo-ai-seo' ) . '</a>';
+			echo '<a class="' . ( 90 === $days ? 'is-active' : '' ) . '" href="' . esc_url( add_query_arg( 'rev', '90', $base ) . '#aigs-revenue' ) . '">' . esc_html__( '90 days', 'omnigeo-ai-seo' ) . '</a>';
+			echo '</span>';
+		}
+		echo '</div>';
+
+		if ( 'disabled' === $status ) {
+			echo '<p class="aigs-card__desc">' . esc_html__( 'WooCommerce Order Attribution is turned off, so orders do not record where the customer came from. Turn it on under WooCommerce → Settings → Advanced → Features to see revenue from ChatGPT, Perplexity, Gemini and other assistants.', 'omnigeo-ai-seo' ) . '</p></div>';
+			return;
+		}
+		if ( 'ok' !== $status ) {
+			echo '</div>';
+			return;
+		}
+		$r = AIGS_Revenue::report( $days );
+		if ( ! $r ) {
+			echo '</div>';
+			return;
+		}
+		if ( ! $r['ai_orders'] ) {
+			echo '<div class="aigs-empty">' . wp_kses( self::icon( 'cart', 30 ), self::svg_kses() ) . '<p>';
+			/* translators: %d: days. */
+			echo esc_html( sprintf( __( 'No orders from AI assistants in the last %d days yet. Orders are attributed from the referrer or utm_source WooCommerce records at checkout.', 'omnigeo-ai-seo' ), $days ) );
+			echo '</p></div></div>';
+			return;
+		}
+		?>
+		<div class="aigs-kpis aigs-kpis--4">
+			<div><span><?php echo esc_html( self::money( $r['ai_revenue'] ) ); ?></span><em>
+			<?php
+			/* translators: %s: share of total revenue. */
+			echo esc_html( sprintf( __( 'AI revenue · %s%% of sales', 'omnigeo-ai-seo' ), number_format_i18n( $r['revenue_share'], 1 ) ) );
+			?>
+			</em></div>
+			<div><span><?php echo (int) $r['ai_orders']; ?></span><em>
+			<?php
+			/* translators: %s: share of orders. */
+			echo esc_html( sprintf( __( 'AI orders · %s%% of orders', 'omnigeo-ai-seo' ), number_format_i18n( $r['share'], 1 ) ) );
+			?>
+			</em></div>
+			<div><span><?php echo esc_html( self::money( $r['ai_aov'] ) ); ?></span><em>
+			<?php
+			/* translators: %s: average order value of other channels. */
+			echo esc_html( sprintf( __( 'AI order value (others: %s)', 'omnigeo-ai-seo' ), self::money( $r['other_aov'] ) ) );
+			?>
+			</em></div>
+			<?php if ( null !== $r['conversion'] && ! $compact ) : ?>
+				<div><span><?php echo esc_html( number_format_i18n( $r['conversion'], 1 ) ); ?>%</span><em><?php esc_html_e( 'approx. conversion of AI visits', 'omnigeo-ai-seo' ); ?></em></div>
+			<?php endif; ?>
+		</div>
+		<?php
+		if ( $compact ) {
+			echo '<p><a class="aigs-btn aigs-btn--sm" href="' . esc_url( admin_url( 'admin.php?page=aigs-traffic#aigs-revenue' ) ) . '">' . esc_html__( 'See the breakdown', 'omnigeo-ai-seo' ) . '</a></p></div>';
+			return;
+		}
+		?>
+		<div class="aigs-grid3">
+			<div>
+				<h3 class="aigs-h3"><?php esc_html_e( 'By assistant', 'omnigeo-ai-seo' ); ?></h3>
+				<table class="aigs-table"><tbody>
+				<?php foreach ( $r['by_platform'] as $plat => $v ) : ?>
+					<tr><td><?php echo esc_html( $plat ); ?></td><td class="aigs-muted"><?php echo (int) $v['orders']; ?></td><td class="num"><?php echo esc_html( self::money( $v['revenue'] ) ); ?></td></tr>
+				<?php endforeach; ?>
+				</tbody></table>
+			</div>
+			<div>
+				<h3 class="aigs-h3"><?php esc_html_e( 'Landing pages that sold', 'omnigeo-ai-seo' ); ?></h3>
+				<table class="aigs-table"><tbody>
+				<?php foreach ( $r['landing'] as $path => $n ) : ?>
+					<tr><td class="url" dir="ltr"><?php echo esc_html( $path ); ?></td><td class="num"><?php echo (int) $n; ?></td></tr>
+				<?php endforeach; ?>
+				<?php if ( ! $r['landing'] ) : ?>
+					<tr><td class="aigs-muted"><?php esc_html_e( 'Not recorded', 'omnigeo-ai-seo' ); ?></td></tr>
+				<?php endif; ?>
+				</tbody></table>
+			</div>
+			<div>
+				<h3 class="aigs-h3"><?php esc_html_e( 'Products bought', 'omnigeo-ai-seo' ); ?></h3>
+				<table class="aigs-table"><tbody>
+				<?php foreach ( $r['products'] as $pid => $qty ) : ?>
+					<tr><td dir="auto"><?php echo esc_html( get_the_title( (int) $pid ) ); ?></td><td class="num"><?php echo (int) $qty; ?></td></tr>
+				<?php endforeach; ?>
+				</tbody></table>
+			</div>
+		</div>
+		<p class="aigs-muted aigs-small">
+		<?php
+		/* translators: %s: time ago. */
+		echo esc_html( sprintf( __( 'Paid orders, refunds subtracted. Based on the traffic source WooCommerce records on each order; apps and some assistants send no referrer, so this is a minimum. Updated %s.', 'omnigeo-ai-seo' ), self::ago( (int) $r['time'] ) ) );
+		?>
+		<button type="button" class="button-link" id="aigs-revenue-refresh"><?php esc_html_e( 'Refresh now', 'omnigeo-ai-seo' ); ?></button></p>
+		</div>
+		<?php
 	}
 
 	/* ============================================================

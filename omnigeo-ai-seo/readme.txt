@@ -4,7 +4,7 @@ Tags: ai seo, geo, aeo, ai visibility, answer engine optimization
 Requires at least: 5.8
 Tested up to: 7.0
 Requires PHP: 7.2
-Stable tag: 1.3.0
+Stable tag: 1.4.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -60,6 +60,12 @@ Everything core runs locally on your site and is free. Optional AI features use 
 * Checks every product: short and full description, specifications, images and alt text, category, price, GTIN/EAN and copied descriptions.
 * **Bulk fixes with preview, approval and undo**: alt text from product name, short description from the full description, or AI-drafted summaries for up to 10 selected products at a time. Existing values are never overwritten.
 * Adds your brand to WooCommerce Product schema when it has none, and lets WooCommerce own Product schema to avoid duplicates.
+
+= AI revenue attribution (WooCommerce) =
+
+* See the orders and revenue that came from ChatGPT, Perplexity, Gemini, Claude, Copilot and other assistants, for the last 30 or 90 days.
+* AI share of orders and sales, average order value from AI compared with other channels, a breakdown by assistant, the landing pages that sold and the products bought.
+* Uses the traffic source WooCommerce Order Attribution already records on each order. No extra cookies and no new visitor data.
 
 = AI Visibility monitoring =
 
@@ -170,6 +176,9 @@ Yes. Word counts and brand matching work across languages and scripts, including
 
 == Changelog ==
 
+= 1.4.0 =
+* New: AI revenue attribution for WooCommerce. See the orders and revenue that came from AI assistants, with a breakdown by assistant, landing page and product.
+
 = 1.3.0 =
 * New: Passage citability. Every section of a page gets a citability score and a specific tip in the editor, and the site scan flags pages whose sections are hard for AI answers to quote or lack data and sources.
 
@@ -221,6 +230,9 @@ First public release. Includes:
 * Yoast SEO and Rank Math integration with schema de duplication, and WooCommerce support with product specific checks.
 
 == Upgrade Notice ==
+
+= 1.4.0 =
+New AI revenue report for WooCommerce stores.
 
 = 1.3.0 =
 New Passage citability score for every section of your pages.

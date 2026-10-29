@@ -293,6 +293,16 @@
 		} ).fail( function () { $b.prop( 'disabled', false ); toast( t( 'requestFailed' ), true ); } );
 	} );
 
+	/* ---------- AI revenue refresh ---------- */
+	$( document ).on( 'click', '#aigs-revenue-refresh', function () {
+		var $b = $( this );
+		$b.prop( 'disabled', true );
+		post( 'aigs_revenue_refresh' ).done( function ( res ) {
+			if ( ! res.success ) { $b.prop( 'disabled', false ); toast( errMsg( res ), true ); return; }
+			window.location.reload();
+		} ).fail( function () { $b.prop( 'disabled', false ); toast( t( 'requestFailed' ), true ); } );
+	} );
+
 	$( '#aigs-onboard-dismiss' ).on( 'click', function () {
 		post( 'aigs_onboarding_dismiss' );
 		$( '#aigs-onboard' ).slideUp( 180 );

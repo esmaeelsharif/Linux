@@ -592,5 +592,36 @@ check( 'no weak_passages when mostly strong', ! isset( $f['weak_passages'] ) );
 check( 'no no_evidence with sources', ! isset( $f['no_evidence'] ) );
 check( 'weak_passages evidence text', '' !== AIGS_Actions::evidence_text( 'weak_passages', array( 'weak' => 2, 'total' => 4, 'sections' => array( array( 'X', 20, 'tip' ) ) ) ) );
 
+/* ============================================================
+ * 1.4.0: AI revenue attribution
+ * ============================================================ */
+same( 'revenue classify chatgpt referrer', 'ChatGPT', AIGS_Revenue::classify( 'https://chatgpt.com/', '' ) );
+same( 'revenue classify chatgpt utm', 'ChatGPT', AIGS_Revenue::classify( '', 'chatgpt.com' ) );
+same( 'revenue classify perplexity', 'Perplexity', AIGS_Revenue::classify( 'https://www.perplexity.ai/search/abc', '' ) );
+same( 'revenue classify gemini utm uppercase', 'Gemini', AIGS_Revenue::classify( '', 'Gemini.Google.com' ) );
+same( 'revenue classify google search is not AI', '', AIGS_Revenue::classify( 'https://www.google.com/', 'google' ) );
+same( 'revenue classify direct', '', AIGS_Revenue::classify( '', '' ) );
+$rows = array(
+	array( 'total' => 100.0, 'ai' => 'ChatGPT', 'landing' => 'https://shop.test/best-mugs/?utm_source=chatgpt.com', 'products' => array( array( 7, 2 ) ) ),
+	array( 'total' => 50.0, 'ai' => 'Perplexity', 'landing' => '', 'products' => array( array( 7, 1 ), array( 9, 1 ) ) ),
+	array( 'total' => 60.0, 'ai' => 'ChatGPT', 'landing' => 'https://shop.test/best-mugs/', 'products' => array() ),
+	array( 'total' => 40.0, 'ai' => '', 'landing' => '', 'products' => array() ),
+	array( 'total' => 50.0, 'ai' => '', 'landing' => '', 'products' => array() ),
+);
+$rs = AIGS_Revenue::summarize( $rows, 30 );
+same( 'revenue total orders', 5, $rs['orders'] );
+same( 'revenue ai orders', 3, $rs['ai_orders'] );
+same( 'revenue ai revenue', 210.0, $rs['ai_revenue'] );
+same( 'revenue share of orders', 60.0, $rs['share'] );
+same( 'revenue share of sales', 70.0, $rs['revenue_share'] );
+same( 'revenue ai aov', 70.0, $rs['ai_aov'] );
+same( 'revenue other aov', 45.0, $rs['other_aov'] );
+same( 'revenue by platform order', array( 'ChatGPT', 'Perplexity' ), array_keys( $rs['by_platform'] ) );
+same( 'revenue landing grouped by path', array( '/best-mugs/' => 2 ), $rs['landing'] );
+same( 'revenue products quantities', array( 7 => 3, 9 => 1 ), $rs['products'] );
+same( 'revenue conversion', 10.0, $rs['conversion'] );
+$empty = AIGS_Revenue::summarize( array(), 0 );
+check( 'revenue empty safe', 0 === $empty['ai_orders'] && 0 === $empty['share'] && null === $empty['conversion'] );
+
 echo "\n{$GLOBALS['__pass']} passed, {$GLOBALS['__fail']} failed\n";
 exit( $GLOBALS['__fail'] ? 1 : 0 );

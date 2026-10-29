@@ -59,6 +59,7 @@ class AIGS_Loader {
 		$this->modules['visibility']    = new AIGS_Visibility();
 		$this->modules['ai_visibility'] = new AIGS_AI_Visibility();
 		$this->modules['woocommerce']   = new AIGS_WooCommerce();
+		$this->modules['revenue']       = new AIGS_Revenue();
 		$this->modules['admin']         = new AIGS_Admin( $this->modules );
 
 		foreach ( $this->modules as $module ) {

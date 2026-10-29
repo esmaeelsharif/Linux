@@ -55,6 +55,28 @@ function get_pages() { return array(); }
 function get_posts() { return array(); }
 function wp_specialchars_decode( $s ) { return $s; }
 function wp_unslash( $s ) { return $s; }
+$GLOBALS['__transients'] = array();
+function get_transient( $k ) { return isset( $GLOBALS['__transients'][ $k ] ) ? $GLOBALS['__transients'][ $k ] : false; }
+function set_transient( $k, $v ) { $GLOBALS['__transients'][ $k ] = $v; return true; }
+function delete_transient( $k ) { unset( $GLOBALS['__transients'][ $k ] ); return true; }
+function wc_price( $a ) { return '<span class="amount">$' . number_format( (float) $a, 2 ) . '</span>'; }
+function wc_get_is_paid_statuses() { return array( 'processing', 'completed' ); }
+class Fake_Order {
+	private $d;
+	public function __construct( $d ) { $this->d = $d; }
+	public function get_total() { return $this->d[0]; }
+	public function get_total_refunded() { return 0; }
+	public function get_meta( $k ) { $m = array( '_wc_order_attribution_referrer' => $this->d[1], '_wc_order_attribution_utm_source' => '', '_wc_order_attribution_session_entry' => 'https://shop.test/mugs/' ); return isset( $m[ $k ] ) ? $m[ $k ] : ''; }
+	public function get_items() { return array( new Fake_Item() ); }
+}
+class Fake_Item {
+	public function get_product_id() { return 7; }
+	public function get_quantity() { return 1; }
+}
+function wc_get_orders( $args ) {
+	if ( $args['paged'] > 1 ) { return array(); }
+	return array( new Fake_Order( array( 120.0, 'https://chatgpt.com/' ) ), new Fake_Order( array( 80.0, '' ) ) );
+}
 function is_rtl() { return (bool) getenv( 'AIGS_LOCALE' ); }
 
 /**
@@ -193,6 +215,23 @@ foreach ( array( 'orphan', 'vis_gap', 'vis_fact', 'bot_404', 'site_meta_fallback
 		check( "task view {$rule}", false, $e->getMessage() );
 	}
 }
+// 1.4 AI revenue.
+ob_start();
+$admin->page_traffic();
+$html = ob_get_clean();
+check( 'traffic page shows AI revenue', false !== strpos( $html, 'id="aigs-revenue"' ) && false !== strpos( $html, '$120.00' ) && false !== strpos( $html, 'ChatGPT' ) );
+ob_start();
+$admin->page_dashboard();
+$html = ob_get_clean();
+check( 'dashboard shows AI revenue card', false !== strpos( $html, 'aigs-revenue' ) );
+update_option( 'woocommerce_feature_order_attribution_enabled', 'no' );
+$GLOBALS['__transients'] = array();
+ob_start();
+$admin->page_traffic();
+$html = ob_get_clean();
+check( 'attribution off shows guidance', false !== strpos( $html, 'Order Attribution' ) );
+delete_option( 'woocommerce_feature_order_attribution_enabled' );
+
 // 1.2 UI pieces.
 $_GET = array( 'rule' => 'orphan' );
 ob_start();
