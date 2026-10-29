@@ -2,14 +2,14 @@
 # This file is distributed under the GPLv2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: OmniGEO Ai SEO 1.1.0\n"
+"Project-Id-Version: OmniGEO Ai SEO 1.2.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/omnigeo-ai-seo\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-10-28 23:31+0000\n"
+"POT-Creation-Date: 2026-10-29 06:43+0000\n"
 "X-Domain: omnigeo-ai-seo\n"
 "X-Generator: tools/make-pot.php\n"
 
@@ -26,13 +26,13 @@ msgid "%1$d long paragraph(s), up to %2$d words. Split into one-idea blocks of 4
 msgstr ""
 
 #. translators: 1: answers, 2: total.
-#: includes/class-aigs-admin.php:1417
+#: includes/class-aigs-admin.php:1547
 #, php-format
 msgid "%1$d of %2$d"
 msgstr ""
 
 #. translators: 1: done steps, 2: total steps.
-#: includes/class-aigs-admin.php:655
+#: includes/class-aigs-admin.php:694
 #, php-format
 msgid "%1$d of %2$d done"
 msgstr ""
@@ -50,15 +50,21 @@ msgid "%1$d of %2$d sections open with a standalone answer."
 msgstr ""
 
 #. translators: 1: number of pages, 2: time since scan.
-#: includes/class-aigs-admin.php:702
+#: includes/class-aigs-admin.php:741
 #, php-format
 msgid "%1$d pages checked · last scan %2$s"
 msgstr ""
 
 #. translators: 1: number of questions, 2: date.
-#: includes/class-aigs-admin.php:1393
+#: includes/class-aigs-admin.php:1515
 #, php-format
 msgid "%1$d questions · %2$s. Every number links back to a stored answer."
+msgstr ""
+
+#. translators: 1: brand, 2: industry, 3: location.
+#: includes/class-aigs-ai-visibility.php:1033
+#, php-format
+msgid "%1$s is a %2$s based in %3$s."
 msgstr ""
 
 #. translators: %d is a value inserted into the message.
@@ -66,6 +72,14 @@ msgstr ""
 #, php-format
 msgid "%d H1 tags found; prefer one."
 msgstr ""
+
+#. translators: %d: number of answers.
+#: includes/class-aigs-admin.php:1522
+#, php-format
+msgid "%d answer gives people wrong facts about you. See the Facts column and the task in the Action Center."
+msgid_plural "%d answers give people wrong facts about you. See the Facts column and the task in the Action Center."
+msgstr[0] ""
+msgstr[1] ""
 
 #. translators: %d: attributes.
 #: includes/class-aigs-actions.php:141
@@ -98,12 +112,26 @@ msgid "%d images without alt text"
 msgstr ""
 
 #. translators: %d: number of affected items.
-#: includes/class-aigs-admin.php:763 includes/class-aigs-admin.php:958
+#: includes/class-aigs-admin.php:802 includes/class-aigs-admin.php:997
 #, php-format
 msgid "%d item"
 msgid_plural "%d items"
 msgstr[0] ""
 msgstr[1] ""
+
+#. translators: %d: number of links.
+#: includes/class-aigs-admin.php:1076
+#, php-format
+msgid "%d link"
+msgid_plural "%d links"
+msgstr[0] ""
+msgstr[1] ""
+
+#. translators: %d: number of links.
+#: includes/class-aigs-admin.php:312
+#, php-format
+msgid "%d links added and verified."
+msgstr ""
 
 #. translators: %d: paragraphs.
 #: includes/class-aigs-actions.php:120
@@ -112,7 +140,7 @@ msgid "%d long paragraphs"
 msgstr ""
 
 #. translators: %d: number of products.
-#: includes/class-aigs-admin.php:1232
+#: includes/class-aigs-admin.php:1317
 #, php-format
 msgid "%d product"
 msgid_plural "%d products"
@@ -126,7 +154,7 @@ msgid "%d product attributes set, ideal for AI comparison."
 msgstr ""
 
 #. translators: %d: number of products.
-#: includes/class-aigs-admin.php:1205
+#: includes/class-aigs-admin.php:1290
 #, php-format
 msgid "%d product needs this"
 msgid_plural "%d products need this"
@@ -134,7 +162,7 @@ msgstr[0] ""
 msgstr[1] ""
 
 #. translators: %d: number of questions.
-#: includes/class-aigs-admin.php:1513
+#: includes/class-aigs-admin.php:1659
 #, php-format
 msgid "%d question where competitors win: see tasks"
 msgid_plural "%d questions where competitors win: see tasks"
@@ -142,7 +170,7 @@ msgstr[0] ""
 msgstr[1] ""
 
 #. translators: %d: number of requests.
-#: includes/class-aigs-admin.php:1096
+#: includes/class-aigs-admin.php:1177
 #, php-format
 msgid "%d request"
 msgid_plural "%d requests"
@@ -180,25 +208,45 @@ msgstr ""
 msgid "%d words"
 msgstr ""
 
+#. translators: %d: number of wrong facts.
+#: includes/class-aigs-admin.php:1590
+#, php-format
+msgid "%d wrong fact"
+msgid_plural "%d wrong facts"
+msgstr[0] ""
+msgstr[1] ""
+
 #. translators: %d: verified percentage.
-#: includes/class-aigs-admin.php:1559
+#: includes/class-aigs-admin.php:1705
 #, php-format
 msgid "%d%% verified"
 msgstr ""
 
 #. translators: %s: human time difference.
-#: includes/class-aigs-admin.php:554
+#: includes/class-aigs-admin.php:593
 #, php-format
 msgid "%s ago"
 msgstr ""
 
+#. translators: %s: site domain.
+#: includes/class-aigs-admin.php:1425
+#, php-format
+msgid "%s is always official. Domains that contain your brand name but are not listed here are flagged."
+msgstr ""
+
+#. translators: %s: SEO plugin name.
+#: includes/class-aigs-admin.php:1950
+#, php-format
+msgid "%s outputs your main schema graph; OmniGEO adds a separate LocalBusiness node on the homepage only. If you use a local SEO add-on that already does this, leave these fields empty."
+msgstr ""
+
 #. translators: %s: signed change in points.
-#: includes/class-aigs-admin.php:709
+#: includes/class-aigs-admin.php:748
 #, php-format
 msgid "%s points since the previous scan"
 msgstr ""
 
-#: includes/class-aigs-admin.php:1031
+#: includes/class-aigs-admin.php:1099
 msgid "(no title)"
 msgstr ""
 
@@ -206,71 +254,79 @@ msgstr ""
 msgid "A concise lead paragraph is present (good for featured snippets)."
 msgstr ""
 
-#: includes/class-aigs-rules.php:81
+#: includes/class-aigs-rules.php:84
 msgid "A featured image is used in Article schema, link previews and some AI answer cards."
 msgstr ""
 
-#: includes/class-aigs-admin.php:2033
+#: includes/class-aigs-admin.php:2279
 msgid "A few honest pointers, based on what tends to work in the real world:"
 msgstr ""
 
 #. translators: %d: requests used.
-#: includes/class-aigs-admin.php:1914
+#: includes/class-aigs-admin.php:2156
 #, php-format
 msgid "A hard stop across all AI features. Used this month: %d."
 msgstr ""
 
-#: includes/class-aigs-rules.php:75
+#: includes/class-aigs-rules.php:78
 msgid "A past year in the title tells readers and engines the information may be stale."
 msgstr ""
 
-#: includes/class-aigs-admin.php:1617
+#: includes/class-aigs-admin.php:1763
 msgid "A person asked an assistant something and it opened these pages to answer. Make these pages excellent first."
 msgstr ""
 
-#: includes/class-aigs-rules.php:102
+#: includes/class-aigs-rules.php:105
 msgid "A published product without a price produces incomplete Product schema and cannot appear in price comparisons."
 msgstr ""
 
-#: includes/class-aigs-admin.php:2025
+#: includes/class-aigs-admin.php:2271
 msgid "A small file that points AI tools to your best content. Let the plugin build it or write your own. To be honest, it is a new idea and not every AI tool reads it yet, so treat it as a nice extra rather than a must."
+msgstr ""
+
+#: includes/class-aigs-rules.php:56
+msgid "A test request to your homepage with an AI search crawler’s user agent was blocked or challenged, while a normal browser request worked. Your robots.txt may allow these bots, but they never reach your pages, so AI search cannot read or cite you."
 msgstr ""
 
 #: includes/class-aigs-extract.php:56 includes/class-aigs-extract.php:60
 msgid "AI Score"
 msgstr ""
 
-#: includes/class-aigs-admin.php:191 includes/class-aigs-admin.php:1545
+#: includes/class-aigs-admin.php:191 includes/class-aigs-admin.php:1691
 msgid "AI Traffic"
 msgstr ""
 
-#: includes/class-aigs-admin.php:2023
+#: includes/class-aigs-admin.php:2269
 msgid "AI Traffic."
 msgstr ""
 
-#: includes/class-aigs-admin.php:190 includes/class-aigs-admin.php:1259
+#: includes/class-aigs-admin.php:190 includes/class-aigs-admin.php:1344
 msgid "AI Visibility"
 msgstr ""
 
-#: includes/class-aigs-admin.php:2022
+#: includes/class-aigs-admin.php:2268
 msgid "AI Visibility."
 msgstr ""
 
-#: includes/class-aigs-admin.php:698 includes/class-aigs-admin.php:2077
+#: includes/class-aigs-admin.php:737 includes/class-aigs-admin.php:2323
 msgid "AI answer readiness"
 msgstr ""
 
 #. translators: 1: score, 2: change.
-#: includes/class-aigs-actions.php:317
+#: includes/class-aigs-actions.php:329
 #, php-format
 msgid "AI answer readiness: %1$d/100 (%2$s since last week)"
 msgstr ""
 
-#: includes/class-aigs-rules.php:55
+#: includes/class-aigs-rules.php:166
+msgid "AI answers state wrong facts about you"
+msgstr ""
+
+#: includes/class-aigs-rules.php:58
 msgid "AI bots are hitting missing pages"
 msgstr ""
 
-#: includes/class-aigs-admin.php:1843
+#: includes/class-aigs-admin.php:2076
 msgid "AI bots follow your normal robots.txt rules."
 msgstr ""
 
@@ -278,19 +334,23 @@ msgstr ""
 msgid "AI content extractability score"
 msgstr ""
 
-#: includes/class-aigs-admin.php:1839
+#: includes/class-aigs-admin.php:2072
 msgid "AI crawler access (robots.txt)"
 msgstr ""
 
-#: includes/class-aigs-admin.php:785
+#: includes/class-aigs-admin.php:824
 msgid "AI crawler activity · last 14 days"
 msgstr ""
 
-#: includes/class-aigs-rules.php:55
+#: includes/class-aigs-rules.php:58
 msgid "AI crawlers and assistants requested URLs on your site that return “not found”. These are often old links that assistants still remember."
 msgstr ""
 
-#: includes/class-aigs-admin.php:1883
+#: includes/class-aigs-visibility.php:353
+msgid "AI crawlers get through your CDN / firewall"
+msgstr ""
+
+#: includes/class-aigs-admin.php:2116
 msgid "AI provider (your own key)"
 msgstr ""
 
@@ -308,39 +368,49 @@ msgstr ""
 msgid "AI search crawlers allowed"
 msgstr ""
 
-#: includes/class-aigs-rules.php:53
+#: includes/class-aigs-rules.php:54
 msgid "AI search crawlers are blocked"
 msgstr ""
 
-#: includes/class-aigs-admin.php:1541
+#: includes/class-aigs-admin.php:1687
 msgid "AI search indexing"
 msgstr ""
 
-#: includes/class-aigs-admin.php:1855
+#: includes/class-aigs-admin.php:2088
 msgid "AI traffic tracking"
 msgstr ""
 
-#: includes/class-aigs-admin.php:856 includes/class-aigs-rules.php:136
+#: includes/class-aigs-admin.php:895 includes/class-aigs-rules.php:139
 msgid "AI visibility"
 msgstr ""
 
-#: includes/class-aigs-admin.php:1897
+#: includes/class-aigs-admin.php:2139
 msgid "API key"
+msgstr ""
+
+#. translators: %s: brand name.
+#: includes/class-aigs-ai-visibility.php:1099
+#, php-format
+msgid "About %s: key facts"
 msgstr ""
 
 #: includes/class-aigs-schema.php:130
 msgid "About (main topic / entity)"
 msgstr ""
 
-#: includes/class-aigs-admin.php:1448
+#: includes/class-aigs-admin.php:1579
 msgid "Absent"
 msgstr ""
 
-#: includes/class-aigs-admin.php:168 includes/class-aigs-admin.php:184 includes/class-aigs-admin.php:895
+#: includes/class-aigs-entity.php:228
+msgid "Accounting service"
+msgstr ""
+
+#: includes/class-aigs-admin.php:168 includes/class-aigs-admin.php:184 includes/class-aigs-admin.php:934
 msgid "Action Center"
 msgstr ""
 
-#: includes/class-aigs-admin.php:2019
+#: includes/class-aigs-admin.php:2265
 msgid "Action Center."
 msgstr ""
 
@@ -348,7 +418,7 @@ msgstr ""
 msgid "Add FAQ item"
 msgstr ""
 
-#: includes/class-aigs-rules.php:103
+#: includes/class-aigs-rules.php:106
 msgid "Add GTIN / barcode identifiers"
 msgstr ""
 
@@ -360,19 +430,19 @@ msgstr ""
 msgid "Add a 1–3 sentence direct answer near the top."
 msgstr ""
 
-#: includes/class-aigs-rules.php:99
+#: includes/class-aigs-rules.php:102
 msgid "Add a clear product image."
 msgstr ""
 
-#: includes/class-aigs-rules.php:73
+#: includes/class-aigs-rules.php:76
 msgid "Add a comparison table"
 msgstr ""
 
-#: includes/class-aigs-rules.php:67
+#: includes/class-aigs-rules.php:70
 msgid "Add a direct answer at the top"
 msgstr ""
 
-#: includes/class-aigs-rules.php:81
+#: includes/class-aigs-rules.php:84
 msgid "Add a featured image"
 msgstr ""
 
@@ -380,11 +450,11 @@ msgstr ""
 msgid "Add a few more descriptive H2/H3 headings."
 msgstr ""
 
-#: includes/class-aigs-rules.php:89
+#: includes/class-aigs-rules.php:92
 msgid "Add a link from 2–3 related pages. Suggestions are listed for each page."
 msgstr ""
 
-#: includes/class-aigs-rules.php:79
+#: includes/class-aigs-rules.php:82
 msgid "Add a short bio and the OmniGEO author fields (job title, LinkedIn) to the user profile."
 msgstr ""
 
@@ -392,23 +462,23 @@ msgstr ""
 msgid "Add a short description, AI uses it as the product’s one-line summary."
 msgstr ""
 
-#: includes/class-aigs-rules.php:73
+#: includes/class-aigs-rules.php:76
 msgid "Add a table comparing the options on real criteria (price, features, pros and cons)."
 msgstr ""
 
-#: includes/class-aigs-rules.php:80
+#: includes/class-aigs-rules.php:83
 msgid "Add alt text to images"
 msgstr ""
 
-#: includes/class-aigs-rules.php:100
+#: includes/class-aigs-rules.php:103
 msgid "Add alt text to product images"
 msgstr ""
 
-#: includes/class-aigs-rules.php:98
+#: includes/class-aigs-rules.php:101
 msgid "Add at least 2–3 attributes under Product data → Attributes."
 msgstr ""
 
-#: includes/class-aigs-ai-visibility.php:355
+#: includes/class-aigs-ai-visibility.php:593
 msgid "Add at least one tracked question first."
 msgstr ""
 
@@ -416,11 +486,11 @@ msgstr ""
 msgid "Add author, published/modified dates and entity markup."
 msgstr ""
 
-#: includes/class-aigs-rules.php:71
+#: includes/class-aigs-rules.php:74
 msgid "Add descriptive H2 headings, ideally phrased the way people ask."
 msgstr ""
 
-#: includes/class-aigs-rules.php:90
+#: includes/class-aigs-rules.php:93
 msgid "Add internal links"
 msgstr ""
 
@@ -428,19 +498,19 @@ msgstr ""
 msgid "Add more internal links and at least one authoritative outbound link."
 msgstr ""
 
-#: includes/class-aigs-rules.php:99
+#: includes/class-aigs-rules.php:102
 msgid "Add product images"
 msgstr ""
 
-#: includes/class-aigs-rules.php:98
+#: includes/class-aigs-rules.php:101
 msgid "Add product specifications"
 msgstr ""
 
-#: includes/class-aigs-admin.php:618
+#: includes/class-aigs-admin.php:657
 msgid "Add profiles"
 msgstr ""
 
-#: includes/class-aigs-rules.php:84
+#: includes/class-aigs-rules.php:87
 msgid "Add questions in the OmniGEO Schema box, or set the type back to None."
 msgstr ""
 
@@ -448,11 +518,11 @@ msgstr ""
 msgid "Add some content first."
 msgstr ""
 
-#: includes/class-aigs-admin.php:1834
+#: includes/class-aigs-admin.php:2067
 msgid "Add the brand to WooCommerce Product schema when it has none"
 msgstr ""
 
-#: includes/class-aigs-rules.php:70
+#: includes/class-aigs-rules.php:73
 msgid "Add the facts, steps, examples and specifics a buyer or reader would need."
 msgstr ""
 
@@ -460,7 +530,7 @@ msgstr ""
 msgid "Add to FAQ schema"
 msgstr ""
 
-#: includes/class-aigs-ai-client.php:154 includes/class-aigs-ai-visibility.php:358 includes/class-aigs-answer.php:361 includes/class-aigs-woocommerce.php:198
+#: includes/class-aigs-ai-client.php:257 includes/class-aigs-ai-visibility.php:596 includes/class-aigs-answer.php:361 includes/class-aigs-woocommerce.php:198
 msgid "Add your AI API key in Settings first."
 msgstr ""
 
@@ -468,12 +538,12 @@ msgstr ""
 msgid "Add your logo and links to official profiles (LinkedIn, Instagram, Wikipedia/Wikidata if you have them) in Settings."
 msgstr ""
 
-#: includes/class-aigs-admin.php:615
+#: includes/class-aigs-admin.php:654
 msgid "Add your logo and official profiles"
 msgstr ""
 
 #. translators: %s settings link
-#: includes/class-aigs-admin.php:1265
+#: includes/class-aigs-admin.php:1350
 #, php-format
 msgid "Add your own AI API key in <a href=\"%s\">Settings</a> to run checks. You pay your provider directly; OmniGEO adds no subscription and enforces a monthly request limit you control."
 msgstr ""
@@ -482,23 +552,29 @@ msgstr ""
 msgid "Added to the FAQ list in the Schema box. Save the post to publish it."
 msgstr ""
 
-#: includes/class-aigs-rules.php:64
+#. translators: %s: address.
+#: includes/class-aigs-ai-visibility.php:1057
+#, php-format
+msgid "Address: %s"
+msgstr ""
+
+#: includes/class-aigs-rules.php:67
 msgid "Adjust meta description length"
 msgstr ""
 
-#: includes/class-aigs-rules.php:62
+#: includes/class-aigs-rules.php:65
 msgid "Aim for roughly 30–65 characters that name the topic clearly."
 msgstr ""
 
-#: includes/class-aigs-rules.php:64
+#: includes/class-aigs-rules.php:67
 msgid "Aim for roughly 80–160 characters."
 msgstr ""
 
-#: includes/class-aigs-admin.php:929
+#: includes/class-aigs-admin.php:968
 msgid "All"
 msgstr ""
 
-#: includes/class-aigs-admin.php:1000
+#: includes/class-aigs-admin.php:1039
 msgid "All done. Every item of this task is fixed or marked as intentional."
 msgstr ""
 
@@ -506,27 +582,31 @@ msgstr ""
 msgid "All images have alt text."
 msgstr ""
 
-#: includes/class-aigs-admin.php:1161
+#: includes/class-aigs-admin.php:1246
 msgid "All products are checked with simple rules first (free and instant). AI drafts are only used for the products you choose, with your own key, and nothing is saved until you approve it. Every bulk change can be undone."
 msgstr ""
 
-#: includes/class-aigs-admin.php:978 includes/class-aigs-admin.php:1115
+#: includes/class-aigs-admin.php:1017 includes/class-aigs-admin.php:1200
 msgid "All tasks"
 msgstr ""
 
-#: includes/class-aigs-actions.php:225 includes/class-aigs-admin.php:1844
+#: includes/class-aigs-actions.php:237 includes/class-aigs-admin.php:2077
 msgid "Allow AI search, block AI training"
 msgstr ""
 
-#: includes/class-aigs-admin.php:1843
+#: includes/class-aigs-admin.php:2076
 msgid "Allow all AI crawlers"
+msgstr ""
+
+#: includes/class-aigs-rules.php:56
+msgid "Allow the AI search crawlers you want in your CDN, firewall or security plugin. The details below name the edge network that answered."
 msgstr ""
 
 #: includes/class-aigs-woocommerce.php:80
 msgid "Alt text from product name"
 msgstr ""
 
-#: includes/class-aigs-admin.php:1823
+#: includes/class-aigs-admin.php:2056
 msgid "Always output our entity schema"
 msgstr ""
 
@@ -534,7 +614,11 @@ msgstr ""
 msgid "An answer is present but not in quotable 40–60 word form."
 msgstr ""
 
-#: includes/class-aigs-admin.php:1953
+#: includes/class-aigs-rules.php:167
+msgid "An assistant mentioned your brand with details that do not match your official facts, such as an old phone number, an unofficial website or a founding year. People act on these answers."
+msgstr ""
+
+#: includes/class-aigs-admin.php:2199
 msgid "An llms.txt file is a short, clean map that points AI tools to your best content. Think of it as a menu for assistants like ChatGPT, Perplexity and coding agents, so they do not have to dig through your whole site."
 msgstr ""
 
@@ -550,15 +634,15 @@ msgstr ""
 msgid "Analyzes the live editor content, no save required."
 msgstr ""
 
-#: includes/class-aigs-admin.php:226 includes/class-aigs-admin.php:1452 includes/class-aigs-schema.php:159
+#: includes/class-aigs-admin.php:226 includes/class-aigs-admin.php:1598 includes/class-aigs-schema.php:159
 msgid "Answer"
 msgstr ""
 
-#: includes/class-aigs-admin.php:2020
+#: includes/class-aigs-admin.php:2266
 msgid "Answer Optimizer."
 msgstr ""
 
-#: includes/class-aigs-rules.php:67
+#: includes/class-aigs-rules.php:70
 msgid "Answer engines quote short, self-contained passages. This page does not answer its main question in the opening."
 msgstr ""
 
@@ -566,7 +650,7 @@ msgstr ""
 msgid "Answer excerpt"
 msgstr ""
 
-#: includes/class-aigs-rules.php:69
+#: includes/class-aigs-rules.php:72
 msgid "Answer question headings directly"
 msgstr ""
 
@@ -579,6 +663,12 @@ msgstr ""
 msgid "Answer-first opening"
 msgstr ""
 
+#. translators: 1: CDN name, 2: bot names.
+#: includes/class-aigs-actions.php:151
+#, php-format
+msgid "Answered by %1$s. Blocked: %2$s."
+msgstr ""
+
 #. translators: 1: answered count, 2: total question headings.
 #: includes/class-aigs-answer.php:325
 msgid "Answered question headings"
@@ -588,11 +678,11 @@ msgstr ""
 msgid "Answered question headings were found. You can add them as FAQ schema with one click."
 msgstr ""
 
-#: includes/class-aigs-rules.php:130
+#: includes/class-aigs-rules.php:133
 msgid "Answers & content"
 msgstr ""
 
-#: includes/class-aigs-admin.php:1282
+#: includes/class-aigs-admin.php:1367
 msgid "Answers come from a live web search, so cited sources are real."
 msgstr ""
 
@@ -600,12 +690,16 @@ msgstr ""
 msgid "Answers the question directly"
 msgstr ""
 
+#: includes/class-aigs-admin.php:2129
+msgid "Any OpenAI-compatible base URL, for example a company AI gateway, Groq, Together, Fireworks, or a local Ollama (http://localhost:11434/v1) or LM Studio server. “/chat/completions” is added for you."
+msgstr ""
+
 #. translators: %d: number of products.
 #: includes/class-aigs-admin.php:291
 msgid "Apply selected"
 msgstr ""
 
-#: includes/class-aigs-entity.php:219
+#: includes/class-aigs-entity.php:495
 msgid "Areas of expertise, strengthens E-E-A-T signals for AI engines."
 msgstr ""
 
@@ -613,12 +707,12 @@ msgstr ""
 msgid "Article, Author and Organization schema are added automatically and linked together. Use this only to add FAQ, How-To or Product on top."
 msgstr ""
 
-#: includes/class-aigs-admin.php:1350
+#: includes/class-aigs-admin.php:1472
 msgid "Ask"
 msgstr ""
 
 #. translators: %d: number of questions.
-#: includes/class-aigs-admin.php:1340
+#: includes/class-aigs-admin.php:1462
 #, php-format
 msgid "Ask all %d tracked question now and save the answers as evidence."
 msgid_plural "Ask all %d tracked questions now and save the answers as evidence."
@@ -631,7 +725,7 @@ msgstr[1] ""
 msgid "Asked %1$d of %2$d questions"
 msgstr ""
 
-#: includes/class-aigs-rules.php:101
+#: includes/class-aigs-rules.php:104
 msgid "Assign a specific product category."
 msgstr ""
 
@@ -643,7 +737,7 @@ msgstr ""
 msgid "Assistants decide who you are from consistent identity data. Your Organization profile is missing a logo or sameAs links to official profiles."
 msgstr ""
 
-#: includes/class-aigs-rules.php:93
+#: includes/class-aigs-rules.php:96
 msgid "Assistants such as ChatGPT or Perplexity fetched this page for a real user in the last 30 days, but it scores low for answer readiness. These are your fastest wins."
 msgstr ""
 
@@ -651,11 +745,11 @@ msgstr ""
 msgid "Audit failed."
 msgstr ""
 
-#: includes/class-aigs-admin.php:1822
+#: includes/class-aigs-admin.php:2055
 msgid "Auto, skip our entity schema when an SEO plugin provides it (recommended)"
 msgstr ""
 
-#: includes/class-aigs-admin.php:1982
+#: includes/class-aigs-admin.php:2228
 msgid "Auto-generated preview"
 msgstr ""
 
@@ -663,27 +757,37 @@ msgstr ""
 msgid "Auto-update as I edit"
 msgstr ""
 
-#: includes/class-aigs-admin.php:1324
+#: includes/class-aigs-admin.php:1446
 msgid "Automatic checks"
 msgstr ""
 
-#: includes/class-aigs-admin.php:1732
+#: includes/class-aigs-admin.php:1878
 msgid "Automatic pings on publish and update are on."
 msgstr ""
 
-#: includes/class-aigs-admin.php:1792
+#: includes/class-aigs-admin.php:2025
 msgid "Background site scan"
 msgstr ""
 
-#: includes/class-aigs-admin.php:2036
+#: includes/class-aigs-admin.php:2282
 msgid "Be a real, findable brand. Links to your Wikipedia, LinkedIn and social profiles help AI trust who you are."
 msgstr ""
 
-#: includes/class-aigs-admin.php:1845
+#: includes/class-aigs-entity.php:239
+msgid "Beauty salon"
+msgstr ""
+
+#: includes/class-aigs-admin.php:2078
 msgid "Block all AI crawlers"
 msgstr ""
 
-#: includes/class-aigs-admin.php:1844
+#. translators: %s: bot names.
+#: includes/class-aigs-visibility.php:359
+#, php-format
+msgid "Blocked or challenged: %s."
+msgstr ""
+
+#: includes/class-aigs-admin.php:2077
 msgid "Blocks training crawlers (GPTBot, ClaudeBot, Google-Extended, CCBot…) and keeps the bots that show you in AI answers (OAI-SearchBot, ChatGPT-User, PerplexityBot…)."
 msgstr ""
 
@@ -691,52 +795,60 @@ msgstr ""
 msgid "Bold the single most important claim in each section so AI can spot the primary assertion."
 msgstr ""
 
-#: includes/class-aigs-admin.php:1593
+#: includes/class-aigs-admin.php:1739
 msgid "Bot"
 msgstr ""
 
-#: includes/class-aigs-admin.php:1576
+#: includes/class-aigs-admin.php:1722
 msgid "Bots by name"
+msgstr ""
+
+#: includes/class-aigs-admin.php:1409
+msgid "Brand facts (accuracy check)"
 msgstr ""
 
 #: includes/class-aigs-admin.php:250
 msgid "Brand mentioned"
 msgstr ""
 
-#: includes/class-aigs-admin.php:595
+#: includes/class-aigs-admin.php:634
 msgid "Brand name, industry and location shape every suggestion."
 msgstr ""
 
-#: includes/class-aigs-admin.php:1761
+#: includes/class-aigs-admin.php:1907
 msgid "Brand profile"
 msgstr ""
 
-#: includes/class-aigs-admin.php:1754
+#: includes/class-aigs-admin.php:1900
 msgid "Brand profile, crawler access, automation and your AI provider."
 msgstr ""
 
-#: includes/class-aigs-rules.php:71
+#: includes/class-aigs-rules.php:74
 msgid "Break long content into sections"
 msgstr ""
 
-#: includes/class-aigs-visibility.php:124
+#: includes/class-aigs-visibility.php:301
 msgid "Browsers warn visitors on insecure pages and engines prefer HTTPS."
 msgstr ""
 
-#: includes/class-aigs-admin.php:1069
+#: includes/class-aigs-admin.php:1137
 msgid "Bulk fix"
 msgstr ""
 
-#: includes/class-aigs-admin.php:1191
+#: includes/class-aigs-admin.php:1276
 msgid "Bulk fixes"
 msgstr ""
 
-#: includes/class-aigs-admin.php:1763
+#: includes/class-aigs-admin.php:1909
 msgid "Business / brand name"
 msgstr ""
 
-#: includes/class-aigs-admin.php:1425
+#: includes/class-aigs-admin.php:1555
 msgid "By question"
+msgstr ""
+
+#: includes/class-aigs-entity.php:221
+msgid "Café / coffee shop"
 msgstr ""
 
 #. translators: %d: number of products.
@@ -755,7 +867,7 @@ msgstr ""
 msgid "Canonical points elsewhere (%s). That URL will be indexed and cited instead."
 msgstr ""
 
-#: includes/class-aigs-rules.php:59
+#: includes/class-aigs-rules.php:62
 msgid "Canonical points to another URL"
 msgstr ""
 
@@ -763,11 +875,19 @@ msgstr ""
 msgid "Canonical points to this page."
 msgstr ""
 
-#: includes/class-aigs-admin.php:1165
+#: includes/class-aigs-entity.php:238
+msgid "Car dealer"
+msgstr ""
+
+#: includes/class-aigs-entity.php:237
+msgid "Car repair"
+msgstr ""
+
+#: includes/class-aigs-admin.php:1250
 msgid "Catalog health"
 msgstr ""
 
-#: includes/class-aigs-rules.php:101
+#: includes/class-aigs-rules.php:104
 msgid "Categorize products"
 msgstr ""
 
@@ -775,20 +895,37 @@ msgstr ""
 msgid "Categorized"
 msgstr ""
 
+#: includes/class-aigs-admin.php:2160
+msgid "Check"
+msgstr ""
+
 #. translators: 1: done, 2: total.
 #: includes/class-aigs-admin.php:262
 msgid "Check complete. Reloading results…"
 msgstr ""
 
-#: includes/class-aigs-admin.php:1687
+#: includes/class-aigs-admin.php:1833
 msgid "Check the live HTML of any one page: indexability, canonical, metadata, structure and AI crawler access."
 msgstr ""
 
-#: includes/class-aigs-admin.php:2024
+#: includes/class-aigs-admin.php:2270
 msgid "Check the live HTML of one page, and the technical basics of the whole site. You can also ping IndexNow, manually or automatically."
 msgstr ""
 
-#: includes/class-aigs-admin.php:622
+#: includes/class-aigs-rules.php:57
+msgid "Check your CDN, firewall and security plugin for bot blocking, and make sure the AI search crawlers you want are allowed."
+msgstr ""
+
+#. translators: %s: CDN or firewall name.
+#: includes/class-aigs-visibility.php:275
+msgid "Check your host, CDN, firewall and any security plugin for bot blocking rules, and allow the AI search crawlers you want (OAI-SearchBot, ChatGPT-User, PerplexityBot)."
+msgstr ""
+
+#: includes/class-aigs-entity.php:246
+msgid "Child care"
+msgstr ""
+
+#: includes/class-aigs-admin.php:661
 msgid "Choose the questions buyers ask AI (optional)"
 msgstr ""
 
@@ -796,20 +933,28 @@ msgstr ""
 msgid "Choose “Post name” under Settings → Permalinks."
 msgstr ""
 
-#: includes/class-aigs-admin.php:1431
+#: includes/class-aigs-admin.php:1561
 msgid "Cited"
 msgstr ""
 
-#: includes/class-aigs-visibility.php:169
+#: includes/class-aigs-admin.php:1993
+msgid "Cities or regions you serve, comma separated. Important for service businesses without a storefront."
+msgstr ""
+
+#: includes/class-aigs-admin.php:1957
+msgid "City"
+msgstr ""
+
+#: includes/class-aigs-visibility.php:346
 msgid "Clean URLs are easier for AI to cite."
 msgstr ""
 
-#: includes/class-aigs-rules.php:59
+#: includes/class-aigs-rules.php:62
 msgid "Clear the custom canonical unless the duplicate is intentional."
 msgstr ""
 
 #. translators: %s url
-#: includes/class-aigs-admin.php:1959
+#: includes/class-aigs-admin.php:2205
 #, php-format
 msgid "Click your file link above, or open <code>%s</code>, to see what AI tools receive."
 msgstr ""
@@ -818,7 +963,7 @@ msgstr ""
 msgid "Close"
 msgstr ""
 
-#: includes/class-aigs-admin.php:1864
+#: includes/class-aigs-admin.php:2097
 msgid "Cloudflare (CF-Connecting-IP)"
 msgstr ""
 
@@ -830,28 +975,32 @@ msgstr ""
 msgid "Comparison table"
 msgstr ""
 
-#: includes/class-aigs-admin.php:1473
+#: includes/class-aigs-admin.php:1619
 msgid "Competitor"
 msgstr ""
 
-#: includes/class-aigs-admin.php:1308
+#: includes/class-aigs-admin.php:1393
 msgid "Competitors (one per line: Name | domain.com)"
 msgstr ""
 
-#: includes/class-aigs-rules.php:152
+#: includes/class-aigs-rules.php:155
 msgid "Competitors appear in AI answers where you do not"
 msgstr ""
 
-#: includes/class-aigs-admin.php:258 includes/class-aigs-admin.php:1433
+#: includes/class-aigs-admin.php:258 includes/class-aigs-admin.php:1563
 msgid "Competitors named"
 msgstr ""
 
-#: includes/class-aigs-rules.php:79
+#: includes/class-aigs-rules.php:82
 msgid "Complete the author profile"
 msgstr ""
 
 #: includes/class-aigs-rules.php:52
 msgid "Complete your brand entity profile"
+msgstr ""
+
+#: includes/class-aigs-rules.php:53
+msgid "Complete your local business details"
 msgstr ""
 
 #. translators: %d is a value inserted into the message.
@@ -866,6 +1015,12 @@ msgstr ""
 msgid "Concise summary present (%d words)."
 msgstr ""
 
+#. translators: 1: provider label, 2: model, 3: seconds.
+#: includes/class-aigs-ai-client.php:523
+#, php-format
+msgid "Connected to %1$s (%2$s) in %3$s s."
+msgstr ""
+
 #. translators: 1: done, 2: total.
 #: includes/class-aigs-admin.php:241
 msgid "Connecting the dots: links, duplicates, priorities…"
@@ -874,6 +1029,10 @@ msgstr ""
 #. translators: %d is a value inserted into the message.
 #: includes/class-aigs-audit.php:472 includes/class-aigs-audit.php:476 includes/class-aigs-audit.php:479 includes/class-aigs-extract.php:456 includes/class-aigs-extract.php:459 includes/class-aigs-extract.php:462
 msgid "Content depth"
+msgstr ""
+
+#: includes/class-aigs-admin.php:1998
+msgid "Coordinates"
 msgstr ""
 
 #: includes/class-aigs-admin.php:236
@@ -888,55 +1047,79 @@ msgstr ""
 msgid "Copy failed. Select the text and press Ctrl+C or Cmd+C."
 msgstr ""
 
-#: includes/class-aigs-admin.php:1667
+#: includes/class-aigs-admin.php:1813
 msgid "Copy regex"
 msgstr ""
 
-#: includes/class-aigs-admin.php:1984
+#: includes/class-aigs-admin.php:2230
 msgid "Copy to clipboard"
+msgstr ""
+
+#: includes/class-aigs-entity.php:211
+msgid "Corporation"
+msgstr ""
+
+#: includes/class-aigs-rules.php:168
+msgid "Correct the detail everywhere it appears: your site, schema, Google Business Profile and other listings, directories and old press pages. A short “key facts” page helps assistants find the right version."
 msgstr ""
 
 #: includes/class-aigs-audit.php:318
 msgid "Could not read robots.txt to check AI crawler access."
 msgstr ""
 
-#: includes/class-aigs-actions.php:186
+#: includes/class-aigs-actions.php:198
 msgid "Could not update."
 msgstr ""
 
-#: includes/class-aigs-visibility.php:132
+#: includes/class-aigs-admin.php:1963
+msgid "Country code"
+msgstr ""
+
+#: includes/class-aigs-visibility.php:309
 msgid "Crawlers read robots.txt before fetching."
 msgstr ""
 
-#: includes/class-aigs-admin.php:1670
+#: includes/class-aigs-admin.php:1816
 msgid "Create a new channel group and add a channel named “AI”."
 msgstr ""
 
-#: includes/class-aigs-admin.php:1085
+#: includes/class-aigs-admin.php:1442
+msgid "Create a “key facts” page draft"
+msgstr ""
+
+#: includes/class-aigs-admin.php:1166
 msgid "Create draft page"
 msgstr ""
 
-#: includes/class-aigs-rules.php:154
+#: includes/class-aigs-admin.php:1159
+msgid "Create facts page"
+msgstr ""
+
+#: includes/class-aigs-rules.php:157
 msgid "Create or improve a page that answers this exact question, with a direct answer, specifics and proof. Then link to it from related pages."
 msgstr ""
 
-#: includes/class-aigs-rules.php:116
+#: includes/class-aigs-rules.php:119
 msgid "Critical"
 msgstr ""
 
-#: includes/class-aigs-loader.php:79
+#: includes/class-aigs-loader.php:81
 msgid "Dashboard"
 msgstr ""
 
-#: includes/class-aigs-rules.php:97
+#: includes/class-aigs-entity.php:222
+msgid "Dentist"
+msgstr ""
+
+#: includes/class-aigs-rules.php:100
 msgid "Describe benefits, use cases, materials, sizes and compatibility."
 msgstr ""
 
-#: includes/class-aigs-rules.php:80
+#: includes/class-aigs-rules.php:83
 msgid "Describe what each image shows in its alt text."
 msgstr ""
 
-#: includes/class-aigs-rules.php:104
+#: includes/class-aigs-rules.php:107
 msgid "Describe what makes each product different."
 msgstr ""
 
@@ -947,17 +1130,17 @@ msgid "Descriptive headings"
 msgstr ""
 
 #. translators: 1: count via referrer, 2: count via utm.
-#: includes/class-aigs-admin.php:1655
+#: includes/class-aigs-admin.php:1801
 #, php-format
 msgid "Detected by referrer: %1$d · by utm_source: %2$d"
 msgstr ""
 
-#: includes/class-aigs-admin.php:1645
+#: includes/class-aigs-admin.php:1791
 msgid "Detected from the referring site or from the utm_source tag some assistants add to links (for example utm_source=chatgpt.com). Apps and Google AI Mode often send no referrer, so this is a floor, not the full number."
 msgstr ""
 
 #. translators: %s: plugin name.
-#: includes/class-aigs-admin.php:1813
+#: includes/class-aigs-admin.php:2046
 #, php-format
 msgid "Detected: %s. Its focus keyword, titles, descriptions, noindex and canonical settings are used by the scanner."
 msgstr ""
@@ -966,11 +1149,11 @@ msgstr ""
 msgid "Direct answer to the main question"
 msgstr ""
 
-#: includes/class-aigs-admin.php:1863
+#: includes/class-aigs-admin.php:2096
 msgid "Direct connection (default)"
 msgstr ""
 
-#: includes/class-aigs-admin.php:1259
+#: includes/class-aigs-admin.php:1344
 msgid "Do assistants mention, recommend and cite you for the questions your buyers ask?"
 msgstr ""
 
@@ -995,11 +1178,11 @@ msgstr ""
 msgid "Drafts a 25–50 word summary from the product’s own data with your AI key. Up to 10 products per run."
 msgstr ""
 
-#: includes/class-aigs-rules.php:85
+#: includes/class-aigs-rules.php:88
 msgid "Duplicate FAQ markup"
 msgstr ""
 
-#: includes/class-aigs-admin.php:1820
+#: includes/class-aigs-admin.php:2053
 msgid "Duplicate schema"
 msgstr ""
 
@@ -1008,20 +1191,40 @@ msgstr ""
 msgid "E-E-A-T signals"
 msgstr ""
 
-#: includes/class-aigs-admin.php:1070 includes/class-aigs-admin.php:1072
+#: includes/class-aigs-admin.php:1138 includes/class-aigs-admin.php:1140
 msgid "Edit"
 msgstr ""
 
-#: includes/class-aigs-admin.php:1067
+#: includes/class-aigs-admin.php:1135
 msgid "Edit profile"
 msgstr ""
 
-#: includes/class-aigs-admin.php:1971
+#: includes/class-aigs-admin.php:2217
 msgid "Editor"
 msgstr ""
 
-#: includes/class-aigs-admin.php:1800
+#: includes/class-aigs-entity.php:214
+msgid "Educational organization"
+msgstr ""
+
+#: includes/class-aigs-entity.php:235
+msgid "Electrician"
+msgstr ""
+
+#. translators: %s: email address.
+#: includes/class-aigs-ai-visibility.php:524
+#, php-format
+msgid "Email address not on your list: %s"
+msgstr ""
+
+#: includes/class-aigs-admin.php:2033
 msgid "Email me a short progress report after the weekly scan"
+msgstr ""
+
+#. translators: %s: emails.
+#: includes/class-aigs-ai-visibility.php:1051
+#, php-format
+msgid "Email: %s"
 msgstr ""
 
 #. translators: %d is a value inserted into the message.
@@ -1029,23 +1232,31 @@ msgstr ""
 msgid "Emphasis is used sparingly to mark key claims."
 msgstr ""
 
-#: includes/class-aigs-ai-visibility.php:629
+#: includes/class-aigs-ai-visibility.php:882
 msgid "Empty prompt."
 msgstr ""
 
-#: includes/class-aigs-admin.php:895
+#: includes/class-aigs-admin.php:2127
+msgid "Endpoint URL"
+msgstr ""
+
+#: includes/class-aigs-ai-client.php:255
+msgid "Enter the endpoint URL and model of your OpenAI-compatible provider in Settings first."
+msgstr ""
+
+#: includes/class-aigs-admin.php:934
 msgid "Every improvement in one list: what to fix, where, why it matters, and proof when it is done."
 msgstr ""
 
-#: includes/class-aigs-admin.php:2019
+#: includes/class-aigs-admin.php:2265
 msgid "Every issue the scan found, grouped into tasks and ordered by impact. Each task explains why it matters and how to fix it, lists the affected pages with suggestions, and lets you re-check a page to confirm the fix. If something is a deliberate choice, mark it as intentional and it stops counting."
 msgstr ""
 
-#: includes/class-aigs-admin.php:1169
+#: includes/class-aigs-admin.php:1254
 msgid "Every product passes the catalog checks."
 msgstr ""
 
-#: includes/class-aigs-admin.php:1998
+#: includes/class-aigs-admin.php:2244
 msgid "Everything you need to get going, in plain language."
 msgstr ""
 
@@ -1053,11 +1264,11 @@ msgstr ""
 msgid "Exactly one clear H1."
 msgstr ""
 
-#: includes/class-aigs-rules.php:70
+#: includes/class-aigs-rules.php:73
 msgid "Expand thin content"
 msgstr ""
 
-#: includes/class-aigs-rules.php:97
+#: includes/class-aigs-rules.php:100
 msgid "Expand thin product descriptions"
 msgstr ""
 
@@ -1073,15 +1284,19 @@ msgstr ""
 msgid "FAQ items"
 msgstr ""
 
-#: includes/class-aigs-rules.php:84
+#: includes/class-aigs-rules.php:87
 msgid "FAQ schema selected but empty"
+msgstr ""
+
+#: includes/class-aigs-admin.php:1564
+msgid "Facts"
 msgstr ""
 
 #: includes/class-aigs-admin.php:230
 msgid "Fail"
 msgstr ""
 
-#: includes/class-aigs-admin.php:1593
+#: includes/class-aigs-admin.php:1739
 msgid "Fake"
 msgstr ""
 
@@ -1097,19 +1312,31 @@ msgstr ""
 msgid "Few sub-headings; add more H2/H3 sections."
 msgstr ""
 
-#: includes/class-aigs-rules.php:103
+#: includes/class-aigs-rules.php:53
+msgid "Fill in the address, phone and opening hours under Settings → Local business details. Keep them identical to your Google Business Profile and other listings."
+msgstr ""
+
+#: includes/class-aigs-rules.php:106
 msgid "Fill “GTIN, UPC, EAN or ISBN” under Product data → Inventory where you have one."
 msgstr ""
 
-#: includes/class-aigs-admin.php:928
+#: includes/class-aigs-admin.php:967
 msgid "Filter tasks"
 msgstr ""
 
-#: includes/class-aigs-admin.php:684
+#: includes/class-aigs-entity.php:229
+msgid "Financial service"
+msgstr ""
+
+#: includes/class-aigs-admin.php:1144
+msgid "Find link spots"
+msgstr ""
+
+#: includes/class-aigs-admin.php:723
 msgid "Find out what is holding your site back"
 msgstr ""
 
-#: includes/class-aigs-admin.php:1954
+#: includes/class-aigs-admin.php:2200
 msgid "First steps:"
 msgstr ""
 
@@ -1117,7 +1344,7 @@ msgstr ""
 msgid "Fix"
 msgstr ""
 
-#: includes/class-aigs-admin.php:608
+#: includes/class-aigs-admin.php:647
 msgid "Fix your first task"
 msgstr ""
 
@@ -1125,7 +1352,7 @@ msgstr ""
 msgid "Fixed and verified"
 msgstr ""
 
-#: includes/class-aigs-admin.php:735
+#: includes/class-aigs-admin.php:774
 msgid "Fixed in the last 7 days"
 msgstr ""
 
@@ -1141,7 +1368,7 @@ msgstr ""
 msgid "Focus keyword “%s” is missing from the opening and headings."
 msgstr ""
 
-#: includes/class-aigs-admin.php:2021
+#: includes/class-aigs-admin.php:2267
 msgid "For WooCommerce shops: catalog checks (descriptions, specs, images, prices, GTIN) and bulk fixes you preview, approve and can undo."
 msgstr ""
 
@@ -1150,13 +1377,29 @@ msgid "For a “what is” page, open with a one-sentence definition (“X is �
 msgstr ""
 
 #. translators: %s: Action Center link.
-#: includes/class-aigs-admin.php:1694
+#: includes/class-aigs-admin.php:1840
 #, php-format
 msgid "For your whole site, use the <a href=\"%s\">Action Center</a>. This tool fetches one URL exactly as a crawler sees it, which is useful for checking theme output and other sites."
 msgstr ""
 
-#: includes/class-aigs-admin.php:1778
+#. translators: %s: year.
+#: includes/class-aigs-ai-visibility.php:1043
+#, php-format
+msgid "Founded: %s"
+msgstr ""
+
+#: includes/class-aigs-admin.php:1430 includes/class-aigs-admin.php:2011
 msgid "Founding year"
+msgstr ""
+
+#. translators: 1: year in answer, 2: official year.
+#: includes/class-aigs-ai-visibility.php:530
+#, php-format
+msgid "Founding year %1$s (yours: %2$s)"
+msgstr ""
+
+#: includes/class-aigs-admin.php:1975 includes/class-aigs-ai-visibility.php:1069
+msgid "Friday"
 msgstr ""
 
 #. translators: %d is a value inserted into the message.
@@ -1164,7 +1407,7 @@ msgstr ""
 msgid "Full description"
 msgstr ""
 
-#: includes/class-aigs-admin.php:1665
+#: includes/class-aigs-admin.php:1811
 msgid "GA4 has no built-in AI channel, so AI clicks get mislabelled as Referral or Direct. Create a custom channel group with this source regex to isolate them."
 msgstr ""
 
@@ -1172,7 +1415,7 @@ msgstr ""
 msgid "GEO score"
 msgstr ""
 
-#: includes/class-aigs-rules.php:103
+#: includes/class-aigs-rules.php:106
 msgid "GTIN, EAN or ISBN identifiers let engines match your product to the same item elsewhere."
 msgstr ""
 
@@ -1182,11 +1425,19 @@ msgstr ""
 msgid "Generic headings dilute meaning: %s. Prefer specific, question-style headings."
 msgstr ""
 
-#: includes/class-aigs-admin.php:651
+#: includes/class-aigs-admin.php:2125
+msgid "Get an API key"
+msgstr ""
+
+#: includes/class-aigs-admin.php:690
 msgid "Get started"
 msgstr ""
 
-#: includes/class-aigs-rules.php:91
+#: includes/class-aigs-admin.php:1409
+msgid "Get warned when an assistant gives people wrong details about you."
+msgstr ""
+
+#: includes/class-aigs-rules.php:94
 msgid "Give each page a title that states its specific angle."
 msgstr ""
 
@@ -1196,11 +1447,11 @@ msgstr ""
 msgid "Good length (%d chars)."
 msgstr ""
 
-#: includes/class-aigs-admin.php:2045
+#: includes/class-aigs-admin.php:2291
 msgid "Good to know"
 msgstr ""
 
-#: includes/class-aigs-admin.php:1966
+#: includes/class-aigs-admin.php:2212
 msgid "Good to know:"
 msgstr ""
 
@@ -1208,28 +1459,36 @@ msgstr ""
 msgid "Good to know: Google shows FAQ rich results mainly for authoritative health and government sites and no longer shows HowTo results. The markup still helps machines read your Q&A, but it is optional."
 msgstr ""
 
-#: includes/class-aigs-admin.php:183 includes/class-aigs-admin.php:642 includes/class-aigs-admin.php:2082
+#: includes/class-aigs-admin.php:183 includes/class-aigs-admin.php:681 includes/class-aigs-admin.php:2328
 msgid "Growth Center"
 msgstr ""
 
-#: includes/class-aigs-admin.php:2018
+#: includes/class-aigs-admin.php:2264
 msgid "Growth Center."
 msgstr ""
 
-#: includes/class-aigs-admin.php:196 includes/class-aigs-admin.php:1998
+#: includes/class-aigs-admin.php:196 includes/class-aigs-admin.php:2244
 msgid "Guide"
 msgstr ""
 
-#: includes/class-aigs-admin.php:1937
+#: includes/class-aigs-admin.php:2183
 msgid "Guide LLMs to your most important content."
+msgstr ""
+
+#: includes/class-aigs-entity.php:242
+msgid "Gym / health club"
 msgstr ""
 
 #: includes/class-aigs-audit.php:525 includes/class-aigs-audit.php:527
 msgid "HTTPS"
 msgstr ""
 
-#: includes/class-aigs-visibility.php:122
+#: includes/class-aigs-visibility.php:299
 msgid "HTTPS enabled"
+msgstr ""
+
+#: includes/class-aigs-entity.php:240
+msgid "Hair salon"
 msgstr ""
 
 #. translators: %d is a value inserted into the message.
@@ -1237,43 +1496,55 @@ msgstr ""
 msgid "Heading structure"
 msgstr ""
 
-#: includes/class-aigs-visibility.php:147
+#: includes/class-aigs-entity.php:236
+msgid "Heating & air conditioning"
+msgstr ""
+
+#: includes/class-aigs-visibility.php:324
 msgid "Helps AI crawlers discover all your URLs."
 msgstr ""
 
-#: includes/class-aigs-admin.php:616
+#: includes/class-aigs-admin.php:655
 msgid "Helps assistants recognise your brand as one consistent entity."
 msgstr ""
 
-#: includes/class-aigs-admin.php:2004
+#: includes/class-aigs-admin.php:2250
 msgid "Here is the fastest way to get value in your first few minutes:"
 msgstr ""
 
-#: includes/class-aigs-admin.php:658
+#: includes/class-aigs-admin.php:697
 msgid "Hide"
 msgstr ""
 
-#: includes/class-aigs-rules.php:117
+#: includes/class-aigs-rules.php:120
 msgid "High"
 msgstr ""
 
-#: includes/class-aigs-admin.php:725
+#: includes/class-aigs-admin.php:764
 msgid "High-priority issues"
 msgstr ""
 
-#: includes/class-aigs-admin.php:1486
+#: includes/class-aigs-admin.php:1632
 msgid "History"
 msgstr ""
 
-#: includes/class-aigs-visibility.php:180
+#: includes/class-aigs-entity.php:233
+msgid "Home services / construction"
+msgstr ""
+
+#: includes/class-aigs-visibility.php:371
 msgid "Homepage freshness"
 msgstr ""
 
-#: includes/class-aigs-admin.php:1951
+#: includes/class-aigs-entity.php:243
+msgid "Hotel"
+msgstr ""
+
+#: includes/class-aigs-admin.php:2197
 msgid "How this works"
 msgstr ""
 
-#: includes/class-aigs-admin.php:990
+#: includes/class-aigs-admin.php:1029
 msgid "How to fix:"
 msgstr ""
 
@@ -1281,7 +1552,7 @@ msgstr ""
 msgid "How-To"
 msgstr ""
 
-#: includes/class-aigs-rules.php:74
+#: includes/class-aigs-rules.php:77
 msgid "How-to content is quoted step by step. Without a numbered list the steps are hard to extract."
 msgstr ""
 
@@ -1289,37 +1560,37 @@ msgstr ""
 msgid "How-to content without a numbered list of steps."
 msgstr ""
 
-#: includes/class-aigs-rules.php:86
+#: includes/class-aigs-rules.php:89
 msgid "HowTo markup without steps is incomplete, and Google no longer shows HowTo rich results."
 msgstr ""
 
-#: includes/class-aigs-rules.php:86
+#: includes/class-aigs-rules.php:89
 msgid "HowTo schema has no steps"
 msgstr ""
 
 #. translators: %s: settings link.
-#: includes/class-aigs-admin.php:1582
+#: includes/class-aigs-admin.php:1728
 #, php-format
 msgid "Identity verification is off, so these are bots that claim the name. <a href=\"%s\">Turn on verification</a> to confirm them with reverse DNS or the IP ranges OpenAI and Perplexity publish."
 msgstr ""
 
-#: includes/class-aigs-admin.php:1851
+#: includes/class-aigs-admin.php:2084
 msgid "If Settings → Reading discourages search engines, OmniGEO adds no rules. robots.txt is a request that reputable bots honour; it is not access control."
 msgstr ""
 
-#: includes/class-aigs-rules.php:58
+#: includes/class-aigs-rules.php:61
 msgid "If this page should be found, remove noindex in your SEO plugin. If it is intentional, ignore this item."
 msgstr ""
 
-#: includes/class-aigs-admin.php:1963
+#: includes/class-aigs-admin.php:2209
 msgid "If you get a 404, go to Settings then Permalinks and click Save once. That refreshes the rule that serves the file. You do not need to create any file by hand."
 msgstr ""
 
-#: includes/class-aigs-admin.php:2026
+#: includes/class-aigs-admin.php:2272
 msgid "If you run a shop, the plugin steps back and lets WooCommerce handle product schema so nothing clashes. Your product pages also get their own checks for the short description, specs, reviews and images."
 msgstr ""
 
-#: includes/class-aigs-rules.php:53
+#: includes/class-aigs-rules.php:54
 msgid "If you want to appear in AI answers but not in training data, choose “Allow AI search, block AI training” in Settings."
 msgstr ""
 
@@ -1328,39 +1599,49 @@ msgstr ""
 msgid "Image alt text"
 msgstr ""
 
-#: includes/class-aigs-rules.php:80
+#: includes/class-aigs-rules.php:83
 msgid "Images without alt text are invisible to crawlers and screen readers."
 msgstr ""
 
-#: includes/class-aigs-admin.php:1076
+#: includes/class-aigs-admin.php:1147
 msgid "Important"
 msgstr ""
 
-#: includes/class-aigs-admin.php:1037
+#: includes/class-aigs-admin.php:1105
 msgid "Important page"
 msgstr ""
 
-#: includes/class-aigs-rules.php:93
+#: includes/class-aigs-rules.php:96
 msgid "Improve pages AI assistants are already reading"
 msgstr ""
 
-#: includes/class-aigs-rules.php:62
+#: includes/class-aigs-rules.php:65
 msgid "Improve the SEO title length"
 msgstr ""
 
-#: includes/class-aigs-admin.php:1669
+#: includes/class-aigs-visibility.php:266
+msgid "In Cloudflare, review the AI crawler controls (for example “Block AI bots” or AI Crawl Control) and Bot Fight Mode, then allow the AI search crawlers you want, such as OAI-SearchBot, ChatGPT-User and PerplexityBot."
+msgstr ""
+
+#: includes/class-aigs-admin.php:1815
 msgid "In GA4, open Admin → Data display → Channel groups."
 msgstr ""
 
-#: includes/class-aigs-rules.php:153
+#. translators: %s: CDN or firewall name.
+#: includes/class-aigs-visibility.php:273
+#, php-format
+msgid "In your %s firewall or bot management settings, allow the AI search crawlers you want (OAI-SearchBot, ChatGPT-User, PerplexityBot)."
+msgstr ""
+
+#: includes/class-aigs-rules.php:156
 msgid "In your latest AI visibility check, the assistant named competitors for this question but not your brand."
 msgstr ""
 
-#: includes/class-aigs-admin.php:1728
+#: includes/class-aigs-admin.php:1874
 msgid "IndexNow"
 msgstr ""
 
-#: includes/class-aigs-visibility.php:198
+#: includes/class-aigs-visibility.php:389
 msgid "IndexNow only accepts URLs on this site."
 msgstr ""
 
@@ -1372,7 +1653,7 @@ msgstr ""
 msgid "Indexable"
 msgstr ""
 
-#: includes/class-aigs-admin.php:1765
+#: includes/class-aigs-admin.php:1911
 msgid "Industry"
 msgstr ""
 
@@ -1380,11 +1661,19 @@ msgstr ""
 msgid "Insert at the top"
 msgstr ""
 
+#: includes/class-aigs-admin.php:310
+msgid "Insert selected links"
+msgstr ""
+
 #: includes/class-aigs-admin.php:281
 msgid "Inserted as the first paragraph. Review it, then save. Revisions keep your previous version."
 msgstr ""
 
-#: includes/class-aigs-admin.php:938 includes/class-aigs-admin.php:1107
+#: includes/class-aigs-entity.php:230
+msgid "Insurance agency"
+msgstr ""
+
+#: includes/class-aigs-admin.php:977 includes/class-aigs-admin.php:1188
 msgid "Intentional"
 msgstr ""
 
@@ -1393,17 +1682,21 @@ msgstr ""
 msgid "Internal & external links"
 msgstr ""
 
-#: includes/class-aigs-rules.php:133
+#: includes/class-aigs-rules.php:136
 msgid "Internal links"
 msgstr ""
 
+#: includes/class-aigs-admin.php:1937
+msgid "International format with country code works best."
+msgstr ""
+
 #. translators: %d: count.
-#: includes/class-aigs-actions.php:319
+#: includes/class-aigs-actions.php:331
 #, php-format
 msgid "Issues fixed this week: %d"
 msgstr ""
 
-#: includes/class-aigs-admin.php:828
+#: includes/class-aigs-admin.php:867
 msgid "Issues the scanner confirmed as fixed."
 msgstr ""
 
@@ -1411,24 +1704,28 @@ msgstr ""
 msgid "JSON-LD structured data present."
 msgstr ""
 
-#: includes/class-aigs-entity.php:204
+#: includes/class-aigs-entity.php:480
 msgid "Job title"
 msgstr ""
 
-#: includes/class-aigs-admin.php:1875
+#: includes/class-aigs-admin.php:2108
 msgid "Keep detailed logs for"
 msgstr ""
 
-#: includes/class-aigs-rules.php:85
+#: includes/class-aigs-rules.php:88
 msgid "Keep one FAQ source: set the OmniGEO schema type to None."
 msgstr ""
 
-#: includes/class-aigs-rules.php:72
+#: includes/class-aigs-rules.php:75
 msgid "Keep one idea per paragraph, about 40–80 words."
 msgstr ""
 
-#: includes/class-aigs-admin.php:2038
+#: includes/class-aigs-admin.php:2284
 msgid "Keep pages fresh. Updating now and then is a small sign that you are still the right source."
+msgstr ""
+
+#: includes/class-aigs-ai-visibility.php:1060
+msgid "Key facts"
 msgstr ""
 
 #. translators: %d is a value inserted into the message.
@@ -1452,7 +1749,7 @@ msgstr ""
 msgid "Keywords (comma separated)"
 msgstr ""
 
-#: includes/class-aigs-entity.php:216
+#: includes/class-aigs-entity.php:492
 msgid "Knows about (topics, comma separated)"
 msgstr ""
 
@@ -1474,36 +1771,44 @@ msgid "Last updated %d days ago"
 msgstr ""
 
 #. translators: 1: number of questions, 2: time ago.
-#: includes/class-aigs-admin.php:864
+#: includes/class-aigs-admin.php:903
 #, php-format
 msgid "Latest check: %1$d questions, %2$s."
 msgstr ""
 
-#: includes/class-aigs-admin.php:1387
+#: includes/class-aigs-admin.php:1509
 msgid "Latest results"
 msgstr ""
 
-#: includes/class-aigs-admin.php:1895
-msgid "Leave empty for the default shown. Defaults are small, low-cost models."
+#: includes/class-aigs-admin.php:1999
+msgid "Latitude"
 msgstr ""
 
-#: includes/class-aigs-admin.php:1964
+#: includes/class-aigs-admin.php:2133
+msgid "Leave empty for the default shown. Defaults are small, low-cost models. Required for “Other OpenAI-compatible endpoint”."
+msgstr ""
+
+#: includes/class-aigs-admin.php:2210
 msgid "Leave the editor below empty to let the plugin build and update the file for you. Or paste your own version to take full control."
 msgstr ""
 
-#: includes/class-aigs-rules.php:90
+#: includes/class-aigs-entity.php:227
+msgid "Legal service / law firm"
+msgstr ""
+
+#: includes/class-aigs-rules.php:93
 msgid "Link to 2–3 related pages. Suggestions are listed for each page."
 msgstr ""
 
-#: includes/class-aigs-admin.php:1054
+#: includes/class-aigs-admin.php:1122
 msgid "Link to it from:"
 msgstr ""
 
-#: includes/class-aigs-rules.php:89
+#: includes/class-aigs-rules.php:92
 msgid "Link to orphan pages"
 msgstr ""
 
-#: includes/class-aigs-rules.php:74
+#: includes/class-aigs-rules.php:77
 msgid "List the steps in order"
 msgstr ""
 
@@ -1515,28 +1820,56 @@ msgstr ""
 msgid "Lists for steps & points"
 msgstr ""
 
-#: includes/class-aigs-admin.php:1388
+#: includes/class-aigs-admin.php:1510 includes/class-aigs-admin.php:2135
 msgid "Live web search"
 msgstr ""
 
-#: includes/class-aigs-admin.php:303 includes/class-aigs-ai-visibility.php:637
+#: includes/class-aigs-admin.php:303 includes/class-aigs-ai-visibility.php:890
 msgid "Live web search answer"
 msgstr ""
 
-#: includes/class-aigs-admin.php:1767
+#: includes/class-aigs-entity.php:218
+msgid "Local business (general)"
+msgstr ""
+
+#: includes/class-aigs-admin.php:1922
+msgid "Local business (has a place customers visit or a service area)"
+msgstr ""
+
+#: includes/class-aigs-admin.php:1944
+msgid "Local business details"
+msgstr ""
+
+#: includes/class-aigs-admin.php:1913
 msgid "Location"
 msgstr ""
 
-#: includes/class-aigs-admin.php:1776
+#: includes/class-aigs-entity.php:244
+msgid "Lodging (B&B, hostel…)"
+msgstr ""
+
+#: includes/class-aigs-admin.php:2009
 msgid "Logo URL"
 msgstr ""
 
-#: includes/class-aigs-rules.php:71
+#: includes/class-aigs-rules.php:74
 msgid "Long text without H2 sections is hard to split into quotable answers."
 msgstr ""
 
-#: includes/class-aigs-rules.php:119
+#: includes/class-aigs-admin.php:2000
+msgid "Longitude"
+msgstr ""
+
+#: includes/class-aigs-admin.php:306
+msgid "Looking for sentences that already mention this topic…"
+msgstr ""
+
+#: includes/class-aigs-rules.php:122
 msgid "Low"
+msgstr ""
+
+#: includes/class-aigs-admin.php:1935
+msgid "Main phone"
 msgstr ""
 
 #: includes/class-aigs-admin.php:266
@@ -1549,23 +1882,27 @@ msgstr ""
 msgid "Main question: %s"
 msgstr ""
 
-#: includes/class-aigs-rules.php:92
+#: includes/class-aigs-rules.php:95
 msgid "Make duplicate meta descriptions unique"
 msgstr ""
 
-#: includes/class-aigs-rules.php:91
+#: includes/class-aigs-rules.php:94
 msgid "Make duplicate titles unique"
 msgstr ""
 
-#: includes/class-aigs-admin.php:1144
+#: includes/class-aigs-admin.php:1229
 msgid "Make every product easy for shopping assistants to describe, compare and recommend."
 msgstr ""
 
-#: includes/class-aigs-rules.php:69
+#: includes/class-aigs-rules.php:72
 msgid "Make the first sentence under each question heading the answer."
 msgstr ""
 
-#: includes/class-aigs-admin.php:1076
+#: includes/class-aigs-admin.php:1996
+msgid "Map link"
+msgstr ""
+
+#: includes/class-aigs-admin.php:1147
 msgid "Mark as important page (raises priority)"
 msgstr ""
 
@@ -1577,15 +1914,19 @@ msgstr ""
 msgid "Marked as important"
 msgstr ""
 
-#: includes/class-aigs-admin.php:246 includes/class-aigs-admin.php:1122
+#: includes/class-aigs-admin.php:246 includes/class-aigs-admin.php:1207
 msgid "Marked as intentional"
 msgstr ""
 
-#: includes/class-aigs-rules.php:118
+#: includes/class-aigs-entity.php:223
+msgid "Medical clinic"
+msgstr ""
+
+#: includes/class-aigs-rules.php:121
 msgid "Medium"
 msgstr ""
 
-#: includes/class-aigs-admin.php:1448
+#: includes/class-aigs-admin.php:1579
 msgid "Mentioned"
 msgstr ""
 
@@ -1598,7 +1939,7 @@ msgstr ""
 msgid "Missing OG/Twitter tags."
 msgstr ""
 
-#: includes/class-aigs-admin.php:1629
+#: includes/class-aigs-admin.php:1775
 msgid "Missing pages AI bots asked for"
 msgstr ""
 
@@ -1608,37 +1949,45 @@ msgid "Missing title tag."
 msgstr ""
 
 #. translators: %s: missing items.
-#: includes/class-aigs-actions.php:157
+#: includes/class-aigs-actions.php:154 includes/class-aigs-actions.php:166
 #, php-format
 msgid "Missing: %s"
 msgstr ""
 
-#: includes/class-aigs-admin.php:1893
+#: includes/class-aigs-admin.php:2131
 msgid "Model"
 msgstr ""
 
-#: includes/class-aigs-admin.php:1388
+#: includes/class-aigs-admin.php:1510
 msgid "Model knowledge only"
 msgstr ""
 
-#: includes/class-aigs-admin.php:304 includes/class-aigs-ai-visibility.php:637
+#: includes/class-aigs-admin.php:304 includes/class-aigs-ai-visibility.php:890
 msgid "Model knowledge only (no live web search)"
 msgstr ""
 
-#: includes/class-aigs-admin.php:1542
+#: includes/class-aigs-admin.php:1688
 msgid "Model training crawls"
 msgstr ""
 
-#: includes/class-aigs-admin.php:1328
+#: includes/class-aigs-admin.php:1971 includes/class-aigs-ai-visibility.php:1065
+msgid "Monday"
+msgstr ""
+
+#: includes/class-aigs-admin.php:1450
 msgid "Monthly"
 msgstr ""
 
-#: includes/class-aigs-ai-client.php:157
+#: includes/class-aigs-ai-client.php:260
 msgid "Monthly AI request limit reached. Raise it in Settings if you want to continue this month."
 msgstr ""
 
-#: includes/class-aigs-admin.php:1909
+#: includes/class-aigs-admin.php:2151
 msgid "Monthly request limit"
+msgstr ""
+
+#: includes/class-aigs-ai-visibility.php:1092
+msgid "More about us"
 msgstr ""
 
 #. translators: %1$d, %2$d are values inserted into the message.
@@ -1647,11 +1996,11 @@ msgstr ""
 msgid "Most sections don’t open with a direct answer (%1$d of %2$d)."
 msgstr ""
 
-#: includes/class-aigs-admin.php:1672
+#: includes/class-aigs-admin.php:1818
 msgid "Move the AI channel above Referral so it is matched first, then save."
 msgstr ""
 
-#: includes/class-aigs-rules.php:68
+#: includes/class-aigs-rules.php:71
 msgid "Move the introduction down and start with the answer itself."
 msgstr ""
 
@@ -1660,12 +2009,12 @@ msgid "Moved back to open tasks"
 msgstr ""
 
 #. translators: %s: competitor names.
-#: includes/class-aigs-actions.php:161
+#: includes/class-aigs-actions.php:173
 #, php-format
 msgid "Named instead: %s"
 msgstr ""
 
-#: includes/class-aigs-admin.php:1210
+#: includes/class-aigs-admin.php:1295
 msgid "Needs an AI API key in Settings."
 msgstr ""
 
@@ -1673,21 +2022,29 @@ msgstr ""
 msgid "Needs work"
 msgstr ""
 
+#: includes/class-aigs-entity.php:213
+msgid "News / media publisher"
+msgstr ""
+
 #. translators: %s is a value inserted into the message.
 #: includes/class-aigs-audit.php:437
 msgid "No <html lang> attribute."
 msgstr ""
 
-#: includes/class-aigs-admin.php:1610
+#: includes/class-aigs-admin.php:1756
 msgid "No AI bots recorded yet."
 msgstr ""
 
-#: includes/class-aigs-admin.php:808
+#: includes/class-aigs-admin.php:847
 msgid "No AI crawler activity yet. It appears here as bots like GPTBot and ClaudeBot visit."
 msgstr ""
 
-#: includes/class-aigs-admin.php:1659
+#: includes/class-aigs-admin.php:1805
 msgid "No AI referral visits yet."
+msgstr ""
+
+#: includes/class-aigs-rules.php:57
+msgid "No AI search crawler has visited in 3 weeks"
 msgstr ""
 
 #. translators: %d is a value inserted into the message.
@@ -1703,7 +2060,7 @@ msgstr ""
 msgid "No H2/H3 structure."
 msgstr ""
 
-#: includes/class-aigs-visibility.php:217
+#: includes/class-aigs-visibility.php:408
 msgid "No IndexNow key set."
 msgstr ""
 
@@ -1711,7 +2068,7 @@ msgstr ""
 msgid "No JSON-LD, add schema via the meta box."
 msgstr ""
 
-#: includes/class-aigs-rules.php:54
+#: includes/class-aigs-rules.php:55
 msgid "No SEO plugin is active, so WordPress prints no meta description. Search engines and assistants then guess a summary."
 msgstr ""
 
@@ -1761,15 +2118,19 @@ msgstr ""
 msgid "No meta description, AI engines use it for summaries."
 msgstr ""
 
-#: includes/class-aigs-admin.php:1638
+#: includes/class-aigs-admin.php:1784
 msgid "No missing pages requested. Good."
+msgstr ""
+
+#: includes/class-aigs-admin.php:307
+msgid "No natural link spot found. Add a sentence that mentions the topic on a related page, or use the suggested pages above."
 msgstr ""
 
 #: includes/class-aigs-audit.php:294
 msgid "No noindex directive found."
 msgstr ""
 
-#: includes/class-aigs-admin.php:772
+#: includes/class-aigs-admin.php:811
 msgid "No open tasks. Your pages pass every check. The weekly scan will tell you if anything changes."
 msgstr ""
 
@@ -1781,7 +2142,7 @@ msgstr ""
 msgid "No opening paragraph. Begin with a direct 40–60 word answer to the page’s main question, AI lifts these as citations."
 msgstr ""
 
-#: includes/class-aigs-rules.php:89
+#: includes/class-aigs-rules.php:92
 msgid "No other page on your site links here. Crawlers find it late and treat it as unimportant."
 msgstr ""
 
@@ -1802,12 +2163,16 @@ msgstr ""
 msgid "No reviews yet. AI tends to recommend products with social proof."
 msgstr ""
 
-#: includes/class-aigs-admin.php:1482
+#: includes/class-aigs-admin.php:1628
 msgid "No sources yet. Web-grounded providers such as Perplexity return the sources they used."
 msgstr ""
 
-#: includes/class-aigs-admin.php:1817
+#: includes/class-aigs-admin.php:2050
 msgid "No supported SEO plugin detected (Yoast, Rank Math, SEOPress, All in One SEO)."
+msgstr ""
+
+#: includes/class-aigs-entity.php:215
+msgid "Non-profit / NGO"
 msgstr ""
 
 #: includes/class-aigs-schema.php:112
@@ -1830,7 +2195,7 @@ msgstr ""
 msgid "Not cited"
 msgstr ""
 
-#: includes/class-aigs-actions.php:179 includes/class-aigs-ai-visibility.php:686 includes/class-aigs-ai-visibility.php:705 includes/class-aigs-ai-visibility.php:710
+#: includes/class-aigs-actions.php:191 includes/class-aigs-ai-visibility.php:939 includes/class-aigs-ai-visibility.php:958 includes/class-aigs-ai-visibility.php:963
 msgid "Not found."
 msgstr ""
 
@@ -1838,23 +2203,27 @@ msgstr ""
 msgid "Not mentioned"
 msgstr ""
 
-#: includes/class-aigs-admin.php:1131
+#: includes/class-aigs-admin.php:1216
 msgid "Nothing here."
+msgstr ""
+
+#: includes/class-aigs-links.php:606
+msgid "Nothing selected."
 msgstr ""
 
 #: includes/class-aigs-admin.php:286
 msgid "Nothing to change: every matching product is already complete, or a site scan has not run yet."
 msgstr ""
 
-#: includes/class-aigs-admin.php:966
+#: includes/class-aigs-admin.php:1005
 msgid "Nothing to fix here. Nice work."
 msgstr ""
 
-#: includes/class-aigs-admin.php:1625
+#: includes/class-aigs-admin.php:1771
 msgid "Nothing yet."
 msgstr ""
 
-#: includes/class-aigs-admin.php:1729
+#: includes/class-aigs-admin.php:1875
 msgid "Notify Bing and other IndexNow engines when a URL changes. Bing’s index also feeds Microsoft Copilot."
 msgstr ""
 
@@ -1866,15 +2235,39 @@ msgstr ""
 msgid "OK"
 msgstr ""
 
-#: includes/class-aigs-admin.php:1326
+#: includes/class-aigs-admin.php:1448
 msgid "Off (run manually)"
 msgstr ""
 
-#: includes/class-aigs-admin.php:1795
+#: includes/class-aigs-admin.php:2028
 msgid "Off, I will scan manually"
 msgstr ""
 
-#: includes/class-aigs-admin.php:1877
+#: includes/class-aigs-admin.php:1416
+msgid "Official email addresses (one per line)"
+msgstr ""
+
+#. translators: %s: brand name.
+#: includes/class-aigs-ai-visibility.php:1038
+#, php-format
+msgid "Official name: %s"
+msgstr ""
+
+#: includes/class-aigs-admin.php:1411
+msgid "Official phone numbers (one per line)"
+msgstr ""
+
+#: includes/class-aigs-ai-visibility.php:1089
+msgid "Official profiles"
+msgstr ""
+
+#. translators: %s: list of domains.
+#: includes/class-aigs-ai-visibility.php:1040
+#, php-format
+msgid "Official website: %s"
+msgstr ""
+
+#: includes/class-aigs-admin.php:2110
 msgid "Older entries are summarised into daily totals and deleted, keeping the database small."
 msgstr ""
 
@@ -1882,7 +2275,7 @@ msgstr ""
 msgid "OmniGEO Ai SEO"
 msgstr ""
 
-#: includes/class-aigs-entity.php:201
+#: includes/class-aigs-entity.php:477
 msgid "OmniGEO Author entity"
 msgstr ""
 
@@ -1894,24 +2287,36 @@ msgstr ""
 msgid "OmniGEO Schema & Entities"
 msgstr ""
 
-#: includes/class-aigs-admin.php:2065
+#: includes/class-aigs-admin.php:2311
 msgid "OmniGEO: AI visibility"
 msgstr ""
 
-#: includes/class-aigs-admin.php:1832
+#: includes/class-aigs-admin.php:308
+msgid "On page"
+msgstr ""
+
+#: includes/class-aigs-admin.php:2065
 msgid "On product pages OmniGEO defers to WooCommerce’s native Product schema to avoid conflicts."
 msgstr ""
 
-#: includes/class-aigs-admin.php:2007
+#: includes/class-aigs-admin.php:2253
 msgid "On the Growth Center, click Scan site. The scan reads your pages from WordPress itself in small batches, so it is safe on shared hosting and changes nothing."
 msgstr ""
 
-#: includes/class-aigs-db.php:173
+#: includes/class-aigs-db.php:182
 msgid "Once Weekly"
 msgstr ""
 
-#: includes/class-aigs-admin.php:1782
+#: includes/class-aigs-admin.php:2015
 msgid "One URL per line: official social profiles, LinkedIn, Wikipedia/Wikidata if you have them, business directories."
+msgstr ""
+
+#: includes/class-aigs-admin.php:1989
+msgid "One or more ranges per day, for example 09:00-13:00, 14:00-18:00. Type 24h for always open. Leave empty when closed."
+msgstr ""
+
+#: includes/class-aigs-entity.php:212
+msgid "Online store"
 msgstr ""
 
 #. translators: %1$d, %2$d are values inserted into the message.
@@ -1920,8 +2325,12 @@ msgstr ""
 msgid "Only %1$d of %2$d sections start with a direct answer, add one under each heading."
 msgstr ""
 
-#: includes/class-aigs-admin.php:1873
+#: includes/class-aigs-admin.php:2106
 msgid "Only change this if your site is behind a CDN or proxy. IPs are stored only for bot requests, never for human visitors."
+msgstr ""
+
+#: includes/class-aigs-admin.php:2137
+msgid "Only changes how AI Visibility results are labelled."
 msgstr ""
 
 #. translators: %d is a value inserted into the message.
@@ -1941,7 +2350,7 @@ msgstr ""
 msgid "Only ~%d words, too thin."
 msgstr ""
 
-#: includes/class-aigs-admin.php:611 includes/class-aigs-admin.php:2081
+#: includes/class-aigs-admin.php:650 includes/class-aigs-admin.php:2327
 msgid "Open Action Center"
 msgstr ""
 
@@ -1949,29 +2358,29 @@ msgstr ""
 msgid "Open Graph / Twitter"
 msgstr ""
 
-#: includes/class-aigs-admin.php:597
+#: includes/class-aigs-admin.php:636
 msgid "Open Settings"
 msgstr ""
 
-#: includes/class-aigs-admin.php:2006
+#: includes/class-aigs-admin.php:2252
 msgid "Open Settings and fill in your brand name, industry and location. Add your logo and official profile links in the sameAs box. It takes five minutes and shapes every suggestion."
 msgstr ""
 
-#: includes/class-aigs-admin.php:730
+#: includes/class-aigs-admin.php:769
 msgid "Open improvements"
 msgstr ""
 
 #. translators: 1: open, 2: critical/high.
-#: includes/class-aigs-actions.php:321
+#: includes/class-aigs-actions.php:333
 #, php-format
 msgid "Open issues: %1$d (%2$d high priority)"
 msgstr ""
 
-#: includes/class-aigs-admin.php:872
+#: includes/class-aigs-admin.php:911
 msgid "Open report"
 msgstr ""
 
-#: includes/class-aigs-admin.php:574
+#: includes/class-aigs-admin.php:613
 msgid "Open setting"
 msgstr ""
 
@@ -1979,16 +2388,20 @@ msgstr ""
 msgid "Open tasks for this page"
 msgstr ""
 
-#: includes/class-aigs-admin.php:2008
+#: includes/class-aigs-admin.php:2254
 msgid "Open the Action Center and start with the first task. Fix the page, click Re-check, and the task moves to Recent wins once the fix is confirmed."
 msgstr ""
 
-#: includes/class-aigs-rules.php:93
+#: includes/class-aigs-rules.php:96
 msgid "Open the page and follow the Answer Optimizer tips at the top of the editor."
 msgstr ""
 
-#: includes/class-aigs-rules.php:67
+#: includes/class-aigs-rules.php:70
 msgid "Open with 40–60 words that answer the main question directly. The Answer Optimizer in the editor can draft it from your own text."
+msgstr ""
+
+#: includes/class-aigs-admin.php:1966 includes/class-aigs-ai-visibility.php:1078
+msgid "Opening hours"
 msgstr ""
 
 #. translators: %d is a value inserted into the message.
@@ -2003,7 +2416,7 @@ msgstr ""
 msgid "Opening is only %d words, expand it into a complete standalone answer."
 msgstr ""
 
-#: includes/class-aigs-admin.php:1474
+#: includes/class-aigs-admin.php:1620
 msgid "Opportunity"
 msgstr ""
 
@@ -2015,7 +2428,7 @@ msgstr ""
 msgid "Optional Q&A or Speakable markup detected."
 msgstr ""
 
-#: includes/class-aigs-visibility.php:155
+#: includes/class-aigs-visibility.php:332
 msgid "Optional. A map for AI tools; Google says it is not needed for AI Overviews."
 msgstr ""
 
@@ -2023,23 +2436,47 @@ msgstr ""
 msgid "Optional. Add FAQ markup only when the page really has questions and answers."
 msgstr ""
 
-#: includes/class-aigs-admin.php:747
+#: includes/class-aigs-admin.php:2001
+msgid "Optional. Right-click your location in a map app to copy them."
+msgstr ""
+
+#: includes/class-aigs-admin.php:786
 msgid "Ordered by impact: how serious the issue is and how important the affected pages are."
 msgstr ""
 
-#: includes/class-aigs-admin.php:1773
+#: includes/class-aigs-admin.php:1921
+msgid "Organization"
+msgstr ""
+
+#: includes/class-aigs-entity.php:210
+msgid "Organization (general)"
+msgstr ""
+
+#: includes/class-aigs-admin.php:2006
 msgid "Organization entity (Schema)"
 msgstr ""
 
-#: includes/class-aigs-admin.php:1298
+#: includes/class-aigs-ai-client.php:84
+msgid "Other OpenAI-compatible endpoint"
+msgstr ""
+
+#: includes/class-aigs-admin.php:1383
 msgid "Other names for your brand (one per line)"
 msgstr ""
 
-#: includes/class-aigs-admin.php:1787
+#: includes/class-aigs-admin.php:1420
+msgid "Other official domains (one per line)"
+msgstr ""
+
+#: includes/class-aigs-admin.php:1434
+msgid "Outdated or wrong statements to watch for (one per line)"
+msgstr ""
+
+#: includes/class-aigs-admin.php:2020
 msgid "Output & automation"
 msgstr ""
 
-#: includes/class-aigs-admin.php:1788
+#: includes/class-aigs-admin.php:2021
 msgid "Output Schema / JSON-LD on the front end"
 msgstr ""
 
@@ -2049,16 +2486,16 @@ msgstr ""
 msgid "Over-emphasis (%d bold spans) dilutes the signal, bold one key sentence per section."
 msgstr ""
 
-#: includes/class-aigs-rules.php:58
+#: includes/class-aigs-rules.php:61
 msgid "Page is set to noindex"
 msgstr ""
 
-#: includes/class-aigs-admin.php:1616
+#: includes/class-aigs-admin.php:1762
 msgid "Pages assistants fetched for users"
 msgstr ""
 
 #. translators: %d: count.
-#: includes/class-aigs-actions.php:323
+#: includes/class-aigs-actions.php:335
 #, php-format
 msgid "Pages read inside AI answers (7 days): %d"
 msgstr ""
@@ -2069,7 +2506,7 @@ msgstr ""
 msgid "Paragraph chunking"
 msgstr ""
 
-#: includes/class-aigs-rules.php:72
+#: includes/class-aigs-rules.php:75
 msgid "Paragraphs over ~120 words mix several ideas, so no single passage answers one question."
 msgstr ""
 
@@ -2085,24 +2522,56 @@ msgstr ""
 msgid "Pass"
 msgstr ""
 
-#: includes/class-aigs-admin.php:1902
+#: includes/class-aigs-admin.php:2144
 msgid "Paste your key"
 msgstr ""
 
-#: includes/class-aigs-actions.php:183 includes/class-aigs-actions.php:200 includes/class-aigs-actions.php:235 includes/class-aigs-actions.php:264 includes/class-aigs-ai-visibility.php:618 includes/class-aigs-ai-visibility.php:700
+#: includes/class-aigs-rules.php:53
+msgid "People ask assistants “near me”, “open now” and “phone number” questions. Without an address, phone and opening hours in your LocalBusiness data, assistants guess or use outdated directory data."
+msgstr ""
+
+#: includes/class-aigs-actions.php:195 includes/class-aigs-actions.php:212 includes/class-aigs-actions.php:247 includes/class-aigs-actions.php:276 includes/class-aigs-ai-client.php:510 includes/class-aigs-ai-visibility.php:871
 msgid "Permission denied."
 msgstr ""
 
-#: includes/class-aigs-admin.php:1790
+#: includes/class-aigs-entity.php:225
+msgid "Pharmacy"
+msgstr ""
+
+#. translators: %s: phone number.
+#: includes/class-aigs-ai-visibility.php:521
+#, php-format
+msgid "Phone number not on your list: %s"
+msgstr ""
+
+#. translators: %s: phones.
+#: includes/class-aigs-ai-visibility.php:1047
+#, php-format
+msgid "Phone: %s"
+msgstr ""
+
+#: includes/class-aigs-entity.php:224
+msgid "Physician / doctor"
+msgstr ""
+
+#: includes/class-aigs-admin.php:2023
 msgid "Ping IndexNow automatically when content is published or updated"
 msgstr ""
 
-#: includes/class-aigs-admin.php:255 includes/class-aigs-admin.php:1432
+#: includes/class-aigs-entity.php:234
+msgid "Plumber"
+msgstr ""
+
+#: includes/class-aigs-admin.php:255 includes/class-aigs-admin.php:1562
 msgid "Position"
 msgstr ""
 
 #: includes/class-aigs-extract.php:192
 msgid "Post not found."
+msgstr ""
+
+#: includes/class-aigs-admin.php:1961
+msgid "Postal code"
 msgstr ""
 
 #. translators: %d is a value inserted into the message.
@@ -2117,16 +2586,24 @@ msgstr ""
 msgid "Present but length is %d (aim 30–65)."
 msgstr ""
 
-#: includes/class-aigs-admin.php:1208
+#: includes/class-aigs-admin.php:1293
 msgid "Preview"
 msgstr ""
 
-#: includes/class-aigs-admin.php:1192
+#: includes/class-aigs-admin.php:1277
 msgid "Preview first. Untick anything you do not want, edit the text if needed, then apply. Existing values are never overwritten."
 msgstr ""
 
-#: includes/class-aigs-admin.php:1789
+#: includes/class-aigs-admin.php:1994
+msgid "Price range"
+msgstr ""
+
+#: includes/class-aigs-admin.php:2022
 msgid "Print a meta description from the excerpt or first paragraph when no SEO plugin is active"
+msgstr ""
+
+#: includes/class-aigs-admin.php:1945
+msgid "Printed as LocalBusiness schema on your homepage. Use exactly the same name, address and phone as on your Google Business Profile, Apple Maps, Bing Places and directories: consistency is what assistants trust."
 msgstr ""
 
 #: includes/class-aigs-admin.php:293 includes/class-aigs-schema.php:115
@@ -2137,49 +2614,57 @@ msgstr ""
 msgid "Product image"
 msgstr ""
 
-#: includes/class-aigs-admin.php:187 includes/class-aigs-admin.php:1144 includes/class-aigs-rules.php:135
+#: includes/class-aigs-admin.php:187 includes/class-aigs-admin.php:1229 includes/class-aigs-rules.php:138
 msgid "Products"
 msgstr ""
 
-#: includes/class-aigs-rules.php:102
+#: includes/class-aigs-rules.php:105
 msgid "Products without a price"
 msgstr ""
 
-#: includes/class-aigs-rules.php:99
+#: includes/class-aigs-rules.php:102
 msgid "Products without an image are rarely shown in shopping answers."
 msgstr ""
 
-#: includes/class-aigs-admin.php:2021
+#: includes/class-aigs-admin.php:2267
 msgid "Products."
+msgstr ""
+
+#: includes/class-aigs-entity.php:232
+msgid "Professional service"
 msgstr ""
 
 #: includes/class-aigs-admin.php:294
 msgid "Proposed value (you can edit it)"
 msgstr ""
 
-#: includes/class-aigs-admin.php:1886
+#: includes/class-aigs-admin.php:2119
 msgid "Provider"
 msgstr ""
 
 #. translators: 1: provider, 2: model, 3: requests left, 4: monthly cap.
-#: includes/class-aigs-admin.php:1274
+#: includes/class-aigs-admin.php:1359
 #, php-format
 msgid "Provider: %1$s (%2$s). AI requests left this month: %3$d of %4$d."
 msgstr ""
 
-#: includes/class-aigs-admin.php:1866
+#: includes/class-aigs-admin.php:2099
 msgid "Proxy (X-Real-IP)"
 msgstr ""
 
-#: includes/class-aigs-admin.php:1865
+#: includes/class-aigs-admin.php:2098
 msgid "Proxy / load balancer (X-Forwarded-For)"
 msgstr ""
 
-#: includes/class-aigs-admin.php:1593
+#: includes/class-aigs-admin.php:1938
+msgid "Public email"
+msgstr ""
+
+#: includes/class-aigs-admin.php:1739
 msgid "Purpose"
 msgstr ""
 
-#: includes/class-aigs-rules.php:74
+#: includes/class-aigs-rules.php:77
 msgid "Put the steps in a numbered list."
 msgstr ""
 
@@ -2187,7 +2672,7 @@ msgstr ""
 msgid "Q&A pairs found in your content"
 msgstr ""
 
-#: includes/class-aigs-admin.php:225 includes/class-aigs-admin.php:1429 includes/class-aigs-schema.php:158
+#: includes/class-aigs-admin.php:225 includes/class-aigs-admin.php:1559 includes/class-aigs-schema.php:158
 msgid "Question"
 msgstr ""
 
@@ -2195,7 +2680,7 @@ msgstr ""
 msgid "Question headings without a direct answer"
 msgstr ""
 
-#: includes/class-aigs-admin.php:1313
+#: includes/class-aigs-admin.php:1398
 msgid "Questions buyers ask AI (one per line)"
 msgstr ""
 
@@ -2203,11 +2688,11 @@ msgstr ""
 msgid "Quick answer / snippet"
 msgstr ""
 
-#: includes/class-aigs-admin.php:1347
+#: includes/class-aigs-admin.php:1469
 msgid "Quick test of one question"
 msgstr ""
 
-#: includes/class-aigs-admin.php:1075
+#: includes/class-aigs-admin.php:1146
 msgid "Re-check"
 msgstr ""
 
@@ -2223,63 +2708,71 @@ msgid_plural "Read %d times by AI assistants in 30 days"
 msgstr[0] ""
 msgstr[1] ""
 
-#: includes/class-aigs-admin.php:1540
+#: includes/class-aigs-admin.php:1686
 msgid "Read inside AI answers"
 msgstr ""
 
-#: includes/class-aigs-visibility.php:167
+#: includes/class-aigs-visibility.php:344
 msgid "Readable permalinks"
 msgstr ""
 
-#: includes/class-aigs-admin.php:740
+#: includes/class-aigs-admin.php:779
 msgid "Reads inside AI answers · 30d"
 msgstr ""
 
-#: includes/class-aigs-admin.php:602
+#: includes/class-aigs-admin.php:641
 msgid "Reads your pages from WordPress itself, in small batches. Safe on shared hosting."
 msgstr ""
 
-#: includes/class-aigs-admin.php:1224
+#: includes/class-aigs-entity.php:231
+msgid "Real estate agent"
+msgstr ""
+
+#: includes/class-aigs-admin.php:1309
 msgid "Recent bulk changes"
 msgstr ""
 
-#: includes/class-aigs-admin.php:827
+#: includes/class-aigs-admin.php:1064
+msgid "Recent link changes"
+msgstr ""
+
+#: includes/class-aigs-admin.php:866
 msgid "Recent wins"
 msgstr ""
 
-#: includes/class-aigs-visibility.php:182
+#: includes/class-aigs-visibility.php:373
 msgid "Recently updated content signals relevance."
 msgstr ""
 
-#: includes/class-aigs-admin.php:254 includes/class-aigs-admin.php:1448
+#: includes/class-aigs-admin.php:254 includes/class-aigs-admin.php:1579
 msgid "Recommended"
 msgstr ""
 
-#: includes/class-aigs-admin.php:746
+#: includes/class-aigs-admin.php:785
 msgid "Recommended for today"
 msgstr ""
 
-#: includes/class-aigs-admin.php:1856
+#: includes/class-aigs-admin.php:2089
 msgid "Record AI bot requests and visits from AI products"
 msgstr ""
 
-#: includes/class-aigs-rules.php:55
+#: includes/class-aigs-rules.php:58
 msgid "Redirect each URL to the closest live page (for example with a redirect plugin) or restore the content."
 msgstr ""
 
-#: includes/class-aigs-rules.php:76
+#: includes/class-aigs-rules.php:79
 msgid "Refresh content that has not been updated in a long time"
 msgstr ""
 
-#: includes/class-aigs-rules.php:75
+#: includes/class-aigs-rules.php:78
 msgid "Refresh the facts, then update the year (or remove it)."
 msgstr ""
 
-#: includes/class-aigs-admin.php:1054
+#: includes/class-aigs-admin.php:1122
 msgid "Related pages to link to:"
 msgstr ""
 
-#: includes/class-aigs-admin.php:2039
+#: includes/class-aigs-admin.php:2285
 msgid "Remember that a lot happens off your site too. Mentions on places like Reddit, and links from other websites, still matter a great deal, and no plugin can do that part for you."
 msgstr ""
 
@@ -2287,15 +2780,21 @@ msgstr ""
 msgid "Remove"
 msgstr ""
 
-#: includes/class-aigs-admin.php:1904
+#: includes/class-aigs-admin.php:2146
 msgid "Remove saved key"
 msgstr ""
 
-#: includes/class-aigs-admin.php:1128
+#: includes/class-aigs-admin.php:1213
 msgid "Reopen"
 msgstr ""
 
-#: includes/class-aigs-rules.php:68
+#. translators: %s: statement.
+#: includes/class-aigs-ai-visibility.php:533
+#, php-format
+msgid "Repeats something you marked as outdated: “%s”"
+msgstr ""
+
+#: includes/class-aigs-rules.php:71
 msgid "Replace the introduction with an answer"
 msgstr ""
 
@@ -2303,12 +2802,22 @@ msgstr ""
 msgid "Request failed. Check your connection and try again."
 msgstr ""
 
-#: includes/class-aigs-admin.php:1593
+#: includes/class-aigs-admin.php:1739
 msgid "Requests"
 msgstr ""
 
-#: includes/class-aigs-admin.php:786
+#: includes/class-aigs-admin.php:825
 msgid "Requests from bots that identify themselves as AI crawlers."
+msgstr ""
+
+#. translators: %s: CDN name or "no CDN detected".
+#: includes/class-aigs-visibility.php:357
+#, php-format
+msgid "Requests with AI crawler user agents receive your page. Edge network: %s."
+msgstr ""
+
+#: includes/class-aigs-entity.php:220
+msgid "Restaurant"
 msgstr ""
 
 #. translators: %d: number of products.
@@ -2317,11 +2826,16 @@ msgstr ""
 msgid "Restored %d products."
 msgstr ""
 
+#. translators: %d: number of links.
+#: includes/class-aigs-admin.php:314
+msgid "Restored the previous version."
+msgstr ""
+
 #: includes/class-aigs-admin.php:282
 msgid "Review before using: the draft only uses facts from your page, but you know your topic best."
 msgstr ""
 
-#: includes/class-aigs-rules.php:76
+#: includes/class-aigs-rules.php:79
 msgid "Review facts, prices and examples, then update the page."
 msgstr ""
 
@@ -2330,55 +2844,55 @@ msgstr ""
 msgid "Reviews / ratings"
 msgstr ""
 
-#: includes/class-aigs-rules.php:104
+#: includes/class-aigs-rules.php:107
 msgid "Rewrite copied product descriptions"
 msgstr ""
 
-#: includes/class-aigs-admin.php:1336
+#: includes/class-aigs-admin.php:1458
 msgid "Run a check"
 msgstr ""
 
-#: includes/class-aigs-admin.php:900
+#: includes/class-aigs-admin.php:939
 msgid "Run a site scan to build your task list. It takes a minute or two and changes nothing on your site."
 msgstr ""
 
-#: includes/class-aigs-admin.php:1167
+#: includes/class-aigs-admin.php:1252
 msgid "Run a site scan to check your products."
 msgstr ""
 
-#: includes/class-aigs-admin.php:1343
+#: includes/class-aigs-admin.php:1465
 msgid "Run all questions"
 msgstr ""
 
-#: includes/class-aigs-admin.php:1703
+#: includes/class-aigs-admin.php:1849
 msgid "Run audit"
 msgstr ""
 
-#: includes/class-aigs-admin.php:1720
+#: includes/class-aigs-admin.php:1866
 msgid "Run checks"
 msgstr ""
 
-#: includes/class-aigs-admin.php:1724
+#: includes/class-aigs-admin.php:1870
 msgid "Run the checks to see HTTPS, robots, sitemap, llms.txt, indexing and freshness status."
 msgstr ""
 
-#: includes/class-aigs-admin.php:686
+#: includes/class-aigs-admin.php:725
 msgid "Run the first scan"
 msgstr ""
 
-#: includes/class-aigs-admin.php:601
+#: includes/class-aigs-admin.php:640
 msgid "Run your first site scan"
 msgstr ""
 
-#: includes/class-aigs-admin.php:1797
+#: includes/class-aigs-admin.php:2030
 msgid "Runs in small batches and skips unchanged pages, so it stays light on shared hosting."
 msgstr ""
 
-#: includes/class-aigs-admin.php:1807
+#: includes/class-aigs-admin.php:2040
 msgid "SEO plugin integration"
 msgstr ""
 
-#: includes/class-aigs-admin.php:1063
+#: includes/class-aigs-admin.php:1131
 msgid "Same as:"
 msgstr ""
 
@@ -2386,15 +2900,23 @@ msgstr ""
 msgid "SameAs URLs (comma separated, Wikipedia, Wikidata, social, etc.)"
 msgstr ""
 
-#: includes/class-aigs-admin.php:1331 includes/class-aigs-admin.php:1977
+#: includes/class-aigs-admin.php:1976 includes/class-aigs-ai-visibility.php:1070
+msgid "Saturday"
+msgstr ""
+
+#: includes/class-aigs-admin.php:1453 includes/class-aigs-admin.php:2223
 msgid "Save"
 msgstr ""
 
-#: includes/class-aigs-admin.php:1921
+#: includes/class-aigs-admin.php:2162
+msgid "Save first, then test. Uses one request."
+msgstr ""
+
+#: includes/class-aigs-admin.php:2167
 msgid "Save settings"
 msgstr ""
 
-#: includes/class-aigs-admin.php:2022
+#: includes/class-aigs-admin.php:2268
 msgid "Save the questions your buyers ask, your brand spellings and your competitors. Each check asks an assistant with your own key, stores the full answers, and shows mentions, recommendations, citations, share of voice and the sources it used. Questions where competitors appear and you do not become tasks."
 msgstr ""
 
@@ -2407,11 +2929,11 @@ msgstr ""
 msgid "Scan complete. Your Action Center is up to date."
 msgstr ""
 
-#: includes/class-aigs-admin.php:604
+#: includes/class-aigs-admin.php:643
 msgid "Scan now"
 msgstr ""
 
-#: includes/class-aigs-admin.php:451 includes/class-aigs-admin.php:900
+#: includes/class-aigs-admin.php:490 includes/class-aigs-admin.php:939
 msgid "Scan site"
 msgstr ""
 
@@ -2425,7 +2947,7 @@ msgstr ""
 msgid "Scanning your site…"
 msgstr ""
 
-#: includes/class-aigs-rules.php:134
+#: includes/class-aigs-rules.php:137
 msgid "Schema"
 msgstr ""
 
@@ -2434,21 +2956,25 @@ msgid "Schema type (pick one per page)"
 msgstr ""
 
 #. translators: %d: page score.
-#: includes/class-aigs-admin.php:1042
+#: includes/class-aigs-admin.php:1110
 #, php-format
 msgid "Score %d"
 msgstr ""
 
-#: includes/class-aigs-admin.php:541
+#: includes/class-aigs-admin.php:580
 msgid "Score trend"
 msgstr ""
 
-#: includes/class-aigs-visibility.php:160
+#: includes/class-aigs-visibility.php:337
 msgid "Search engine indexing allowed"
 msgstr ""
 
-#: includes/class-aigs-admin.php:769
+#: includes/class-aigs-admin.php:808
 msgid "See all tasks"
+msgstr ""
+
+#: includes/class-aigs-admin.php:1158
+msgid "See the answer"
 msgstr ""
 
 #. translators: %1$d, %2$d are values inserted into the message.
@@ -2456,7 +2982,7 @@ msgstr ""
 msgid "Self-contained sections"
 msgstr ""
 
-#: includes/class-aigs-admin.php:1976
+#: includes/class-aigs-admin.php:2222
 msgid "Serve llms.txt publicly"
 msgstr ""
 
@@ -2464,31 +2990,35 @@ msgstr ""
 msgid "Served over HTTPS."
 msgstr ""
 
-#: includes/class-aigs-rules.php:102
+#: includes/class-aigs-admin.php:1991
+msgid "Service area"
+msgstr ""
+
+#: includes/class-aigs-rules.php:105
 msgid "Set a regular price, or hide the product if it is not for sale."
 msgstr ""
 
-#: includes/class-aigs-rules.php:81
+#: includes/class-aigs-rules.php:84
 msgid "Set a relevant featured image."
 msgstr ""
 
-#: includes/class-aigs-admin.php:1900
+#: includes/class-aigs-admin.php:2142
 msgid "Set in wp-config.php (AIGS_AI_API_KEY). That key is used."
 msgstr ""
 
-#: includes/class-aigs-admin.php:1671
+#: includes/class-aigs-admin.php:1817
 msgid "Set the condition: Source matches regex → paste the regex above."
 msgstr ""
 
-#: includes/class-aigs-rules.php:86
+#: includes/class-aigs-rules.php:89
 msgid "Set the schema type to None and use a numbered list in the content instead."
 msgstr ""
 
-#: includes/class-aigs-admin.php:625
+#: includes/class-aigs-admin.php:664
 msgid "Set up"
 msgstr ""
 
-#: includes/class-aigs-admin.php:875
+#: includes/class-aigs-admin.php:914
 msgid "Set up tracking"
 msgstr ""
 
@@ -2496,15 +3026,15 @@ msgstr ""
 msgid "Sets the main image alt text to the product name where it is empty."
 msgstr ""
 
-#: includes/class-aigs-admin.php:195 includes/class-aigs-admin.php:1754
+#: includes/class-aigs-admin.php:195 includes/class-aigs-admin.php:1900
 msgid "Settings"
 msgstr ""
 
-#: includes/class-aigs-admin.php:433
+#: includes/class-aigs-admin.php:472
 msgid "Settings saved."
 msgstr ""
 
-#: includes/class-aigs-visibility.php:162
+#: includes/class-aigs-visibility.php:339
 msgid "Settings → Reading must allow indexing."
 msgstr ""
 
@@ -2512,23 +3042,27 @@ msgstr ""
 msgid "Settings → Reading → “Discourage search engines” is on. Search engines, and the AI answers built on their indexes, will drop your pages."
 msgstr ""
 
-#: includes/class-aigs-rules.php:92
+#: includes/class-aigs-rules.php:95
 msgid "Several pages share one meta description."
 msgstr ""
 
-#: includes/class-aigs-rules.php:91
+#: includes/class-aigs-rules.php:94
 msgid "Several pages share the same title, so engines cannot tell which one answers the query."
 msgstr ""
 
-#: includes/class-aigs-rules.php:104
+#: includes/class-aigs-rules.php:107
 msgid "Several products share the same description, so none of them stands out as the answer."
 msgstr ""
 
-#: includes/class-aigs-admin.php:1404
+#: includes/class-aigs-admin.php:1534
 msgid "Share of voice"
 msgstr ""
 
-#: includes/class-aigs-rules.php:97
+#: includes/class-aigs-entity.php:219
+msgid "Shop / store"
+msgstr ""
+
+#: includes/class-aigs-rules.php:100
 msgid "Shoppers ask assistants detailed questions. A thin description gives them nothing to answer with."
 msgstr ""
 
@@ -2551,16 +3085,20 @@ msgstr ""
 msgid "Short description is %d words, aim for a tight 20–60 word summary."
 msgstr ""
 
+#: includes/class-aigs-admin.php:1439
+msgid "Short description of what you offer (used for the facts page)"
+msgstr ""
+
 #. translators: %d is a value inserted into the message.
 #: includes/class-aigs-audit.php:225 includes/class-aigs-audit.php:229 includes/class-aigs-audit.php:231
 msgid "Single H1"
 msgstr ""
 
-#: includes/class-aigs-admin.php:193 includes/class-aigs-admin.php:1721
+#: includes/class-aigs-admin.php:193 includes/class-aigs-admin.php:1867
 msgid "Site Health"
 msgstr ""
 
-#: includes/class-aigs-admin.php:1774
+#: includes/class-aigs-admin.php:2007
 msgid "Site-wide Organization schema so engines can resolve your brand identity. The sameAs links to official profiles are the most valuable part."
 msgstr ""
 
@@ -2568,7 +3106,7 @@ msgstr ""
 msgid "Social meta tags present."
 msgstr ""
 
-#: includes/class-aigs-rules.php:69
+#: includes/class-aigs-rules.php:72
 msgid "Some headings ask a question but the text under them does not answer it straight away."
 msgstr ""
 
@@ -2584,8 +3122,12 @@ msgstr ""
 msgid "Sources"
 msgstr ""
 
-#: includes/class-aigs-admin.php:1466
+#: includes/class-aigs-admin.php:1612
 msgid "Sources assistants cited · 90 days"
+msgstr ""
+
+#: includes/class-aigs-entity.php:241
+msgid "Spa"
 msgstr ""
 
 #. translators: %d is a value inserted into the message.
@@ -2593,7 +3135,7 @@ msgstr ""
 msgid "Specs / attributes"
 msgstr ""
 
-#: includes/class-aigs-rules.php:72
+#: includes/class-aigs-rules.php:75
 msgid "Split very long paragraphs"
 msgstr ""
 
@@ -2601,8 +3143,12 @@ msgstr ""
 msgid "Start the page with a short paragraph that answers the main question in 40–60 words."
 msgstr ""
 
-#: includes/class-aigs-admin.php:609
+#: includes/class-aigs-admin.php:648
 msgid "Start with the top recommendation below, then re-check to confirm it is fixed."
+msgstr ""
+
+#: includes/class-aigs-admin.php:1959
+msgid "State / region"
 msgstr ""
 
 #: includes/class-aigs-answer.php:328
@@ -2613,8 +3159,12 @@ msgstr ""
 msgid "Still open. Save your changes in the editor, then re-check."
 msgstr ""
 
-#: includes/class-aigs-admin.php:1906
-msgid "Stored in your database and never shown again. For extra safety define AIGS_AI_API_KEY in wp-config.php instead."
+#: includes/class-aigs-admin.php:2148
+msgid "Stored in your database and never shown again. For extra safety define AIGS_AI_API_KEY in wp-config.php instead. Local servers usually need no key."
+msgstr ""
+
+#: includes/class-aigs-admin.php:1955
+msgid "Street address"
 msgstr ""
 
 #: includes/class-aigs-audit.php:251 includes/class-aigs-audit.php:253
@@ -2625,7 +3175,7 @@ msgstr ""
 msgid "Structured table present, great for data extraction."
 msgstr ""
 
-#: includes/class-aigs-admin.php:1736
+#: includes/class-aigs-admin.php:1882
 msgid "Submit URL"
 msgstr ""
 
@@ -2634,46 +3184,54 @@ msgid "Submitted to IndexNow"
 msgstr ""
 
 #. translators: %d: max prompts.
-#: includes/class-aigs-admin.php:1320
+#: includes/class-aigs-admin.php:1405
 msgid "Suggest questions"
+msgstr ""
+
+#: includes/class-aigs-admin.php:1977 includes/class-aigs-ai-visibility.php:1071
+msgid "Sunday"
 msgstr ""
 
 #: includes/class-aigs-extract.php:409 includes/class-aigs-extract.php:411
 msgid "Tables"
 msgstr ""
 
-#: includes/class-aigs-rules.php:131
+#: includes/class-aigs-rules.php:134
 msgid "Technical"
 msgstr ""
 
-#: includes/class-aigs-admin.php:1721
+#: includes/class-aigs-admin.php:1867
 msgid "Technical signals that decide whether search engines and AI can read you."
 msgstr ""
 
-#: includes/class-aigs-admin.php:594
+#: includes/class-aigs-admin.php:633
 msgid "Tell OmniGEO about your brand"
+msgstr ""
+
+#: includes/class-aigs-admin.php:2161
+msgid "Test saved connection"
 msgstr ""
 
 #: includes/class-aigs-audit.php:50
 msgid "That URL could not be validated. Use a public http or https address."
 msgstr ""
 
-#: includes/class-aigs-admin.php:2011
+#: includes/class-aigs-admin.php:2257
 msgid "That is really all you need to start. The rest is here when you feel like going deeper."
 msgstr ""
 
-#: includes/class-aigs-woocommerce.php:336
+#: includes/class-aigs-links.php:564 includes/class-aigs-woocommerce.php:336
 msgid "That operation can no longer be undone."
 msgstr ""
 
 #. translators: %d is the HTTP status code.
-#: includes/class-aigs-ai-client.php:220 includes/class-aigs-ai-client.php:224
+#: includes/class-aigs-ai-client.php:328 includes/class-aigs-ai-client.php:332
 #, php-format
 msgid "The AI provider returned HTTP %d."
 msgstr ""
 
 #. translators: %d is the HTTP status code.
-#: includes/class-aigs-ai-client.php:215
+#: includes/class-aigs-ai-client.php:323
 #, php-format
 msgid "The AI provider returned an unreadable response (HTTP %d)."
 msgstr ""
@@ -2682,27 +3240,27 @@ msgstr ""
 msgid "The answer is buried in a long opening. Put a 40–60 word summary first, then the details."
 msgstr ""
 
-#: includes/class-aigs-rules.php:79
+#: includes/class-aigs-rules.php:82
 msgid "The author has no bio or job title, so there is no visible expertise behind the content."
 msgstr ""
 
-#: includes/class-aigs-admin.php:2020
+#: includes/class-aigs-admin.php:2266
 msgid "The box under the editor. It detects the main question of the page, checks whether the opening answers it directly, finds question headings without an answer, and can turn answered questions into FAQ schema. With your own AI key it can draft a direct answer from your text for you to review."
 msgstr ""
 
-#: includes/class-aigs-rules.php:64
+#: includes/class-aigs-rules.php:67
 msgid "The description is too short to be useful or too long to be shown fully."
 msgstr ""
 
-#: includes/class-aigs-admin.php:1966
+#: includes/class-aigs-admin.php:2212
 msgid "The file is served live by the plugin, so there is no physical file in your hosting folder, and it stays up to date on its own. This is normal and intended."
 msgstr ""
 
-#: includes/class-aigs-rules.php:100
+#: includes/class-aigs-rules.php:103
 msgid "The main product image has no alt text."
 msgstr ""
 
-#: includes/class-aigs-ai-client.php:331
+#: includes/class-aigs-ai-client.php:462
 msgid "The model declined to answer this prompt."
 msgstr ""
 
@@ -2722,7 +3280,7 @@ msgstr ""
 msgid "The opening paragraph does not clearly address the page topic."
 msgstr ""
 
-#: includes/class-aigs-rules.php:84
+#: includes/class-aigs-rules.php:87
 msgid "The page is set to FAQ schema but has no questions, so nothing is output."
 msgstr ""
 
@@ -2730,7 +3288,7 @@ msgstr ""
 msgid "The page opens with an introduction (“In this article…”) instead of an answer."
 msgstr ""
 
-#: includes/class-aigs-rules.php:68
+#: includes/class-aigs-rules.php:71
 msgid "The page opens with filler such as “In this article…” or “در این مقاله…”, which assistants skip."
 msgstr ""
 
@@ -2752,36 +3310,36 @@ msgstr ""
 msgid "The page text does not contain enough information to answer the question. Add the facts first, then try again."
 msgstr ""
 
-#: includes/class-aigs-admin.php:685
+#: includes/class-aigs-admin.php:724
 msgid "The scan checks every published page and product for answer readiness, indexability, internal links, schema and trust signals, then turns the results into a short, prioritised to-do list. Nothing on your site is changed."
 msgstr ""
 
-#: includes/class-aigs-rules.php:96
+#: includes/class-aigs-rules.php:99
 msgid "The short description is the one-line summary shopping assistants lift. It is missing."
 msgstr ""
 
-#: includes/class-aigs-rules.php:73
+#: includes/class-aigs-rules.php:76
 msgid "The title promises a comparison or “best of”, but there is no table. Tables are the easiest format for assistants to read and reuse."
 msgstr ""
 
-#: includes/class-aigs-admin.php:623
+#: includes/class-aigs-admin.php:662
 msgid "Then check whether assistants mention you or your competitors."
 msgstr ""
 
-#: includes/class-aigs-admin.php:1630
+#: includes/class-aigs-admin.php:1776
 msgid "These URLs returned “not found”. Redirect them to the closest live page."
 msgstr ""
 
-#: includes/class-aigs-admin.php:1123
+#: includes/class-aigs-admin.php:1208
 msgid "These do not count against your score. Reopen any item to track it again."
 msgstr ""
 
-#: includes/class-aigs-admin.php:1467
+#: includes/class-aigs-admin.php:1613
 msgid "Third-party sites that assistants rely on are where reviews, listings, comparisons and PR can make you visible. A citation here is not a promise that a mention there will change AI answers."
 msgstr ""
 
 #. translators: 1: requests needed, 2: requests left this month.
-#: includes/class-aigs-ai-visibility.php:362
+#: includes/class-aigs-ai-visibility.php:600
 #, php-format
 msgid "This check needs %1$d AI requests but only %2$d are left this month. Remove some questions or raise the monthly limit in Settings."
 msgstr ""
@@ -2794,11 +3352,11 @@ msgstr ""
 msgid "This is comparison content: add a table that compares the options on the criteria buyers care about (price, features, pros and cons)."
 msgstr ""
 
-#: includes/class-aigs-admin.php:994
+#: includes/class-aigs-admin.php:1033
 msgid "This is intentional for all pages"
 msgstr ""
 
-#: includes/class-aigs-admin.php:2047
+#: includes/class-aigs-admin.php:2293
 msgid "This is not a magic switch. AI visibility builds up over weeks, not minutes, and some of it you will never see in any dashboard because people read the answer without ever clicking. Do the basics well, give it time, and check back now and then. Small, steady improvements add up."
 msgstr ""
 
@@ -2806,19 +3364,23 @@ msgstr ""
 msgid "This looks like “best/compare” content but has no table. Add one that compares options on real criteria."
 msgstr ""
 
-#: includes/class-aigs-rules.php:59
+#: includes/class-aigs-admin.php:2136
+msgid "This model searches the web and returns sources (for example Perplexity models or “:online” models on OpenRouter)"
+msgstr ""
+
+#: includes/class-aigs-rules.php:62
 msgid "This page declares a different URL as the original, so engines will index and cite that one instead."
 msgstr ""
 
-#: includes/class-aigs-rules.php:85
+#: includes/class-aigs-rules.php:88
 msgid "This page has an FAQ block from your SEO plugin and OmniGEO FAQ schema. OmniGEO now skips its copy, but the settings disagree."
 msgstr ""
 
-#: includes/class-aigs-rules.php:90
+#: includes/class-aigs-rules.php:93
 msgid "This page links to no other page on your site, which breaks the topic connections engines use."
 msgstr ""
 
-#: includes/class-aigs-admin.php:2003
+#: includes/class-aigs-admin.php:2249
 msgid "This plugin helps your content get noticed by AI search tools like ChatGPT, Perplexity, Gemini and Google AI Overviews. You do not need to be technical to use it, and you can ignore the advanced parts until you want them."
 msgstr ""
 
@@ -2830,19 +3392,23 @@ msgstr ""
 msgid "This post has no body content to analyze."
 msgstr ""
 
-#: includes/class-aigs-admin.php:1282
+#: includes/class-aigs-admin.php:1367
 msgid "This provider answers from model knowledge without a live web search, so results show what the model “remembers”, not live web citations. Perplexity gives web-grounded answers with sources."
 msgstr ""
 
-#: includes/class-aigs-admin.php:1548
+#: includes/class-aigs-admin.php:1694
 msgid "Three separate layers, never added together: requests from bots that say they are AI bots (anyone can fake a user agent), bots whose identity was verified, and human visits that arrived from an AI product. A bot reading a page is not the same as your page being shown in an answer."
 msgstr ""
 
-#: includes/class-aigs-rules.php:76
+#: includes/class-aigs-admin.php:1974 includes/class-aigs-ai-visibility.php:1068
+msgid "Thursday"
+msgstr ""
+
+#: includes/class-aigs-rules.php:79
 msgid "Time-sensitive pages that have not changed in over a year lose trust."
 msgstr ""
 
-#: includes/class-aigs-admin.php:1732
+#: includes/class-aigs-admin.php:1878
 msgid "Tip: turn on automatic pings in Settings so new and updated content is submitted for you."
 msgstr ""
 
@@ -2857,40 +3423,60 @@ msgstr ""
 msgid "Title tag"
 msgstr ""
 
-#: includes/class-aigs-rules.php:62
+#: includes/class-aigs-rules.php:65
 msgid "Titles that are very short say little; very long ones get cut off in results and answer cards."
 msgstr ""
 
 #. translators: %d: count.
-#: includes/class-aigs-actions.php:325
+#: includes/class-aigs-actions.php:337
 msgid "Top tasks this week:"
 msgstr ""
 
-#: includes/class-aigs-admin.php:1664
+#: includes/class-aigs-admin.php:1810
 msgid "Track AI clicks in GA4"
 msgstr ""
 
-#: includes/class-aigs-admin.php:874
+#: includes/class-aigs-admin.php:913
 msgid "Track whether ChatGPT, Claude or Perplexity mention you for the questions your buyers ask."
 msgstr ""
 
-#: includes/class-aigs-rules.php:132
+#: includes/class-aigs-rules.php:57
+msgid "Tracking has been on for over three weeks and not a single AI search crawler or assistant fetch was recorded. Most often a CDN, firewall or security plugin blocks them before WordPress sees the request."
+msgstr ""
+
+#: includes/class-aigs-entity.php:245
+msgid "Travel agency"
+msgstr ""
+
+#: includes/class-aigs-rules.php:135
 msgid "Trust & entity"
 msgstr ""
 
-#: includes/class-aigs-actions.php:224
+#: includes/class-aigs-admin.php:1972 includes/class-aigs-ai-visibility.php:1066
+msgid "Tuesday"
+msgstr ""
+
+#: includes/class-aigs-actions.php:236
 msgid "Turn on automatic meta descriptions"
 msgstr ""
 
-#: includes/class-aigs-rules.php:54
+#: includes/class-aigs-rules.php:55
 msgid "Turn on the automatic meta description (built from each excerpt or opening paragraph)."
 msgstr ""
 
-#: includes/class-aigs-admin.php:192 includes/class-aigs-admin.php:1687
+#: includes/class-aigs-admin.php:1965
+msgid "Two-letter ISO code, for example US, GB, DE, AE."
+msgstr ""
+
+#: includes/class-aigs-admin.php:1915
+msgid "Type of business"
+msgstr ""
+
+#: includes/class-aigs-admin.php:192 includes/class-aigs-admin.php:1833
 msgid "URL Audit"
 msgstr ""
 
-#: includes/class-aigs-admin.php:2024
+#: includes/class-aigs-admin.php:2270
 msgid "URL Audit and Site Health."
 msgstr ""
 
@@ -2898,24 +3484,35 @@ msgstr ""
 msgid "URLs like ?p=123 say nothing about the page and are harder to cite."
 msgstr ""
 
-#: includes/class-aigs-rules.php:101
+#: includes/class-aigs-rules.php:104
 msgid "Uncategorized products are hard to place in context."
 msgstr ""
 
-#: includes/class-aigs-admin.php:1235
+#. translators: %d: number of links.
+#: includes/class-aigs-admin.php:313 includes/class-aigs-admin.php:1077 includes/class-aigs-admin.php:1320
 msgid "Undo"
 msgstr ""
 
-#: includes/class-aigs-actions.php:248 includes/class-aigs-woocommerce.php:195 includes/class-aigs-woocommerce.php:240
+#: includes/class-aigs-admin.php:1065
+msgid "Undo restores the page exactly as it was before the links were added. WordPress revisions also keep every version."
+msgstr ""
+
+#: includes/class-aigs-actions.php:260 includes/class-aigs-woocommerce.php:195 includes/class-aigs-woocommerce.php:240
 msgid "Unknown fix."
 msgstr ""
 
-#: includes/class-aigs-actions.php:204
+#: includes/class-aigs-actions.php:216
 msgid "Unknown rule."
 msgstr ""
 
-#: includes/class-aigs-admin.php:980
+#: includes/class-aigs-admin.php:1019
 msgid "Unknown task."
+msgstr ""
+
+#. translators: %s: domain.
+#: includes/class-aigs-ai-visibility.php:527
+#, php-format
+msgid "Unofficial website that looks like yours: %s"
 msgstr ""
 
 #: includes/class-aigs-rules.php:50
@@ -2923,16 +3520,16 @@ msgid "Untick “Discourage search engines from indexing this site” unless thi
 msgstr ""
 
 #. translators: %d: max prompts.
-#: includes/class-aigs-admin.php:1318
+#: includes/class-aigs-admin.php:1403
 #, php-format
 msgid "Up to %d. Each question uses one AI request per check."
 msgstr ""
 
-#: includes/class-aigs-admin.php:1310
+#: includes/class-aigs-admin.php:1395
 msgid "Up to 10. Add more spellings after another “|”, e.g. Name | domain.com | Other spelling."
 msgstr ""
 
-#: includes/class-aigs-rules.php:75
+#: includes/class-aigs-rules.php:78
 msgid "Update the outdated year in the title"
 msgstr ""
 
@@ -2946,71 +3543,87 @@ msgstr ""
 msgid "Use readable permalinks"
 msgstr ""
 
-#: includes/class-aigs-admin.php:2037
+#: includes/class-aigs-admin.php:2283
 msgid "Use tables for comparisons. If a page is about the best option or the difference between options, a table gets picked up far more often."
 msgstr ""
 
-#: includes/class-aigs-rules.php:100
+#: includes/class-aigs-rules.php:103
 msgid "Use the bulk “alt text from product name” fix in Products."
 msgstr ""
 
-#: includes/class-aigs-admin.php:1884
-msgid "Used only for features you trigger or schedule: AI visibility checks, answer drafts and product summaries."
+#: includes/class-aigs-admin.php:1933
+msgid "Used as the schema.org type of your brand. Local types add address, opening hours and map data."
+msgstr ""
+
+#: includes/class-aigs-admin.php:2117
+msgid "Used only for features you trigger or schedule: AI visibility checks, answer drafts and product summaries. Pick any provider you already pay for, or a local model."
 msgstr ""
 
 #: includes/class-aigs-woocommerce.php:87
 msgid "Uses the first sentences (up to 50 words) of the full description where the short description is empty."
 msgstr ""
 
-#: includes/class-aigs-admin.php:1588
+#: includes/class-aigs-admin.php:1443
+msgid "Uses the saved facts. Save first."
+msgstr ""
+
+#: includes/class-aigs-admin.php:1734
 msgid "Verification runs hourly in the background. “Fake” means the IP does not belong to the company named in the user agent."
 msgstr ""
 
-#: includes/class-aigs-admin.php:1593
+#: includes/class-aigs-admin.php:1739
 msgid "Verified"
 msgstr ""
 
-#: includes/class-aigs-admin.php:1857
+#: includes/class-aigs-admin.php:2090
 msgid "Verify bot identity in the background (reverse DNS, and the public IP lists of OpenAI and Perplexity)"
 msgstr ""
 
-#: includes/class-aigs-rules.php:70
+#: includes/class-aigs-rules.php:73
 msgid "Very short pages rarely contain enough facts to be trusted or quoted."
 msgstr ""
 
-#: includes/class-aigs-admin.php:1074 includes/class-aigs-admin.php:1183
+#: includes/class-aigs-entity.php:226
+msgid "Veterinary care"
+msgstr ""
+
+#: includes/class-aigs-admin.php:1142 includes/class-aigs-admin.php:1268
 msgid "View"
 msgstr ""
 
-#: includes/class-aigs-admin.php:1859
+#: includes/class-aigs-admin.php:2092
 msgid "Visitor IP comes from"
 msgstr ""
 
-#: includes/class-aigs-admin.php:1644
+#: includes/class-aigs-admin.php:1790
 msgid "Visitors from AI answers"
 msgstr ""
 
-#: includes/class-aigs-admin.php:1571
+#: includes/class-aigs-admin.php:1717
 msgid "Visitors from AI answers · 30d"
 msgstr ""
 
-#: includes/class-aigs-admin.php:1327
+#: includes/class-aigs-admin.php:1973 includes/class-aigs-ai-visibility.php:1067
+msgid "Wednesday"
+msgstr ""
+
+#: includes/class-aigs-admin.php:1449
 msgid "Weekly"
 msgstr ""
 
-#: includes/class-aigs-admin.php:1794
+#: includes/class-aigs-admin.php:2027
 msgid "Weekly (recommended)"
 msgstr ""
 
-#: includes/class-aigs-admin.php:1799
+#: includes/class-aigs-admin.php:2032
 msgid "Weekly email"
 msgstr ""
 
-#: includes/class-aigs-admin.php:713
+#: includes/class-aigs-admin.php:752
 msgid "Weighted by page importance. It measures how ready your pages are to be understood and quoted, not a ranking or a guarantee."
 msgstr ""
 
-#: includes/class-aigs-admin.php:2001
+#: includes/class-aigs-admin.php:2247
 msgid "Welcome"
 msgstr ""
 
@@ -3024,11 +3637,11 @@ msgstr ""
 msgid "Well-sized meta description."
 msgstr ""
 
-#: includes/class-aigs-admin.php:2031
+#: includes/class-aigs-admin.php:2277
 msgid "What actually helps you show up"
 msgstr ""
 
-#: includes/class-aigs-admin.php:2016
+#: includes/class-aigs-admin.php:2262
 msgid "What each part does"
 msgstr ""
 
@@ -3036,15 +3649,15 @@ msgstr ""
 msgid "What to do next"
 msgstr ""
 
-#: includes/class-aigs-admin.php:642
+#: includes/class-aigs-admin.php:681
 msgid "What to fix today so search engines and AI assistants understand, trust and quote your site."
 msgstr ""
 
-#: includes/class-aigs-admin.php:1293
+#: includes/class-aigs-admin.php:1378
 msgid "What to track"
 msgstr ""
 
-#: includes/class-aigs-admin.php:2009
+#: includes/class-aigs-admin.php:2255
 msgid "When you write, use the Answer Optimizer under the editor. It shows the question your page should answer and whether your opening answers it."
 msgstr ""
 
@@ -3052,43 +3665,43 @@ msgstr ""
 msgid "Where you compare options or list specs, a table makes the data easy to extract."
 msgstr ""
 
-#: includes/class-aigs-admin.php:2023
+#: includes/class-aigs-admin.php:2269
 msgid "Which AI bots read your site (with optional identity verification), which pages assistants opened for real users, which missing pages they asked for, and how many visitors came from AI answers."
 msgstr ""
 
-#: includes/class-aigs-admin.php:1545
+#: includes/class-aigs-admin.php:1691
 msgid "Which AI systems read your site, and which people arrive from AI answers."
 msgstr ""
 
-#: includes/class-aigs-admin.php:837 includes/class-aigs-admin.php:1126
+#: includes/class-aigs-admin.php:876 includes/class-aigs-admin.php:1211
 msgid "Whole site"
 msgstr ""
 
-#: includes/class-aigs-admin.php:989
+#: includes/class-aigs-admin.php:1028
 msgid "Why it matters:"
 msgstr ""
 
-#: includes/class-aigs-rules.php:98
+#: includes/class-aigs-rules.php:101
 msgid "Without attributes (size, material, brand, compatibility) assistants cannot match the product to specific requests or comparisons."
 msgstr ""
 
-#: includes/class-aigs-rules.php:63
+#: includes/class-aigs-rules.php:66
 msgid "Without one, engines invent a summary from random text on the page."
 msgstr ""
 
-#: includes/class-aigs-admin.php:1831
+#: includes/class-aigs-admin.php:2064
 msgid "WooCommerce"
 msgstr ""
 
-#: includes/class-aigs-admin.php:2026
+#: includes/class-aigs-admin.php:2272
 msgid "WooCommerce."
 msgstr ""
 
-#: includes/class-aigs-rules.php:96
+#: includes/class-aigs-rules.php:99
 msgid "Write 20–60 words on what it is, who it is for and the key spec. Bulk tools are in Products."
 msgstr ""
 
-#: includes/class-aigs-rules.php:63
+#: includes/class-aigs-rules.php:66
 msgid "Write a 120–160 character summary in your SEO plugin, or add an excerpt."
 msgstr ""
 
@@ -3096,11 +3709,11 @@ msgstr ""
 msgid "Write a little more first. The draft is built only from facts already on the page."
 msgstr ""
 
-#: includes/class-aigs-rules.php:63
+#: includes/class-aigs-rules.php:66
 msgid "Write a meta description"
 msgstr ""
 
-#: includes/class-aigs-rules.php:92
+#: includes/class-aigs-rules.php:95
 msgid "Write a specific description for each page."
 msgstr ""
 
@@ -3108,48 +3721,60 @@ msgstr ""
 msgid "Write or pick a prompt first."
 msgstr ""
 
-#: includes/class-aigs-rules.php:96
+#: includes/class-aigs-rules.php:99
 msgid "Write product short descriptions"
 msgstr ""
 
-#: includes/class-aigs-admin.php:2035
+#: includes/class-aigs-admin.php:2281
 msgid "Write the answer first. Put a short, clear answer at the top of a page or section before the long explanation. AI loves lifting these."
 msgstr ""
 
-#: includes/class-aigs-entity.php:212
+#: includes/class-aigs-admin.php:315
+msgid "Wrong facts about you in this answer:"
+msgstr ""
+
+#: includes/class-aigs-entity.php:488
 msgid "X / Twitter URL"
 msgstr ""
 
-#: includes/class-aigs-visibility.php:145
+#: includes/class-aigs-visibility.php:322
 msgid "XML sitemap available"
 msgstr ""
 
-#: includes/class-aigs-admin.php:1430 includes/class-aigs-admin.php:1472
+#: includes/class-aigs-admin.php:1560 includes/class-aigs-admin.php:1618
 msgid "You"
 msgstr ""
 
-#: includes/class-aigs-admin.php:1845
+#: includes/class-aigs-admin.php:2078
 msgid "You will not appear in AI search answers. Bing and Apple search are never blocked by this setting."
 msgstr ""
 
-#: includes/class-aigs-rules.php:58
+#: includes/class-aigs-rules.php:56
+msgid "Your CDN or firewall blocks AI crawlers"
+msgstr ""
+
+#: includes/class-aigs-rules.php:61
 msgid "Your SEO plugin tells search engines not to index this page, so search-based AI answers will not find it."
 msgstr ""
 
 #. translators: %s url
-#: includes/class-aigs-admin.php:1943
+#: includes/class-aigs-admin.php:2189
 #, php-format
 msgid "Your file is live at <a href=\"%1$s\" target=\"_blank\" rel=\"noopener\"><code>%2$s</code></a>. Leave the editor empty to auto-generate it from your pages and posts."
 msgstr ""
 
-#: includes/class-aigs-admin.php:843
+#: includes/class-aigs-admin.php:882
 msgid "Your fixes will show up here once a re-check confirms them."
 msgstr ""
 
 #. translators: %s: brand name.
-#: includes/class-aigs-admin.php:1303
+#: includes/class-aigs-admin.php:1388
 #, php-format
 msgid "Your main name “%s” is always included. Matching ignores ی/ي, ک/ك, half-spaces and Persian digits."
+msgstr ""
+
+#: includes/class-aigs-admin.php:1413
+msgid "Your main phone from Settings is always included."
 msgstr ""
 
 #: includes/class-aigs-admin.php:269
@@ -3160,15 +3785,15 @@ msgstr ""
 msgid "Your opening is an introduction, not an answer. Replace it with one or two sentences that answer the main question directly; move the introduction below."
 msgstr ""
 
-#: includes/class-aigs-rules.php:54
+#: includes/class-aigs-rules.php:55
 msgid "Your pages have no meta descriptions"
 msgstr ""
 
-#: includes/class-aigs-rules.php:53
+#: includes/class-aigs-rules.php:54
 msgid "Your robots.txt rule blocks all AI crawlers, including the search bots that power ChatGPT search and Perplexity answers."
 msgstr ""
 
-#: includes/class-aigs-admin.php:2018
+#: includes/class-aigs-admin.php:2264
 msgid "Your starting point: the answer-readiness score of your site, its trend, today’s three most valuable tasks, recent wins and AI activity."
 msgstr ""
 
@@ -3177,9 +3802,28 @@ msgid "Your whole site is hidden from search engines"
 msgstr ""
 
 #. translators: %s: site name.
-#: includes/class-aigs-actions.php:335
+#: includes/class-aigs-actions.php:347
 #, php-format
 msgid "[%s] Your weekly AI visibility report"
+msgstr ""
+
+#. translators: 1: brand, 2: industry, 3: location.
+#: includes/class-aigs-ai-visibility.php:1034
+msgid "[Add one or two sentences on what you offer and for whom.]"
+msgstr ""
+
+#: includes/class-aigs-ai-visibility.php:1094
+msgid "[Last reviewed: add the date you checked these facts.]"
+msgstr ""
+
+#. translators: 1: brand, 2: industry, 3: location.
+#: includes/class-aigs-ai-visibility.php:1033
+msgid "[location]"
+msgstr ""
+
+#. translators: 1: brand, 2: industry, 3: location.
+#: includes/class-aigs-ai-visibility.php:1033
+msgid "[what you do]"
 msgstr ""
 
 #. translators: %s is a value inserted into the message.
@@ -3187,35 +3831,56 @@ msgstr ""
 msgid "a heading"
 msgstr ""
 
-#: includes/class-aigs-admin.php:1397
+#: includes/class-aigs-entity.php:455
+msgid "address"
+msgstr ""
+
+#. translators: %d: reads.
+#: includes/class-aigs-actions.php:149
+msgid "an unknown edge network"
+msgstr ""
+
+#: includes/class-aigs-admin.php:1527
 msgid "answers mention you"
 msgstr ""
 
-#: includes/class-aigs-admin.php:1399
+#: includes/class-aigs-admin.php:1529
 msgid "cite or link your site"
 msgstr ""
 
-#: includes/class-aigs-admin.php:869
+#: includes/class-aigs-admin.php:908
 msgid "cited your site"
 msgstr ""
 
-#: includes/class-aigs-admin.php:1876
+#: includes/class-aigs-ai-visibility.php:1076
+msgid "closed"
+msgstr ""
+
+#: includes/class-aigs-admin.php:2109
 msgid "days"
 msgstr ""
 
-#: includes/class-aigs-admin.php:1768
-msgid "e.g. Tehran"
+#: includes/class-aigs-admin.php:1914
+msgid "e.g. Berlin"
 msgstr ""
 
-#: includes/class-aigs-admin.php:1349
+#: includes/class-aigs-admin.php:1992
+msgid "e.g. Brooklyn, Queens, Manhattan"
+msgstr ""
+
+#: includes/class-aigs-admin.php:1471
 msgid "e.g. What are the best providers for…"
 msgstr ""
 
-#: includes/class-aigs-admin.php:1766
+#: includes/class-aigs-admin.php:1435
+msgid "e.g. an old address, a discontinued product name,\na former company name or an old price"
+msgstr ""
+
+#: includes/class-aigs-admin.php:1912
 msgid "e.g. dental clinic"
 msgstr ""
 
-#: includes/class-aigs-admin.php:1299
+#: includes/class-aigs-admin.php:1384
 msgid "e.g. the Persian and English spellings of your brand,\nor a short name customers use"
 msgstr ""
 
@@ -3223,7 +3888,7 @@ msgstr ""
 msgid "from the title"
 msgstr ""
 
-#: includes/class-aigs-admin.php:2078
+#: includes/class-aigs-admin.php:2324
 msgid "high-priority issues"
 msgstr ""
 
@@ -3237,58 +3902,75 @@ msgstr ""
 msgid "lang=\"%s\" set."
 msgstr ""
 
+#: includes/class-aigs-admin.php:309
+msgid "links to"
+msgstr ""
+
 #: includes/class-aigs-admin.php:194
 msgid "llms.txt"
 msgstr ""
 
-#: includes/class-aigs-admin.php:1937
+#: includes/class-aigs-admin.php:2183
 msgid "llms.txt Manager"
 msgstr ""
 
-#: includes/class-aigs-visibility.php:153
+#: includes/class-aigs-visibility.php:330
 msgid "llms.txt served (optional)"
 msgstr ""
 
-#: includes/class-aigs-admin.php:2025
+#: includes/class-aigs-admin.php:2271
 msgid "llms.txt."
 msgstr ""
 
-#: includes/class-aigs-actions.php:151
+#: includes/class-aigs-actions.php:160
 msgid "logo"
 msgstr ""
 
-#: includes/class-aigs-admin.php:1443
+#: includes/class-aigs-admin.php:1574
 msgid "lost"
 msgstr ""
 
 #. translators: 1: mentions, 2: questions.
-#: includes/class-aigs-admin.php:1494
+#: includes/class-aigs-admin.php:1640
 #, php-format
 msgid "mentioned in %1$d of %2$d"
 msgstr ""
 
-#: includes/class-aigs-admin.php:868
+#: includes/class-aigs-admin.php:907
 msgid "mentioned you"
 msgstr ""
 
 #. translators: %s: human time difference.
-#: includes/class-aigs-admin.php:554
+#: includes/class-aigs-admin.php:593
 msgid "never"
 msgstr ""
 
-#: includes/class-aigs-admin.php:1443
+#: includes/class-aigs-admin.php:1574
 msgid "new"
 msgstr ""
 
-#: includes/class-aigs-admin.php:696
+#. translators: %s: CDN name or "no CDN detected".
+#: includes/class-aigs-visibility.php:357
+msgid "none detected"
+msgstr ""
+
+#: includes/class-aigs-admin.php:735
 msgid "of 100"
 msgstr ""
 
-#: includes/class-aigs-admin.php:2080
+#: includes/class-aigs-entity.php:461
+msgid "opening hours"
+msgstr ""
+
+#: includes/class-aigs-entity.php:458
+msgid "phone"
+msgstr ""
+
+#: includes/class-aigs-admin.php:2326
 msgid "reads inside AI answers · last 7 days"
 msgstr ""
 
-#: includes/class-aigs-admin.php:1398
+#: includes/class-aigs-admin.php:1528
 msgid "recommend you (heuristic)"
 msgstr ""
 
@@ -3310,23 +3992,23 @@ msgstr ""
 msgid "robots.txt present"
 msgstr ""
 
-#: includes/class-aigs-visibility.php:130
+#: includes/class-aigs-visibility.php:307
 msgid "robots.txt reachable"
 msgstr ""
 
-#: includes/class-aigs-admin.php:1780
+#: includes/class-aigs-admin.php:2013
 msgid "sameAs profile URLs"
 msgstr ""
 
-#: includes/class-aigs-actions.php:154
+#: includes/class-aigs-actions.php:163
 msgid "sameAs profile links"
 msgstr ""
 
-#: includes/class-aigs-admin.php:870
+#: includes/class-aigs-admin.php:909
 msgid "share of voice"
 msgstr ""
 
-#: includes/class-aigs-admin.php:1400
+#: includes/class-aigs-admin.php:1530
 msgid "share of voice vs competitors"
 msgstr ""
 
@@ -3335,7 +4017,7 @@ msgstr ""
 msgid "the opening"
 msgstr ""
 
-#: includes/class-aigs-ai-visibility.php:162
+#: includes/class-aigs-ai-visibility.php:163
 msgid "this industry"
 msgstr ""
 
@@ -3379,7 +4061,7 @@ msgstr ""
 msgid "~%d words; consider expanding."
 msgstr ""
 
-#: includes/class-aigs-admin.php:1902
+#: includes/class-aigs-admin.php:2144
 msgid "•••••••• saved. Type to replace"
 msgstr ""
 

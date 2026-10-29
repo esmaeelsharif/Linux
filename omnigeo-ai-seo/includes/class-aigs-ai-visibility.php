@@ -39,6 +39,7 @@ class AIGS_AI_Visibility {
 		add_action( 'wp_ajax_aigs_vis_step', array( $this, 'ajax_batch_step' ) );
 		add_action( 'wp_ajax_aigs_vis_answer', array( $this, 'ajax_answer' ) );
 		add_action( 'wp_ajax_aigs_vis_draft', array( $this, 'ajax_create_draft' ) );
+		add_action( 'wp_ajax_aigs_facts_page', array( $this, 'ajax_facts_page' ) );
 		add_action( 'aigs_weekly', array( $this, 'cron_schedule' ) );
 		add_action( 'aigs_visibility_continue', array( $this, 'cron_continue' ) );
 	}
@@ -298,6 +299,242 @@ class AIGS_AI_Visibility {
 		);
 	}
 
+	/* ============================================================
+	 * Brand facts: is the assistant describing you correctly?
+	 * ============================================================ */
+
+	/**
+	 * The official facts the user entered (plus profile data).
+	 *
+	 * @return array{phones:array,emails:array,domains:array,founded:string,outdated:array,notes:string}
+	 */
+	public static function facts() {
+		$phones = self::lines( aigs_get( 'fact_phones', '' ), 10 );
+		$biz    = trim( (string) aigs_get( 'biz_phone', '' ) );
+		if ( '' !== $biz ) {
+			$phones[] = $biz;
+		}
+		$emails = array_map( 'strtolower', self::lines( aigs_get( 'fact_emails', '' ), 10 ) );
+		$bemail = strtolower( trim( (string) aigs_get( 'biz_email', '' ) ) );
+		if ( '' !== $bemail ) {
+			$emails[] = $bemail;
+		}
+		$domains = array( self::own_domain() );
+		foreach ( self::lines( aigs_get( 'fact_domains', '' ), 10 ) as $d ) {
+			$h = AIGS_AI_Client::host( $d );
+			if ( '' !== $h ) {
+				$domains[] = $h;
+			}
+		}
+		$founded = trim( (string) aigs_get( 'fact_founded', '' ) );
+		if ( '' === $founded && preg_match( '/(1[89]\d{2}|20\d{2})/', (string) aigs_get( 'org_founded', '' ), $m ) ) {
+			$founded = $m[1];
+		}
+		return array(
+			'phones'   => array_values( array_unique( array_filter( $phones ) ) ),
+			'emails'   => array_values( array_unique( array_filter( $emails ) ) ),
+			'domains'  => array_values( array_unique( array_filter( $domains ) ) ),
+			'founded'  => preg_match( '/^(1[89]\d{2}|20\d{2})$/', $founded ) ? $founded : '',
+			'outdated' => self::lines( aigs_get( 'fact_outdated', '' ), 20 ),
+			'notes'    => (string) aigs_get( 'fact_notes', '' ),
+		);
+	}
+
+	/**
+	 * Digits only (Persian/Arabic digits converted).
+	 *
+	 * @param string $s Text.
+	 * @return string
+	 */
+	private static function digits( $s ) {
+		return preg_replace( '/\D+/', '', AIGS_Text::normalize( $s ) );
+	}
+
+	/**
+	 * Do two phone numbers refer to the same line? Compares the last 8 digits so
+	 * "+44 20 7946 0000" and "020 7946 0000" match.
+	 *
+	 * @param string $a Phone.
+	 * @param string $b Phone.
+	 * @return bool
+	 */
+	public static function same_phone( $a, $b ) {
+		$a = self::digits( $a );
+		$b = self::digits( $b );
+		if ( strlen( $a ) < 6 || strlen( $b ) < 6 ) {
+			return false;
+		}
+		$n = min( 8, strlen( $a ), strlen( $b ) );
+		return substr( $a, -$n ) === substr( $b, -$n );
+	}
+
+	/**
+	 * Paragraphs of the answer that talk about the brand (and the one after,
+	 * where contact details often follow a name).
+	 *
+	 * @param string $text Answer.
+	 * @return string
+	 */
+	private static function brand_context( $text ) {
+		$paras = preg_split( '/\r\n|\r|\n/', (string) $text );
+		$keep  = array();
+		$terms = self::brand_terms();
+		foreach ( $paras as $i => $p ) {
+			foreach ( $terms as $t ) {
+				if ( AIGS_Text::contains_term( $p, $t ) ) {
+					$keep[ $i ] = true;
+					if ( isset( $paras[ $i + 1 ] ) ) {
+						$keep[ $i + 1 ] = true;
+					}
+					break;
+				}
+			}
+		}
+		$out = array();
+		foreach ( array_keys( $keep ) as $i ) {
+			$out[] = $paras[ $i ];
+		}
+		return implode( "\n", $out );
+	}
+
+	/**
+	 * Lower-case alphanumeric slugs of the Latin brand spellings (for lookalike domains).
+	 *
+	 * @return array
+	 */
+	private static function brand_slugs() {
+		$out = array();
+		foreach ( self::brand_terms() as $t ) {
+			$slug = preg_replace( '/[^a-z0-9]/', '', strtolower( remove_accents( $t ) ) );
+			if ( strlen( $slug ) >= 4 ) {
+				$out[ $slug ] = true;
+			}
+		}
+		return array_keys( $out );
+	}
+
+	/**
+	 * Check an answer against the official facts.
+	 *
+	 * @param string $text Answer text.
+	 * @return array List of [type, found, expected].
+	 */
+	public static function accuracy( $text ) {
+		$f      = self::facts();
+		$issues = array();
+		$ctx    = self::brand_context( $text );
+		if ( '' === trim( $ctx ) ) {
+			return array();
+		}
+		$norm = AIGS_Text::normalize( $ctx );
+
+		// Phone numbers near the brand that are not on the official list.
+		if ( $f['phones'] && preg_match_all( '/\+?\d[\d\s().\-]{6,}\d/u', $norm, $m ) ) {
+			foreach ( array_unique( $m[0] ) as $cand ) {
+				$d = preg_replace( '/\D+/', '', $cand );
+				if ( strlen( $d ) < 8 || strlen( $d ) > 15 || preg_match( '/^(1[89]|20)\d{2}(1[89]|20)\d{2}$/', $d ) ) {
+					continue; // Not a phone number (too short/long, or a year range).
+				}
+				$known = false;
+				foreach ( $f['phones'] as $p ) {
+					if ( self::same_phone( $p, $d ) ) {
+						$known = true;
+						break;
+					}
+				}
+				if ( ! $known ) {
+					$issues[] = array( 'phone', trim( $cand ), implode( ', ', $f['phones'] ) );
+				}
+			}
+		}
+
+		// Email addresses near the brand that are not official.
+		if ( $f['emails'] && preg_match_all( '/[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,}/i', $ctx, $m ) ) {
+			foreach ( array_unique( array_map( 'strtolower', $m[0] ) ) as $e ) {
+				if ( ! in_array( $e, $f['emails'], true ) ) {
+					$issues[] = array( 'email', $e, implode( ', ', $f['emails'] ) );
+				}
+			}
+		}
+
+		// Lookalike domains: contain the brand name but are not official.
+		$slugs = self::brand_slugs();
+		if ( $slugs && preg_match_all( '/(?:https?:\/\/)?((?:[a-z0-9-]+\.)+[a-z]{2,})(?=[\/\s,;:)\]"\'<]|$)/i', $ctx, $m ) ) {
+			foreach ( array_unique( array_map( 'strtolower', $m[1] ) ) as $host ) {
+				$host = preg_replace( '/^www\./', '', $host );
+				if ( false !== strpos( $host, '@' ) ) {
+					continue;
+				}
+				$official = false;
+				foreach ( $f['domains'] as $d ) {
+					if ( AIGS_AI_Client::host_matches( $host, $d ) ) {
+						$official = true;
+						break;
+					}
+				}
+				if ( $official ) {
+					continue;
+				}
+				foreach ( $slugs as $slug ) {
+					if ( false !== strpos( str_replace( array( '-', '.' ), '', $host ), $slug ) ) {
+						$issues[] = array( 'domain', $host, implode( ', ', $f['domains'] ) );
+						break;
+					}
+				}
+			}
+		}
+
+		// Founding year.
+		if ( '' !== $f['founded'] && preg_match_all( '/(founded|established|launched|started|in business since|since|تأسیس|تاسیس)\D{0,25}?((?:1[89]|20)\d{2})/u', $norm, $m, PREG_SET_ORDER ) ) {
+			foreach ( $m as $hit ) {
+				if ( $hit[2] !== $f['founded'] ) {
+					$issues[] = array( 'founded', $hit[2], $f['founded'] );
+					break;
+				}
+			}
+		}
+
+		// Statements the user marked as outdated or wrong (checked in the whole answer).
+		foreach ( $f['outdated'] as $line ) {
+			if ( AIGS_Text::word_count( $line ) >= 1 && strlen( $line ) >= 3 && AIGS_Text::contains_term( $text, $line ) ) {
+				$issues[] = array( 'outdated', $line, '' );
+			}
+		}
+
+		$uniq = array();
+		foreach ( $issues as $i ) {
+			$uniq[ $i[0] . '|' . $i[1] ] = $i;
+		}
+		return array_slice( array_values( $uniq ), 0, 10 );
+	}
+
+	/**
+	 * Human sentence for an accuracy issue.
+	 *
+	 * @param array $i [type, found, expected].
+	 * @return string
+	 */
+	public static function issue_text( $i ) {
+		switch ( $i[0] ) {
+			case 'phone':
+				/* translators: %s: phone number. */
+				return sprintf( __( 'Phone number not on your list: %s', 'omnigeo-ai-seo' ), $i[1] );
+			case 'email':
+				/* translators: %s: email address. */
+				return sprintf( __( 'Email address not on your list: %s', 'omnigeo-ai-seo' ), $i[1] );
+			case 'domain':
+				/* translators: %s: domain. */
+				return sprintf( __( 'Unofficial website that looks like yours: %s', 'omnigeo-ai-seo' ), $i[1] );
+			case 'founded':
+				/* translators: 1: year in answer, 2: official year. */
+				return sprintf( __( 'Founding year %1$s (yours: %2$s)', 'omnigeo-ai-seo' ), $i[1], $i[2] );
+			case 'outdated':
+				/* translators: %s: statement. */
+				return sprintf( __( 'Repeats something you marked as outdated: “%s”', 'omnigeo-ai-seo' ), $i[1] );
+		}
+		return '';
+	}
+
 	/**
 	 * Ask one prompt, analyse and store it.
 	 *
@@ -329,6 +566,7 @@ class AIGS_AI_Visibility {
 			'position'    => (int) $a['position'],
 			'competitors' => wp_json_encode( $a['competitors'] ),
 			'citations'   => wp_json_encode( $a['citations'] ),
+			'issues'      => wp_json_encode( $a['mentioned'] ? self::accuracy( $res['text'] ) : array() ),
 			'answer'      => wp_kses_post( $res['text'] ),
 			'created_at'  => AIGS_DB::now(),
 		);
@@ -435,6 +673,15 @@ class AIGS_AI_Visibility {
 		global $wpdb;
 		$found = array();
 		foreach ( self::batch_rows( $batch ) as $r ) {
+			$issues = (array) json_decode( isset( $r['issues'] ) ? (string) $r['issues'] : '', true );
+			if ( $issues ) {
+				$found[ 'vis_fact_' . substr( $r['prompt_hash'], 0, 16 ) ] = array(
+					'prompt'   => $r['prompt'],
+					'issues'   => $issues,
+					'provider' => $r['provider'],
+					'run'      => (int) $r['id'],
+				);
+			}
 			if ( (int) $r['mentioned'] ) {
 				continue;
 			}
@@ -466,7 +713,7 @@ class AIGS_AI_Visibility {
 		global $wpdb;
 		$table = AIGS_DB::table( 'ai_runs' );
 		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- custom table.
-		return (array) $wpdb->get_results( $wpdb->prepare( "SELECT id, batch_id, prompt_hash, prompt, provider, model, grounded, mentioned, recommended, cited, position, competitors, citations, created_at FROM {$table} WHERE batch_id = %s ORDER BY id ASC", $batch ), ARRAY_A );
+		return (array) $wpdb->get_results( $wpdb->prepare( "SELECT id, batch_id, prompt_hash, prompt, provider, model, grounded, mentioned, recommended, cited, position, competitors, citations, issues, created_at FROM {$table} WHERE batch_id = %s ORDER BY id ASC", $batch ), ARRAY_A );
 	}
 
 	/**
@@ -490,6 +737,7 @@ class AIGS_AI_Visibility {
 	 */
 	public static function summarize( $rows ) {
 		$n     = count( $rows );
+		$wrong = 0;
 		$m     = 0;
 		$c     = 0;
 		$rec   = 0;
@@ -498,6 +746,9 @@ class AIGS_AI_Visibility {
 			$m   += (int) $r['mentioned'];
 			$c   += (int) $r['cited'];
 			$rec += (int) $r['recommended'];
+			if ( ! empty( $r['issues'] ) && '[]' !== $r['issues'] ) {
+				$wrong++;
+			}
 			if ( (int) $r['mentioned'] ) {
 				$voice['__brand']++;
 			}
@@ -521,6 +772,7 @@ class AIGS_AI_Visibility {
 			'mention'     => $n ? (int) round( 100 * $m / $n ) : 0,
 			'cited'       => $n ? (int) round( 100 * $c / $n ) : 0,
 			'recommended' => $n ? (int) round( 100 * $rec / $n ) : 0,
+			'wrong'       => $wrong,
 			'voice'       => $voice,
 			'share'       => $share,
 		);
@@ -601,6 +853,7 @@ class AIGS_AI_Visibility {
 			'position'    => (int) $r['position'],
 			'competitors' => (array) json_decode( (string) $r['competitors'], true ),
 			'citations'   => (array) json_decode( (string) $r['citations'], true ),
+			'issues'      => array_map( array( __CLASS__, 'issue_text' ), (array) json_decode( isset( $r['issues'] ) ? (string) $r['issues'] : '', true ) ),
 			'answer'      => isset( $r['answer'] ) ? wp_trim_words( wp_strip_all_tags( $r['answer'] ), 120 ) : '',
 		);
 	}
@@ -739,6 +992,114 @@ class AIGS_AI_Visibility {
 				'post_content' => $content,
 				'post_status'  => 'draft',
 				'post_type'    => 'post',
+			),
+			true
+		);
+		if ( is_wp_error( $post_id ) ) {
+			wp_send_json_error( array( 'message' => $post_id->get_error_message() ) );
+		}
+		wp_send_json_success( array( 'edit' => get_edit_post_link( $post_id, 'raw' ) ) );
+	}
+
+	/**
+	 * AJAX: create a draft "facts about us" page from the official facts.
+	 * A page with the correct details in plain sentences gives assistants (and
+	 * people) one authoritative place to read them. Never published automatically.
+	 */
+	public function ajax_facts_page() {
+		check_ajax_referer( 'aigs_admin', 'nonce' );
+		if ( ! current_user_can( 'edit_pages' ) ) {
+			wp_send_json_error( array( 'message' => __( 'Permission denied.', 'omnigeo-ai-seo' ) ) );
+		}
+		$f     = self::facts();
+		$brand = aigs_business_name();
+		$h     = static function ( $text ) {
+			return "<!-- wp:heading -->\n<h2 class=\"wp-block-heading\">" . esc_html( $text ) . "</h2>\n<!-- /wp:heading -->\n\n";
+		};
+		$p     = static function ( $html ) {
+			return "<!-- wp:paragraph -->\n<p>" . $html . "</p>\n<!-- /wp:paragraph -->\n\n";
+		};
+		$list  = static function ( $items ) {
+			$li = '';
+			foreach ( $items as $i ) {
+				$li .= '<!-- wp:list-item --><li>' . $i . '</li><!-- /wp:list-item -->';
+			}
+			return "<!-- wp:list -->\n<ul class=\"wp-block-list\">" . $li . "</ul>\n<!-- /wp:list -->\n\n";
+		};
+
+		$industry = trim( (string) aigs_get( 'industry', '' ) );
+		$location = trim( (string) aigs_get( 'location', '' ) );
+		/* translators: 1: brand, 2: industry, 3: location. */
+		$intro    = sprintf( __( '%1$s is a %2$s based in %3$s.', 'omnigeo-ai-seo' ), $brand, '' !== $industry ? $industry : __( '[what you do]', 'omnigeo-ai-seo' ), '' !== $location ? $location : __( '[location]', 'omnigeo-ai-seo' ) );
+		$content  = $p( esc_html( $intro ) . ' ' . esc_html__( '[Add one or two sentences on what you offer and for whom.]', 'omnigeo-ai-seo' ) );
+
+		$facts = array();
+		/* translators: %s: brand name. */
+		$facts[] = esc_html( sprintf( __( 'Official name: %s', 'omnigeo-ai-seo' ), $brand ) );
+		/* translators: %s: list of domains. */
+		$facts[] = esc_html( sprintf( __( 'Official website: %s', 'omnigeo-ai-seo' ), implode( ', ', $f['domains'] ) ) );
+		if ( '' !== $f['founded'] ) {
+			/* translators: %s: year. */
+			$facts[] = esc_html( sprintf( __( 'Founded: %s', 'omnigeo-ai-seo' ), $f['founded'] ) );
+		}
+		if ( $f['phones'] ) {
+			/* translators: %s: phones. */
+			$facts[] = esc_html( sprintf( __( 'Phone: %s', 'omnigeo-ai-seo' ), implode( ', ', $f['phones'] ) ) );
+		}
+		if ( $f['emails'] ) {
+			/* translators: %s: emails. */
+			$facts[] = esc_html( sprintf( __( 'Email: %s', 'omnigeo-ai-seo' ), implode( ', ', $f['emails'] ) ) );
+		}
+		if ( AIGS_Entity::is_local() ) {
+			$addr = array_filter( array( aigs_get( 'biz_street', '' ), aigs_get( 'biz_postal', '' ) . ' ' . aigs_get( 'biz_city', '' ), aigs_get( 'biz_region', '' ), aigs_get( 'biz_country', '' ) ), 'trim' );
+			if ( $addr ) {
+				/* translators: %s: address. */
+				$facts[] = esc_html( sprintf( __( 'Address: %s', 'omnigeo-ai-seo' ), implode( ', ', array_map( 'trim', $addr ) ) ) );
+			}
+		}
+		$content .= $h( __( 'Key facts', 'omnigeo-ai-seo' ) ) . $list( $facts );
+
+		if ( AIGS_Entity::is_local() ) {
+			$hours = array();
+			$names = array(
+				'Monday'    => __( 'Monday', 'omnigeo-ai-seo' ),
+				'Tuesday'   => __( 'Tuesday', 'omnigeo-ai-seo' ),
+				'Wednesday' => __( 'Wednesday', 'omnigeo-ai-seo' ),
+				'Thursday'  => __( 'Thursday', 'omnigeo-ai-seo' ),
+				'Friday'    => __( 'Friday', 'omnigeo-ai-seo' ),
+				'Saturday'  => __( 'Saturday', 'omnigeo-ai-seo' ),
+				'Sunday'    => __( 'Sunday', 'omnigeo-ai-seo' ),
+			);
+			$raw   = (array) aigs_get( 'biz_hours', array() );
+			foreach ( AIGS_Entity::days() as $k => $day ) {
+				$r       = isset( $raw[ $k ] ) ? trim( (string) $raw[ $k ] ) : '';
+				$hours[] = esc_html( $names[ $day ] . ': ' . ( '' !== $r ? $r : __( 'closed', 'omnigeo-ai-seo' ) ) );
+			}
+			$content .= $h( __( 'Opening hours', 'omnigeo-ai-seo' ) ) . $list( $hours );
+		}
+
+		$same = array();
+		foreach ( preg_split( '/[,\n]+/u', (string) aigs_get( 'org_sameas', '' ) ) as $u ) {
+			$u = trim( $u );
+			if ( filter_var( $u, FILTER_VALIDATE_URL ) ) {
+				$same[] = '<a href="' . esc_url( $u ) . '">' . esc_html( AIGS_AI_Client::host( $u ) ) . '</a>';
+			}
+		}
+		if ( $same ) {
+			$content .= $h( __( 'Official profiles', 'omnigeo-ai-seo' ) ) . $list( $same );
+		}
+		if ( '' !== trim( $f['notes'] ) ) {
+			$content .= $h( __( 'More about us', 'omnigeo-ai-seo' ) ) . $p( nl2br( esc_html( $f['notes'] ) ) );
+		}
+		$content .= $p( esc_html__( '[Last reviewed: add the date you checked these facts.]', 'omnigeo-ai-seo' ) );
+
+		$post_id = wp_insert_post(
+			array(
+				/* translators: %s: brand name. */
+				'post_title'   => sprintf( __( 'About %s: key facts', 'omnigeo-ai-seo' ), $brand ),
+				'post_content' => $content,
+				'post_status'  => 'draft',
+				'post_type'    => 'page',
 			),
 			true
 		);

@@ -4,7 +4,7 @@ Tags: ai seo, geo, aeo, ai visibility, answer engine optimization
 Requires at least: 5.8
 Tested up to: 7.0
 Requires PHP: 7.2
-Stable tag: 1.1.0
+Stable tag: 1.2.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -16,7 +16,7 @@ People now ask ChatGPT, Perplexity, Gemini, Claude and Google AI Overviews inste
 
 It is built around one simple loop: **scan → fix the most valuable task → re-check → see your progress**.
 
-Everything core runs locally on your site and is free. Optional AI features use your own API key, with a hard monthly limit you control.
+Everything core runs locally on your site and is free. Optional AI features use your own API key from OpenAI, Anthropic, Perplexity, Google Gemini, OpenRouter, Mistral, DeepSeek or any OpenAI-compatible endpoint (including a local Ollama or LM Studio server), with a hard monthly limit you control.
 
 = Growth Center and Action Center =
 
@@ -37,6 +37,18 @@ Everything core runs locally on your site and is free. Optional AI features use 
 * Optional: **drafts a 40–60 word direct answer** from your own text with your AI key, for you to review and insert. Revisions keep your previous version.
 * Live **answer-readiness score** while you write, plus an AI Score column on your lists.
 
+= One-click internal links =
+
+* For orphan pages and pages without internal links, OmniGEO finds sentences on your site that already mention the topic and shows them with the phrase highlighted.
+* Tick the ones you like and insert the links in one click. Only visible text is changed: never existing links, headings, code, block settings or shortcodes.
+* Every change can be undone, and WordPress revisions keep each version.
+
+= Local business schema =
+
+* Choose from 30 business types (dentist, restaurant, law firm, plumber, hotel, store…) and add address, phone, opening hours, service area, price range, map link and coordinates.
+* Output as LocalBusiness schema, and as a separate homepage node when Yoast, Rank Math, SEOPress or All in One SEO output the main graph.
+* The scan tells you when address, phone or hours are missing.
+
 = WooCommerce Catalog Copilot =
 
 * Checks every product: short and full description, specifications, images and alt text, category, price, GTIN/EAN and copied descriptions.
@@ -49,6 +61,7 @@ Everything core runs locally on your site and is free. Optional AI features use 
 * Each check stores the full answers and measures **mentions, recommendations, citations, position and share of voice**, compared with the previous check.
 * Shows the **sources assistants cited** and labels them as yours, a competitor or an opportunity.
 * Questions where competitors appear and you do not become tasks, with a one-click **draft page** outline.
+* **Brand facts accuracy check**: enter your official phone numbers, emails, domains, founding year and statements that are outdated. Every answer that mentions you is checked, and wrong details (an old phone number, a lookalike domain, a wrong founding year) become a high-priority task. Create a “key facts” page draft from your facts in one click.
 * Answers from providers without live web search are labelled as model knowledge, not web citations.
 * Matching handles Persian script variants (ی/ي, ک/ك), half-spaces and Persian digits.
 
@@ -58,6 +71,7 @@ Everything core runs locally on your site and is free. Optional AI features use 
 * Bots are grouped by purpose: reading pages for a user right now, AI search indexing, or model training.
 * Lists the pages assistants fetched for users and the **missing pages (404) AI bots requested**.
 * Raw logs are kept for a period you choose, then summarised into daily totals.
+* **CDN and firewall check**: OmniGEO requests your homepage as a browser and as AI search crawlers. If Cloudflare, Sucuri, Imperva, CloudFront, Akamai or another edge network blocks or challenges the crawlers that your robots.txt allows, you get a task with where to change it. It also warns when no AI search crawler has visited for three weeks.
 * Ready-made GA4 channel regex.
 
 = Technical and schema =
@@ -79,10 +93,17 @@ This plugin connects to third-party services only when you turn on or use the re
 AI features (optional, off until you add your own API key): AI visibility checks, direct-answer drafts and product summaries send the question or the page/product text you chose to the provider you select. Scheduled visibility checks run only if you enable them, and every request counts against the monthly limit you set.
 
 * OpenAI: https://api.openai.com. Terms: https://openai.com/policies/terms-of-use Privacy: https://openai.com/policies/privacy-policy
+* Google Gemini: https://generativelanguage.googleapis.com. Terms: https://ai.google.dev/gemini-api/terms Privacy: https://policies.google.com/privacy
+* OpenRouter: https://openrouter.ai. Terms: https://openrouter.ai/terms Privacy: https://openrouter.ai/privacy
+* Mistral AI: https://api.mistral.ai. Terms: https://mistral.ai/terms Privacy: https://mistral.ai/terms#privacy-policy
+* DeepSeek: https://api.deepseek.com. Terms: https://cdn.deepseek.com/policies/en-US/deepseek-terms-of-use.html Privacy: https://cdn.deepseek.com/policies/en-US/deepseek-privacy-policy.html
+* Any other endpoint you enter yourself (for example your company gateway or a local model server): requests go only to the URL you provide.
 * Anthropic: https://api.anthropic.com. Terms: https://www.anthropic.com/legal/consumer-terms Privacy: https://www.anthropic.com/legal/privacy
 * Perplexity: https://api.perplexity.ai. Terms: https://www.perplexity.ai/hub/legal/terms-of-service Privacy: https://www.perplexity.ai/hub/legal/privacy-policy
 
 Bot identity verification (optional, off by default): when enabled, the plugin downloads the public crawler IP lists published by OpenAI (https://openai.com/gptbot.json, https://openai.com/searchbot.json, https://openai.com/chatgpt-user.json) and Perplexity (https://www.perplexity.ai/perplexitybot.json, https://www.perplexity.ai/perplexity-user.json) at most once a day, and performs reverse DNS lookups of bot IP addresses through your server's resolver. No data about your site or visitors is sent.
+
+CDN check (local): the CDN and firewall check requests your own homepage from your server a few times with AI crawler user agents (cached for 12 hours). No third party is contacted.
 
 IndexNow (optional): when you submit a URL, or when you enable automatic pings, the plugin sends that URL and your key to https://api.indexnow.org so participating search engines learn about the change. More info: https://www.indexnow.org Microsoft privacy statement: https://privacy.microsoft.com/privacystatement
 
@@ -114,6 +135,12 @@ No. It reads content from WordPress directly instead of crawling your site over 
 = Does llms.txt help me appear in Google AI Overviews? =
 Google says no special files or AI-specific markup are needed for AI Overviews and AI Mode; normal SEO fundamentals apply. OmniGEO keeps llms.txt as an optional extra for tools that read it, and does not treat it as a ranking factor.
 
+= Which AI providers can I use? =
+OpenAI, Anthropic, Perplexity, Google Gemini, OpenRouter, Mistral, DeepSeek, or any OpenAI-compatible endpoint such as a company gateway or a local Ollama / LM Studio server. AI is optional: scanning, the Action Center, internal links, schema and bot tracking work without it.
+
+= My robots.txt allows AI bots. Why don't they visit? =
+Often a CDN or firewall (for example Cloudflare's AI bot blocking or Bot Fight Mode) stops them before WordPress sees the request. OmniGEO's CDN check tests this and tells you where to change it.
+
 = Does it work for Persian (Farsi) sites? =
 Yes. Word counts, question detection, filler-opening detection and brand matching handle Persian and Arabic script, including ی/ي and ک/ك variants, half-spaces (ZWNJ), Persian digits and Solar Hijri years in titles. The admin supports right-to-left layouts.
 
@@ -139,6 +166,14 @@ Yes. The extractability analyzer counts and reads non Latin text correctly, incl
 6. Settings with brand profile and entity details.
 
 == Changelog ==
+
+= 1.2.0 =
+New:
+* Any AI provider: Google Gemini, OpenRouter, Mistral, DeepSeek and any OpenAI-compatible endpoint (company gateways, Groq, Together, local Ollama or LM Studio), plus a Test connection button. OpenAI requests now use max_completion_tokens so newer models work.
+* One-click internal links for orphan pages and pages without internal links: highlighted preview, insert selected, undo.
+* CDN and firewall check that detects when Cloudflare or another edge network blocks AI search crawlers that robots.txt allows, with provider-specific advice. New tasks: "Your CDN or firewall blocks AI crawlers" and "No AI search crawler has visited in 3 weeks".
+* LocalBusiness schema with 30 business types, address, phone, email, opening hours, service area, price range, map link and coordinates, plus an incomplete-profile task.
+* Brand facts accuracy check in AI Visibility: wrong phone numbers, emails, lookalike domains, founding years and outdated statements in AI answers become tasks. One-click “key facts” page draft.
 
 = 1.1.0 =
 New:
@@ -174,6 +209,9 @@ First public release. Includes:
 * Yoast SEO and Rank Math integration with schema de duplication, and WooCommerce support with product specific checks.
 
 == Upgrade Notice ==
+
+= 1.2.0 =
+Adds one-click internal links, LocalBusiness schema, a CDN/firewall check for AI crawlers, brand fact accuracy checks and support for Gemini, OpenRouter, Mistral, DeepSeek and any OpenAI-compatible or local model.
 
 = 1.1.0 =
 Big update: site-wide scan, Action Center, Answer Optimizer, WooCommerce bulk fixes and AI visibility monitoring. Also fixes robots.txt rules that could override your defaults. Run your first scan from the new Growth Center.

@@ -303,6 +303,16 @@ class AIGS_Admin {
 					'webSearch'     => __( 'Live web search answer', 'omnigeo-ai-seo' ),
 					'modelOnly'     => __( 'Model knowledge only (no live web search)', 'omnigeo-ai-seo' ),
 					'close'         => __( 'Close', 'omnigeo-ai-seo' ),
+					'findingLinks'  => __( 'Looking for sentences that already mention this topic…', 'omnigeo-ai-seo' ),
+					'noLinkSpots'   => __( 'No natural link spot found. Add a sentence that mentions the topic on a related page, or use the suggested pages above.', 'omnigeo-ai-seo' ),
+					'linkFrom'      => __( 'On page', 'omnigeo-ai-seo' ),
+					'linkTo'        => __( 'links to', 'omnigeo-ai-seo' ),
+					'insertLinks'   => __( 'Insert selected links', 'omnigeo-ai-seo' ),
+					/* translators: %d: number of links. */
+					'linksAdded'    => __( '%d links added and verified.', 'omnigeo-ai-seo' ),
+					'undo'          => __( 'Undo', 'omnigeo-ai-seo' ),
+					'undone'        => __( 'Restored the previous version.', 'omnigeo-ai-seo' ),
+					'wrongFacts'    => __( 'Wrong facts about you in this answer:', 'omnigeo-ai-seo' ),
 				),
 			)
 		);
@@ -353,7 +363,28 @@ class AIGS_Admin {
 			$out['digest_to']       = isset( $input['digest_to'] ) ? sanitize_email( $input['digest_to'] ) : '';
 			$out['verify_bots']     = empty( $input['verify_bots'] ) ? 0 : 1;
 			$out['business_name']   = isset( $input['business_name'] ) ? sanitize_text_field( $input['business_name'] ) : '';
-			$out['business_type']   = isset( $input['business_type'] ) ? sanitize_text_field( $input['business_type'] ) : 'Organization';
+			$types                  = AIGS_Entity::business_types();
+			$btype                  = isset( $input['business_type'] ) ? sanitize_text_field( $input['business_type'] ) : 'Organization';
+			$out['business_type']   = ( isset( $types['org'][ $btype ] ) || isset( $types['local'][ $btype ] ) ) ? $btype : 'Organization';
+			$out['biz_phone']       = isset( $input['biz_phone'] ) ? preg_replace( '/[^0-9+()\-.\s]/', '', sanitize_text_field( $input['biz_phone'] ) ) : '';
+			$out['biz_email']       = isset( $input['biz_email'] ) ? sanitize_email( $input['biz_email'] ) : '';
+			foreach ( array( 'biz_street', 'biz_city', 'biz_region', 'biz_postal', 'biz_price', 'biz_area' ) as $k ) {
+				$out[ $k ] = isset( $input[ $k ] ) ? sanitize_text_field( $input[ $k ] ) : '';
+			}
+			$country            = isset( $input['biz_country'] ) ? strtoupper( sanitize_text_field( $input['biz_country'] ) ) : '';
+			$out['biz_country'] = preg_match( '/^[A-Z]{2}$/', $country ) ? $country : sanitize_text_field( isset( $input['biz_country'] ) ? $input['biz_country'] : '' );
+			$out['biz_map']     = isset( $input['biz_map'] ) ? esc_url_raw( $input['biz_map'], array( 'http', 'https' ) ) : '';
+			$lat                = isset( $input['biz_lat'] ) ? trim( (string) $input['biz_lat'] ) : '';
+			$lng                = isset( $input['biz_lng'] ) ? trim( (string) $input['biz_lng'] ) : '';
+			$valid_geo          = is_numeric( $lat ) && is_numeric( $lng ) && abs( (float) $lat ) <= 90 && abs( (float) $lng ) <= 180;
+			$out['biz_lat']     = $valid_geo ? (string) (float) $lat : '';
+			$out['biz_lng']     = $valid_geo ? (string) (float) $lng : '';
+			$out['biz_hours']   = array();
+			foreach ( array_keys( AIGS_Entity::days() ) as $d ) {
+				$raw = isset( $input['biz_hours'][ $d ] ) ? sanitize_text_field( $input['biz_hours'][ $d ] ) : '';
+				// Keep what the user typed only if it parses, so mistakes are visible as empty.
+				$out['biz_hours'][ $d ] = ( '' === $raw || AIGS_Entity::parse_ranges( $raw ) ) ? $raw : '';
+			}
 			$out['industry']        = isset( $input['industry'] ) ? sanitize_text_field( $input['industry'] ) : '';
 			$out['location']        = isset( $input['location'] ) ? sanitize_text_field( $input['location'] ) : '';
 			$out['org_logo']        = isset( $input['org_logo'] ) ? esc_url_raw( $input['org_logo'] ) : '';
@@ -365,6 +396,9 @@ class AIGS_Admin {
 			$prov                   = isset( $input['ai_provider'] ) ? sanitize_key( $input['ai_provider'] ) : 'openai';
 			$out['ai_provider']     = array_key_exists( $prov, AIGS_AI_Client::providers() ) ? $prov : 'openai';
 			$out['ai_model']        = isset( $input['ai_model'] ) ? preg_replace( '/[^A-Za-z0-9._:\/-]/', '', (string) $input['ai_model'] ) : '';
+			$base                   = isset( $input['ai_base_url'] ) ? esc_url_raw( trim( (string) $input['ai_base_url'] ), array( 'http', 'https' ) ) : '';
+			$out['ai_base_url']     = '' !== AIGS_AI_Client::normalize_endpoint( $base ) ? $base : '';
+			$out['ai_grounded']     = empty( $input['ai_grounded'] ) ? 0 : 1;
 			$out['ai_monthly_cap']  = isset( $input['ai_monthly_cap'] ) ? min( 5000, absint( $input['ai_monthly_cap'] ) ) : 60;
 			$sched                  = isset( $input['scan_schedule'] ) ? sanitize_key( $input['scan_schedule'] ) : 'weekly';
 			$out['scan_schedule']   = 'off' === $sched ? 'off' : 'weekly';
@@ -393,6 +427,11 @@ class AIGS_Admin {
 			$out['brand_aliases'] = isset( $input['brand_aliases'] ) ? sanitize_textarea_field( $input['brand_aliases'] ) : '';
 			$out['competitors']   = isset( $input['competitors'] ) ? sanitize_textarea_field( $input['competitors'] ) : '';
 			$out['vis_prompts']   = isset( $input['vis_prompts'] ) ? sanitize_textarea_field( $input['vis_prompts'] ) : '';
+			foreach ( array( 'fact_phones', 'fact_emails', 'fact_domains', 'fact_outdated', 'fact_notes' ) as $k ) {
+				$out[ $k ] = isset( $input[ $k ] ) ? sanitize_textarea_field( $input[ $k ] ) : '';
+			}
+			$fy                  = isset( $input['fact_founded'] ) ? trim( sanitize_text_field( $input['fact_founded'] ) ) : '';
+			$out['fact_founded'] = preg_match( '/^(1[89]\d{2}|20\d{2})$/', $fy ) ? $fy : '';
 			$vs                   = isset( $input['vis_schedule'] ) ? sanitize_key( $input['vis_schedule'] ) : 'off';
 			$out['vis_schedule']  = in_array( $vs, array( 'off', 'weekly', 'monthly' ), true ) ? $vs : 'off';
 		}
@@ -973,7 +1012,7 @@ class AIGS_Admin {
 	 * @param string $rule Rule or vis_gap.
 	 */
 	private function render_task( $rule ) {
-		$meta = 'vis_gap' === $rule ? AIGS_Rules::meta( 'vis_gap_x' ) : AIGS_Rules::meta( $rule );
+		$meta = in_array( $rule, array( 'vis_gap', 'vis_fact' ), true ) ? AIGS_Rules::meta( $rule . '_x' ) : AIGS_Rules::meta( $rule );
 		$back = admin_url( 'admin.php?page=aigs-actions' );
 		echo '<p><a class="aigs-back" href="' . esc_url( $back ) . '">' . ( is_rtl() ? '→ ' : '← ' ) . esc_html__( 'All tasks', 'omnigeo-ai-seo' ) . '</a></p>';
 		if ( ! $meta ) {
@@ -1009,6 +1048,35 @@ class AIGS_Admin {
 			$this->render_row( $r, $meta );
 		}
 		echo '</div>';
+		if ( in_array( $rule, array( 'orphan', 'no_internal_links' ), true ) ) {
+			$this->render_link_log();
+		}
+	}
+
+	/**
+	 * Recent one-click link insertions with undo.
+	 */
+	private function render_link_log() {
+		$ops = get_option( AIGS_Links::LOG_OPTION, array() );
+		if ( ! is_array( $ops ) || ! $ops ) {
+			return;
+		}
+		echo '<div class="aigs-card"><div class="aigs-card__head">' . wp_kses( self::icon( 'undo', 17 ), self::svg_kses() ) . '<h2>' . esc_html__( 'Recent link changes', 'omnigeo-ai-seo' ) . '</h2></div>';
+		echo '<p class="aigs-card__desc">' . esc_html__( 'Undo restores the page exactly as it was before the links were added. WordPress revisions also keep every version.', 'omnigeo-ai-seo' ) . '</p>';
+		echo '<table class="aigs-table"><tbody>';
+		foreach ( array_slice( $ops, 0, 10 ) as $op ) {
+			$n     = 0;
+			$names = array();
+			foreach ( $op['items'] as $it ) {
+				$n      += count( $it['targets'] );
+				$names[] = get_the_title( (int) $it['source'] );
+			}
+			echo '<tr><td dir="auto">' . esc_html( implode( ', ', array_slice( $names, 0, 3 ) ) ) . '</td>';
+			/* translators: %d: number of links. */
+			echo '<td class="aigs-muted">' . esc_html( sprintf( _n( '%d link', '%d links', $n, 'omnigeo-ai-seo' ), $n ) . ' · ' . self::ago( (int) $op['time'] ) ) . '</td>';
+			echo '<td class="act"><button type="button" class="aigs-btn aigs-btn--sm" data-aigs-links-undo="' . esc_attr( $op['id'] ) . '">' . wp_kses( self::icon( 'undo', 15 ), self::svg_kses() ) . esc_html__( 'Undo', 'omnigeo-ai-seo' ) . '</button></td></tr>';
+		}
+		echo '</tbody></table></div>';
 	}
 
 	/**
@@ -1072,11 +1140,24 @@ class AIGS_Admin {
 				echo '<a class="aigs-btn aigs-btn--sm" href="' . esc_url( (string) get_edit_post_link( $pid ) ) . '">' . wp_kses( self::icon( 'edit', 15 ), self::svg_kses() ) . esc_html__( 'Edit', 'omnigeo-ai-seo' ) . '</a>';
 			}
 			echo '<a class="aigs-btn aigs-btn--ghost aigs-btn--sm" href="' . esc_url( (string) get_permalink( $pid ) ) . '" target="_blank" rel="noopener" title="' . esc_attr__( 'View', 'omnigeo-ai-seo' ) . '">' . wp_kses( self::icon( 'eye', 15 ), self::svg_kses() ) . '<span class="screen-reader-text">' . esc_html__( 'View', 'omnigeo-ai-seo' ) . '</span></a>';
+			if ( in_array( $r['rule'], array( 'orphan', 'no_internal_links' ), true ) ) {
+				echo '<button type="button" class="aigs-btn aigs-btn--primary aigs-btn--sm" data-aigs-links="' . ( 'orphan' === $r['rule'] ? 'to' : 'from' ) . '" data-post="' . (int) $pid . '">' . wp_kses( self::icon( 'link', 15 ), self::svg_kses() ) . esc_html__( 'Find link spots', 'omnigeo-ai-seo' ) . '</button>';
+			}
 			echo '<button type="button" class="aigs-btn aigs-btn--sm" data-aigs-recheck="' . (int) $pid . '">' . wp_kses( self::icon( 'refresh', 15 ), self::svg_kses() ) . esc_html__( 'Re-check', 'omnigeo-ai-seo' ) . '</button>';
 			echo '<button type="button" class="aigs-btn aigs-btn--ghost aigs-btn--sm' . ( $star ? ' is-on' : '' ) . '" data-aigs-important="' . (int) $pid . '" title="' . esc_attr__( 'Mark as important page (raises priority)', 'omnigeo-ai-seo' ) . '">' . wp_kses( self::icon( 'star', 15 ), self::svg_kses() ) . '<span class="screen-reader-text">' . esc_html__( 'Important', 'omnigeo-ai-seo' ) . '</span></button>';
 		} else {
 			// Site-level or AI visibility finding.
-			if ( 0 === strpos( $r['rule'], 'vis_gap_' ) ) {
+			if ( 0 === strpos( $r['rule'], 'vis_fact_' ) ) {
+				echo '<strong dir="auto">' . esc_html( isset( $ev['prompt'] ) ? $ev['prompt'] : '' ) . '</strong>';
+				echo '<ul class="aigs-row__urls">';
+				foreach ( isset( $ev['issues'] ) ? (array) $ev['issues'] : array() as $iss ) {
+					echo '<li dir="auto">' . esc_html( AIGS_AI_Visibility::issue_text( $iss ) ) . '</li>';
+				}
+				echo '</ul>';
+				echo '</div><div class="aigs-row__acts">';
+				echo '<a class="aigs-btn aigs-btn--sm" href="' . esc_url( admin_url( 'admin.php?page=aigs-ai-visibility' ) ) . '">' . wp_kses( self::icon( 'eye', 15 ), self::svg_kses() ) . esc_html__( 'See the answer', 'omnigeo-ai-seo' ) . '</a>';
+				echo '<button type="button" class="aigs-btn aigs-btn--primary aigs-btn--sm" data-aigs-trigger-facts="1">' . wp_kses( self::icon( 'file', 15 ), self::svg_kses() ) . esc_html__( 'Create facts page', 'omnigeo-ai-seo' ) . '</button>';
+			} elseif ( 0 === strpos( $r['rule'], 'vis_gap_' ) ) {
 				echo '<strong dir="auto">' . esc_html( isset( $ev['prompt'] ) ? $ev['prompt'] : '' ) . '</strong>';
 				if ( '' !== $text ) {
 					echo '<span class="aigs-row__ev">' . esc_html( $text ) . '</span>';
@@ -1105,7 +1186,11 @@ class AIGS_Admin {
 			}
 		}
 		echo '<button type="button" class="aigs-btn aigs-btn--ghost aigs-btn--sm" data-aigs-status="ignored" data-id="' . (int) $r['id'] . '">' . esc_html__( 'Intentional', 'omnigeo-ai-seo' ) . '</button>';
-		echo '</div></div>';
+		echo '</div>';
+		if ( $pid && in_array( $r['rule'], array( 'orphan', 'no_internal_links' ), true ) ) {
+			echo '<div class="aigs-linkbox" hidden></div>';
+		}
+		echo '</div>';
 	}
 
 	/**
@@ -1320,6 +1405,43 @@ class AIGS_Admin {
 						<button type="button" class="button-link" id="aigs-suggest-prompts"><?php esc_html_e( 'Suggest questions', 'omnigeo-ai-seo' ); ?></button></p>
 						<div id="aigs-prompt-list" class="aigs-chips"></div>
 					</div>
+					<details class="aigs-facts" <?php echo ( '' === trim( (string) aigs_get( 'fact_phones', '' ) . aigs_get( 'fact_outdated', '' ) . aigs_get( 'fact_domains', '' ) ) ) ? '' : 'open'; ?>>
+						<summary><strong><?php esc_html_e( 'Brand facts (accuracy check)', 'omnigeo-ai-seo' ); ?></strong> <span class="aigs-muted aigs-small"><?php esc_html_e( 'Get warned when an assistant gives people wrong details about you.', 'omnigeo-ai-seo' ); ?></span></summary>
+						<div class="aigs-field">
+							<label for="aigs_fphones"><?php esc_html_e( 'Official phone numbers (one per line)', 'omnigeo-ai-seo' ); ?></label>
+							<textarea id="aigs_fphones" name="aigs_settings[fact_phones]" rows="2" dir="ltr"><?php echo esc_textarea( aigs_get( 'fact_phones', '' ) ); ?></textarea>
+							<p class="description"><?php esc_html_e( 'Your main phone from Settings is always included.', 'omnigeo-ai-seo' ); ?></p>
+						</div>
+						<div class="aigs-field">
+							<label for="aigs_femails"><?php esc_html_e( 'Official email addresses (one per line)', 'omnigeo-ai-seo' ); ?></label>
+							<textarea id="aigs_femails" name="aigs_settings[fact_emails]" rows="2" dir="ltr"><?php echo esc_textarea( aigs_get( 'fact_emails', '' ) ); ?></textarea>
+						</div>
+						<div class="aigs-field">
+							<label for="aigs_fdomains"><?php esc_html_e( 'Other official domains (one per line)', 'omnigeo-ai-seo' ); ?></label>
+							<textarea id="aigs_fdomains" name="aigs_settings[fact_domains]" rows="2" dir="ltr" placeholder="shop.example.com&#10;example.co.uk"><?php echo esc_textarea( aigs_get( 'fact_domains', '' ) ); ?></textarea>
+							<p class="description">
+							<?php
+							/* translators: %s: site domain. */
+							printf( esc_html__( '%s is always official. Domains that contain your brand name but are not listed here are flagged.', 'omnigeo-ai-seo' ), esc_html( AIGS_AI_Visibility::own_domain() ) );
+							?>
+							</p>
+						</div>
+						<div class="aigs-field">
+							<label for="aigs_ffounded"><?php esc_html_e( 'Founding year', 'omnigeo-ai-seo' ); ?></label>
+							<input type="text" id="aigs_ffounded" class="small-text" style="width:7em" name="aigs_settings[fact_founded]" value="<?php echo esc_attr( aigs_get( 'fact_founded', '' ) ); ?>" placeholder="<?php echo esc_attr( (string) aigs_get( 'org_founded', '' ) ); ?>" dir="ltr" />
+						</div>
+						<div class="aigs-field">
+							<label for="aigs_foutdated"><?php esc_html_e( 'Outdated or wrong statements to watch for (one per line)', 'omnigeo-ai-seo' ); ?></label>
+							<textarea id="aigs_foutdated" name="aigs_settings[fact_outdated]" rows="3" placeholder="<?php esc_attr_e( "e.g. an old address, a discontinued product name,
+a former company name or an old price", 'omnigeo-ai-seo' ); ?>"><?php echo esc_textarea( aigs_get( 'fact_outdated', '' ) ); ?></textarea>
+						</div>
+						<div class="aigs-field">
+							<label for="aigs_fnotes"><?php esc_html_e( 'Short description of what you offer (used for the facts page)', 'omnigeo-ai-seo' ); ?></label>
+							<textarea id="aigs_fnotes" name="aigs_settings[fact_notes]" rows="3"><?php echo esc_textarea( aigs_get( 'fact_notes', '' ) ); ?></textarea>
+						</div>
+						<p><button type="button" class="aigs-btn aigs-btn--sm" id="aigs-facts-page"><?php self::i( 'file', 15 ); ?><?php esc_html_e( 'Create a “key facts” page draft', 'omnigeo-ai-seo' ); ?></button>
+						<span class="aigs-muted aigs-small"><?php esc_html_e( 'Uses the saved facts. Save first.', 'omnigeo-ai-seo' ); ?></span></p>
+					</details>
 					<div class="aigs-field">
 						<label for="aigs_vsched"><?php esc_html_e( 'Automatic checks', 'omnigeo-ai-seo' ); ?></label>
 						<select id="aigs_vsched" name="aigs_settings[vis_schedule]">
@@ -1393,6 +1515,14 @@ class AIGS_Admin {
 			printf( esc_html__( '%1$d questions · %2$s. Every number links back to a stored answer.', 'omnigeo-ai-seo' ), (int) $s['prompts'], esc_html( mysql2date( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), $batches[0]['t'] ) ) );
 			?>
 			</p>
+			<?php if ( $s['wrong'] ) : ?>
+				<div class="aigs-callout aigs-callout--warn"><?php self::i( 'flag', 18 ); ?><p>
+				<?php
+				/* translators: %d: number of answers. */
+				echo esc_html( sprintf( _n( '%d answer gives people wrong facts about you. See the Facts column and the task in the Action Center.', '%d answers give people wrong facts about you. See the Facts column and the task in the Action Center.', (int) $s['wrong'], 'omnigeo-ai-seo' ), (int) $s['wrong'] ) );
+				?>
+				</p></div>
+			<?php endif; ?>
 			<div class="aigs-kpis aigs-kpis--4">
 				<div><span><?php echo (int) $s['mention']; ?>%<?php echo wp_kses_post( $delta( $s['mention'], $ps ? $ps['mention'] : null ) ); ?></span><em><?php esc_html_e( 'answers mention you', 'omnigeo-ai-seo' ); ?></em></div>
 				<div><span><?php echo (int) $s['recommended']; ?>%<?php echo wp_kses_post( $delta( $s['recommended'], $ps ? $ps['recommended'] : null ) ); ?></span><em><?php esc_html_e( 'recommend you (heuristic)', 'omnigeo-ai-seo' ); ?></em></div>
@@ -1431,6 +1561,7 @@ class AIGS_Admin {
 					<th><?php esc_html_e( 'Cited', 'omnigeo-ai-seo' ); ?></th>
 					<th><?php esc_html_e( 'Position', 'omnigeo-ai-seo' ); ?></th>
 					<th><?php esc_html_e( 'Competitors named', 'omnigeo-ai-seo' ); ?></th>
+					<th><?php esc_html_e( 'Facts', 'omnigeo-ai-seo' ); ?></th>
 					<th></th>
 				</tr></thead>
 				<tbody>
@@ -1449,6 +1580,21 @@ class AIGS_Admin {
 						<td><?php echo (int) $r['cited'] ? '✓' : '—'; ?></td>
 						<td><?php echo (int) $r['position'] ? '#' . (int) $r['position'] : '—'; ?></td>
 						<td class="aigs-muted"><?php echo esc_html( $comps ? implode( ', ', $comps ) : '—' ); ?></td>
+						<td>
+						<?php
+						$issues = (array) json_decode( isset( $r['issues'] ) ? (string) $r['issues'] : '', true );
+						if ( $issues ) {
+							$texts = array_map( array( 'AIGS_AI_Visibility', 'issue_text' ), $issues );
+							echo '<span class="aigs-tag aigs-tag--warn" title="' . esc_attr( implode( "\n", $texts ) ) . '">';
+							/* translators: %d: number of wrong facts. */
+							echo esc_html( sprintf( _n( '%d wrong fact', '%d wrong facts', count( $issues ), 'omnigeo-ai-seo' ), count( $issues ) ) ) . '</span>';
+						} elseif ( (int) $r['mentioned'] ) {
+							echo '<span class="aigs-muted">✓</span>';
+						} else {
+							echo '<span class="aigs-muted">—</span>';
+						}
+						?>
+						</td>
 						<td class="act"><button type="button" class="aigs-btn aigs-btn--ghost aigs-btn--sm" data-aigs-answer="<?php echo (int) $r['id']; ?>"><?php self::i( 'eye', 15 ); ?><?php esc_html_e( 'Answer', 'omnigeo-ai-seo' ); ?></button></td>
 					</tr>
 				<?php endforeach; ?>
@@ -1765,7 +1911,94 @@ class AIGS_Admin {
 					<tr><th><label for="aigs_ind"><?php esc_html_e( 'Industry', 'omnigeo-ai-seo' ); ?></label></th>
 						<td><input type="text" id="aigs_ind" class="regular-text" name="aigs_settings[industry]" value="<?php echo esc_attr( aigs_get( 'industry', '' ) ); ?>" placeholder="<?php esc_attr_e( 'e.g. dental clinic', 'omnigeo-ai-seo' ); ?>" /></td></tr>
 					<tr><th><label for="aigs_loc"><?php esc_html_e( 'Location', 'omnigeo-ai-seo' ); ?></label></th>
-						<td><input type="text" id="aigs_loc" class="regular-text" name="aigs_settings[location]" value="<?php echo esc_attr( aigs_get( 'location', '' ) ); ?>" placeholder="<?php esc_attr_e( 'e.g. Tehran', 'omnigeo-ai-seo' ); ?>" /></td></tr>
+						<td><input type="text" id="aigs_loc" class="regular-text" name="aigs_settings[location]" value="<?php echo esc_attr( aigs_get( 'location', '' ) ); ?>" placeholder="<?php esc_attr_e( 'e.g. Berlin', 'omnigeo-ai-seo' ); ?>" /></td></tr>
+					<tr><th><label for="aigs_btype"><?php esc_html_e( 'Type of business', 'omnigeo-ai-seo' ); ?></label></th><td>
+						<select id="aigs_btype" name="aigs_settings[business_type]">
+							<?php
+							$types   = AIGS_Entity::business_types();
+							$current = AIGS_Entity::schema_type();
+							$groups  = array(
+								'org'   => __( 'Organization', 'omnigeo-ai-seo' ),
+								'local' => __( 'Local business (has a place customers visit or a service area)', 'omnigeo-ai-seo' ),
+							);
+							foreach ( $groups as $g => $glabel ) {
+								echo '<optgroup label="' . esc_attr( $glabel ) . '">';
+								foreach ( $types[ $g ] as $val => $label ) {
+									printf( '<option value="%s" data-local="%d" %s>%s</option>', esc_attr( $val ), 'local' === $g ? 1 : 0, selected( $current, $val, false ), esc_html( $label ) );
+								}
+								echo '</optgroup>';
+							}
+							?>
+						</select>
+						<p class="description"><?php esc_html_e( 'Used as the schema.org type of your brand. Local types add address, opening hours and map data.', 'omnigeo-ai-seo' ); ?></p>
+					</td></tr>
+					<tr><th><label for="aigs_phone"><?php esc_html_e( 'Main phone', 'omnigeo-ai-seo' ); ?></label></th>
+						<td><input type="tel" id="aigs_phone" class="regular-text" name="aigs_settings[biz_phone]" value="<?php echo esc_attr( aigs_get( 'biz_phone', '' ) ); ?>" placeholder="+1 555 010 0100" />
+						<p class="description"><?php esc_html_e( 'International format with country code works best.', 'omnigeo-ai-seo' ); ?></p></td></tr>
+					<tr><th><label for="aigs_email"><?php esc_html_e( 'Public email', 'omnigeo-ai-seo' ); ?></label></th>
+						<td><input type="email" id="aigs_email" class="regular-text" name="aigs_settings[biz_email]" value="<?php echo esc_attr( aigs_get( 'biz_email', '' ) ); ?>" /></td></tr>
+				</table>
+			</div>
+
+			<div class="aigs-card aigs-local-only" id="aigs-local">
+				<div class="aigs-card__head"><?php self::i( 'globe' ); ?><h2><?php esc_html_e( 'Local business details', 'omnigeo-ai-seo' ); ?></h2></div>
+				<p class="aigs-card__desc"><?php esc_html_e( 'Printed as LocalBusiness schema on your homepage. Use exactly the same name, address and phone as on your Google Business Profile, Apple Maps, Bing Places and directories: consistency is what assistants trust.', 'omnigeo-ai-seo' ); ?></p>
+				<?php if ( AIGS_SEO::outputs_schema() ) : ?>
+					<p class="aigs-card__desc">
+					<?php
+					/* translators: %s: SEO plugin name. */
+					printf( esc_html__( '%s outputs your main schema graph; OmniGEO adds a separate LocalBusiness node on the homepage only. If you use a local SEO add-on that already does this, leave these fields empty.', 'omnigeo-ai-seo' ), esc_html( AIGS_SEO::name() ) );
+					?>
+					</p>
+				<?php endif; ?>
+				<table class="form-table" role="presentation">
+					<tr><th><label for="aigs_street"><?php esc_html_e( 'Street address', 'omnigeo-ai-seo' ); ?></label></th>
+						<td><input type="text" id="aigs_street" class="regular-text" name="aigs_settings[biz_street]" value="<?php echo esc_attr( aigs_get( 'biz_street', '' ) ); ?>" /></td></tr>
+					<tr><th><label for="aigs_city"><?php esc_html_e( 'City', 'omnigeo-ai-seo' ); ?></label></th>
+						<td><input type="text" id="aigs_city" class="regular-text" name="aigs_settings[biz_city]" value="<?php echo esc_attr( aigs_get( 'biz_city', '' ) ); ?>" /></td></tr>
+					<tr><th><label for="aigs_region"><?php esc_html_e( 'State / region', 'omnigeo-ai-seo' ); ?></label></th>
+						<td><input type="text" id="aigs_region" class="regular-text" name="aigs_settings[biz_region]" value="<?php echo esc_attr( aigs_get( 'biz_region', '' ) ); ?>" /></td></tr>
+					<tr><th><label for="aigs_postal"><?php esc_html_e( 'Postal code', 'omnigeo-ai-seo' ); ?></label></th>
+						<td><input type="text" id="aigs_postal" class="small-text" style="width:10em" name="aigs_settings[biz_postal]" value="<?php echo esc_attr( aigs_get( 'biz_postal', '' ) ); ?>" /></td></tr>
+					<tr><th><label for="aigs_country"><?php esc_html_e( 'Country code', 'omnigeo-ai-seo' ); ?></label></th>
+						<td><input type="text" id="aigs_country" class="small-text" maxlength="40" name="aigs_settings[biz_country]" value="<?php echo esc_attr( aigs_get( 'biz_country', '' ) ); ?>" placeholder="US" />
+						<p class="description"><?php esc_html_e( 'Two-letter ISO code, for example US, GB, DE, AE.', 'omnigeo-ai-seo' ); ?></p></td></tr>
+					<tr><th><?php esc_html_e( 'Opening hours', 'omnigeo-ai-seo' ); ?></th><td>
+						<div class="aigs-hours">
+						<?php
+						$hours = (array) aigs_get( 'biz_hours', array() );
+						$names = array(
+							'mo' => __( 'Monday', 'omnigeo-ai-seo' ),
+							'tu' => __( 'Tuesday', 'omnigeo-ai-seo' ),
+							'we' => __( 'Wednesday', 'omnigeo-ai-seo' ),
+							'th' => __( 'Thursday', 'omnigeo-ai-seo' ),
+							'fr' => __( 'Friday', 'omnigeo-ai-seo' ),
+							'sa' => __( 'Saturday', 'omnigeo-ai-seo' ),
+							'su' => __( 'Sunday', 'omnigeo-ai-seo' ),
+						);
+						foreach ( $names as $k => $label ) {
+							printf(
+								'<label><span>%1$s</span><input type="text" name="aigs_settings[biz_hours][%2$s]" value="%3$s" placeholder="09:00-17:00" dir="ltr" /></label>',
+								esc_html( $label ),
+								esc_attr( $k ),
+								esc_attr( isset( $hours[ $k ] ) ? $hours[ $k ] : '' )
+							);
+						}
+						?>
+						</div>
+						<p class="description"><?php esc_html_e( 'One or more ranges per day, for example 09:00-13:00, 14:00-18:00. Type 24h for always open. Leave empty when closed.', 'omnigeo-ai-seo' ); ?></p>
+					</td></tr>
+					<tr><th><label for="aigs_area"><?php esc_html_e( 'Service area', 'omnigeo-ai-seo' ); ?></label></th>
+						<td><input type="text" id="aigs_area" class="regular-text" name="aigs_settings[biz_area]" value="<?php echo esc_attr( aigs_get( 'biz_area', '' ) ); ?>" placeholder="<?php esc_attr_e( 'e.g. Brooklyn, Queens, Manhattan', 'omnigeo-ai-seo' ); ?>" />
+						<p class="description"><?php esc_html_e( 'Cities or regions you serve, comma separated. Important for service businesses without a storefront.', 'omnigeo-ai-seo' ); ?></p></td></tr>
+					<tr><th><label for="aigs_price"><?php esc_html_e( 'Price range', 'omnigeo-ai-seo' ); ?></label></th>
+						<td><input type="text" id="aigs_price" class="small-text" style="width:10em" name="aigs_settings[biz_price]" value="<?php echo esc_attr( aigs_get( 'biz_price', '' ) ); ?>" placeholder="$$" /></td></tr>
+					<tr><th><label for="aigs_map"><?php esc_html_e( 'Map link', 'omnigeo-ai-seo' ); ?></label></th>
+						<td><input type="url" id="aigs_map" class="regular-text" name="aigs_settings[biz_map]" value="<?php echo esc_attr( aigs_get( 'biz_map', '' ) ); ?>" placeholder="https://maps.google.com/?cid=…" /></td></tr>
+					<tr><th><?php esc_html_e( 'Coordinates', 'omnigeo-ai-seo' ); ?></th>
+						<td><input type="text" class="small-text" style="width:9em" name="aigs_settings[biz_lat]" value="<?php echo esc_attr( aigs_get( 'biz_lat', '' ) ); ?>" placeholder="<?php esc_attr_e( 'Latitude', 'omnigeo-ai-seo' ); ?>" dir="ltr" />
+						<input type="text" class="small-text" style="width:9em" name="aigs_settings[biz_lng]" value="<?php echo esc_attr( aigs_get( 'biz_lng', '' ) ); ?>" placeholder="<?php esc_attr_e( 'Longitude', 'omnigeo-ai-seo' ); ?>" dir="ltr" />
+						<p class="description"><?php esc_html_e( 'Optional. Right-click your location in a map app to copy them.', 'omnigeo-ai-seo' ); ?></p></td></tr>
 				</table>
 			</div>
 
@@ -1881,18 +2114,27 @@ class AIGS_Admin {
 
 			<div class="aigs-card" id="aigs-ai">
 				<div class="aigs-card__head"><?php self::i( 'radar' ); ?><h2><?php esc_html_e( 'AI provider (your own key)', 'omnigeo-ai-seo' ); ?></h2></div>
-				<p class="aigs-card__desc"><?php esc_html_e( 'Used only for features you trigger or schedule: AI visibility checks, answer drafts and product summaries.', 'omnigeo-ai-seo' ); ?></p>
+				<p class="aigs-card__desc"><?php esc_html_e( 'Used only for features you trigger or schedule: AI visibility checks, answer drafts and product summaries. Pick any provider you already pay for, or a local model.', 'omnigeo-ai-seo' ); ?></p>
 				<table class="form-table" role="presentation">
 					<tr><th><label for="aigs_prov"><?php esc_html_e( 'Provider', 'omnigeo-ai-seo' ); ?></label></th><td>
 						<select id="aigs_prov" name="aigs_settings[ai_provider]">
 							<?php foreach ( $provs as $k => $p ) : ?>
-								<option value="<?php echo esc_attr( $k ); ?>" <?php selected( AIGS_AI_Client::provider(), $k ); ?>><?php echo esc_html( $p['label'] ); ?></option>
+								<option value="<?php echo esc_attr( $k ); ?>" data-model="<?php echo esc_attr( $p['model'] ); ?>" data-keys="<?php echo esc_url( $p['keys'] ); ?>" <?php selected( AIGS_AI_Client::provider(), $k ); ?>><?php echo esc_html( $p['label'] ); ?></option>
 							<?php endforeach; ?>
 						</select>
+						<p class="description" id="aigs-keys-link-wrap"><a id="aigs-keys-link" href="<?php echo esc_url( $provs[ AIGS_AI_Client::provider() ]['keys'] ); ?>" target="_blank" rel="noopener"><?php esc_html_e( 'Get an API key', 'omnigeo-ai-seo' ); ?> ↗</a></p>
+					</td></tr>
+					<tr class="aigs-custom-only"><th><label for="aigs_base"><?php esc_html_e( 'Endpoint URL', 'omnigeo-ai-seo' ); ?></label></th><td>
+						<input type="url" id="aigs_base" class="regular-text" name="aigs_settings[ai_base_url]" value="<?php echo esc_attr( aigs_get( 'ai_base_url', '' ) ); ?>" placeholder="https://api.example.com/v1" />
+						<p class="description"><?php esc_html_e( 'Any OpenAI-compatible base URL, for example a company AI gateway, Groq, Together, Fireworks, or a local Ollama (http://localhost:11434/v1) or LM Studio server. “/chat/completions” is added for you.', 'omnigeo-ai-seo' ); ?></p>
 					</td></tr>
 					<tr><th><label for="aigs_model"><?php esc_html_e( 'Model', 'omnigeo-ai-seo' ); ?></label></th><td>
 						<input type="text" id="aigs_model" class="regular-text" name="aigs_settings[ai_model]" value="<?php echo esc_attr( aigs_get( 'ai_model', '' ) ); ?>" placeholder="<?php echo esc_attr( $provs[ AIGS_AI_Client::provider() ]['model'] ); ?>" />
-						<p class="description"><?php esc_html_e( 'Leave empty for the default shown. Defaults are small, low-cost models.', 'omnigeo-ai-seo' ); ?></p>
+						<p class="description"><?php esc_html_e( 'Leave empty for the default shown. Defaults are small, low-cost models. Required for “Other OpenAI-compatible endpoint”.', 'omnigeo-ai-seo' ); ?></p>
+					</td></tr>
+					<tr class="aigs-gateway-only"><th><?php esc_html_e( 'Live web search', 'omnigeo-ai-seo' ); ?></th><td>
+						<label><input type="checkbox" name="aigs_settings[ai_grounded]" value="1" <?php checked( aigs_get( 'ai_grounded', 0 ), 1 ); ?> /> <?php esc_html_e( 'This model searches the web and returns sources (for example Perplexity models or “:online” models on OpenRouter)', 'omnigeo-ai-seo' ); ?></label>
+						<p class="description"><?php esc_html_e( 'Only changes how AI Visibility results are labelled.', 'omnigeo-ai-seo' ); ?></p>
 					</td></tr>
 					<tr><th><label for="aigs_key"><?php esc_html_e( 'API key', 'omnigeo-ai-seo' ); ?></label></th>
 						<td>
@@ -1903,7 +2145,7 @@ class AIGS_Admin {
 							<?php if ( $has_key ) : ?>
 								<label style="margin-inline-start:10px"><input type="checkbox" name="aigs_settings[ai_remove_key]" value="1" /> <?php esc_html_e( 'Remove saved key', 'omnigeo-ai-seo' ); ?></label>
 							<?php endif; ?>
-							<p class="description"><?php esc_html_e( 'Stored in your database and never shown again. For extra safety define AIGS_AI_API_KEY in wp-config.php instead.', 'omnigeo-ai-seo' ); ?></p>
+							<p class="description"><?php esc_html_e( 'Stored in your database and never shown again. For extra safety define AIGS_AI_API_KEY in wp-config.php instead. Local servers usually need no key.', 'omnigeo-ai-seo' ); ?></p>
 						<?php endif; ?>
 						</td></tr>
 					<tr><th><label for="aigs_cap"><?php esc_html_e( 'Monthly request limit', 'omnigeo-ai-seo' ); ?></label></th><td>
@@ -1914,6 +2156,10 @@ class AIGS_Admin {
 						printf( esc_html__( 'A hard stop across all AI features. Used this month: %d.', 'omnigeo-ai-seo' ), (int) AIGS_AI_Client::used() );
 						?>
 						</p>
+					</td></tr>
+					<tr><th><?php esc_html_e( 'Check', 'omnigeo-ai-seo' ); ?></th><td>
+						<button type="button" class="aigs-btn aigs-btn--sm" id="aigs-ai-test" <?php disabled( ! AIGS_AI_Client::ready() ); ?>><?php self::i( 'zap', 15 ); ?><?php esc_html_e( 'Test saved connection', 'omnigeo-ai-seo' ); ?></button>
+						<span class="aigs-muted aigs-small" id="aigs-ai-test-out"><?php esc_html_e( 'Save first, then test. Uses one request.', 'omnigeo-ai-seo' ); ?></span>
 					</td></tr>
 				</table>
 			</div>

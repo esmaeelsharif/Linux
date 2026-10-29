@@ -318,5 +318,175 @@ same( 'programmatic merge keeps key', 'secret', $out['ai_api_key'] );
 $out = $admin->sanitize_settings( array( 'section_visibility' => 1, 'vis_prompts' => "a\nb", 'vis_schedule' => 'hourly' ) );
 same( 'vis schedule whitelist', 'off', $out['vis_schedule'] );
 
+/* ============================================================
+ * 1.2: multi-provider AI client
+ * ============================================================ */
+same( 'endpoint base v1', 'https://api.example.com/v1/chat/completions', AIGS_AI_Client::normalize_endpoint( 'https://api.example.com/v1/' ) );
+same( 'endpoint full kept', 'http://localhost:11434/v1/chat/completions', AIGS_AI_Client::normalize_endpoint( 'http://localhost:11434/v1/chat/completions' ) );
+same( 'endpoint query stripped', 'https://x.io/v1/chat/completions', AIGS_AI_Client::normalize_endpoint( 'https://x.io/v1?foo=1' ) );
+same( 'endpoint rejects ftp', '', AIGS_AI_Client::normalize_endpoint( 'ftp://x.io/v1' ) );
+same( 'endpoint rejects junk', '', AIGS_AI_Client::normalize_endpoint( 'javascript:alert(1)' ) );
+check( 'providers include gemini/openrouter/custom', count( array_intersect( array( 'gemini', 'openrouter', 'mistral', 'deepseek', 'custom' ), array_keys( AIGS_AI_Client::providers() ) ) ) === 5 );
+
+update_option( 'aigs_ai_usage', array() );
+update_option( 'aigs_settings', array( 'ai_provider' => 'custom', 'ai_base_url' => 'http://localhost:11434/v1', 'ai_model' => 'llama3.1' ) );
+check( 'custom keyless ready', AIGS_AI_Client::ready() );
+$GLOBALS['__http'] = array();
+$GLOBALS['__http_reply'] = '{"model":"llama3.1","choices":[{"message":{"content":"<think>hmm</think>OK"}}]}';
+$r = AIGS_AI_Client::ask( 'hi' );
+same( 'custom endpoint url', 'http://localhost:11434/v1/chat/completions', $GLOBALS['__http'][0]['url'] );
+check( 'custom no auth header without key', ! isset( $GLOBALS['__http'][0]['args']['headers']['Authorization'] ) );
+same( 'think tags stripped', 'OK', $r['text'] );
+update_option( 'aigs_settings', array( 'ai_provider' => 'custom', 'ai_base_url' => '' , 'ai_model' => 'x' ) );
+check( 'custom without url not ready', ! AIGS_AI_Client::ready() );
+
+update_option( 'aigs_settings', array( 'ai_provider' => 'openai', 'ai_api_key' => 'sk-1' ) );
+$GLOBALS['__http'] = array();
+$GLOBALS['__http_reply'] = '{"choices":[{"message":{"content":"Hi","annotations":[{"type":"url_citation","url_citation":{"url":"https://a.com/x"}}]}}]}';
+$r    = AIGS_AI_Client::ask( 'hi', array( 'max_tokens' => 50 ) );
+$body = json_decode( $GLOBALS['__http'][0]['args']['body'], true );
+check( 'openai uses max_completion_tokens', isset( $body['max_completion_tokens'] ) && ! isset( $body['max_tokens'] ) );
+same( 'openai bearer', 'Bearer sk-1', $GLOBALS['__http'][0]['args']['headers']['Authorization'] );
+same( 'annotation citations', array( 'https://a.com/x' ), $r['citations'] );
+
+update_option( 'aigs_settings', array( 'ai_provider' => 'openrouter', 'ai_api_key' => 'or-1', 'ai_grounded' => 1 ) );
+$GLOBALS['__http'] = array();
+$GLOBALS['__http_reply'] = '{"choices":[{"message":{"content":[{"type":"text","text":"Part A "},{"type":"text","text":"B"}]}}]}';
+$r    = AIGS_AI_Client::ask( 'hi' );
+$body = json_decode( $GLOBALS['__http'][0]['args']['body'], true );
+same( 'openrouter endpoint', 'https://openrouter.ai/api/v1/chat/completions', $GLOBALS['__http'][0]['url'] );
+check( 'openrouter uses max_tokens', isset( $body['max_tokens'] ) );
+check( 'openrouter attribution header', isset( $GLOBALS['__http'][0]['args']['headers']['X-Title'] ) );
+same( 'content parts joined', 'Part A B', $r['text'] );
+check( 'gateway grounded flag honoured', true === $r['grounded'] );
+
+update_option( 'aigs_settings', array( 'ai_provider' => 'anthropic', 'ai_api_key' => 'a-1' ) );
+$GLOBALS['__http'] = array();
+$GLOBALS['__http_reply'] = '{"model":"claude-haiku-5-5","content":[{"type":"thinking","thinking":""},{"type":"text","text":"Answer"}]}';
+$r = AIGS_AI_Client::ask( 'hi' );
+same( 'anthropic text after thinking block', 'Answer', $r['text'] );
+same( 'anthropic api key header', 'a-1', $GLOBALS['__http'][0]['args']['headers']['x-api-key'] );
+$GLOBALS['__http_reply'] = '{"stop_reason":"refusal","content":[]}';
+check( 'anthropic refusal is an error', is_wp_error( AIGS_AI_Client::ask( 'x' ) ) );
+$GLOBALS['__http_reply'] = '{"error":{"message":"bad key"}}';
+$e = AIGS_AI_Client::ask( 'x' );
+same( 'api error passed through', 'bad key', $e->get_error_message() );
+
+/* ============================================================
+ * 1.2: one-click internal links
+ * ============================================================ */
+$html = '<!-- wp:heading --><h2>Email marketing guide</h2><!-- /wp:heading -->'
+	. '<!-- wp:paragraph {"className":"email marketing guide"} --><p>See our <a href="/x/">email marketing guide</a> first.</p><!-- /wp:paragraph -->'
+	. '<p>[shortcode title="email marketing guide"]</p>'
+	. '<p>Before you start, read the Email&nbsp;Marketing Guide carefully.</p>';
+$hit = AIGS_Links::find( $html, array( 'email marketing guide' ) );
+check( 'link find skips heading/link/shortcode/comment', null !== $hit && 'Email&nbsp;Marketing Guide' === $hit['match'], wp_json_encode( $hit ) );
+same( 'link snippet context', array( 'Before you start, read the', 'Email Marketing Guide', 'carefully.' ), $hit['snippet'] );
+$new = AIGS_Links::insert( $html, 'email marketing guide', 'https://example.ir/guide/' );
+check( 'link inserted once in body text', 1 === substr_count( $new, '<a href="https://example.ir/guide/">Email&nbsp;Marketing Guide</a>' ) );
+check( 'link heading untouched', false !== strpos( $new, '<h2>Email marketing guide</h2>' ) );
+check( 'link block attrs untouched', false !== strpos( $new, '{"className":"email marketing guide"}' ) );
+check( 'link shortcode untouched', false !== strpos( $new, '[shortcode title="email marketing guide"]' ) );
+same( 'link none when only in heading', null, AIGS_Links::insert( '<h2>Email marketing guide</h2><p>Nothing here.</p>', 'email marketing guide', 'https://x' ) );
+same( 'link word bounded', null, AIGS_Links::insert( '<p>Our seo tools are great</p>', 'seo tool', 'https://x' ) );
+$fa = AIGS_Links::insert( "<p>برای شروع، آموزش نصب\u{200C}وردپرس را بخوانید.</p>", 'آموزش نصب وردپرس', 'https://x/' );
+check( 'link persian phrase across zwnj', null !== $fa && false !== strpos( $fa, '<a href="https://x/">' ) );
+check( 'links_to detects existing', AIGS_Links::links_to( '<a href="http://www.example.ir/guide">g</a>', 'https://example.ir/guide/' ) );
+check( 'anchor rejects generic', ! AIGS_Links::usable_anchor( 'Contact us' ) && ! AIGS_Links::usable_anchor( 'SEO' ) && AIGS_Links::usable_anchor( 'Local SEO checklist' ) );
+
+/* ============================================================
+ * 1.2: CDN / firewall detection
+ * ============================================================ */
+same( 'cdn cloudflare', 'Cloudflare', AIGS_Visibility::detect_cdn( array( 'cf-ray' => '8a1-LHR', 'server' => 'cloudflare' ) ) );
+same( 'cdn sucuri', 'Sucuri', AIGS_Visibility::detect_cdn( array( 'x-sucuri-id' => '1' ) ) );
+same( 'cdn cloudfront', 'Amazon CloudFront', AIGS_Visibility::detect_cdn( array( 'x-amz-cf-id' => 'x' ) ) );
+same( 'cdn none', '', AIGS_Visibility::detect_cdn( array( 'server' => 'nginx' ) ) );
+check( 'blocked 403', AIGS_Visibility::is_blocked_response( 403, array(), '' ) );
+check( 'blocked challenge page', AIGS_Visibility::is_blocked_response( 200, array(), '<title>Just a moment...</title>' ) );
+check( 'blocked cf-mitigated', AIGS_Visibility::is_blocked_response( 200, array( 'cf-mitigated' => 'challenge' ), '' ) );
+check( 'not blocked normal page', ! AIGS_Visibility::is_blocked_response( 200, array(), '<html><body>Welcome</body></html>' ) );
+
+/* ============================================================
+ * 1.2: LocalBusiness
+ * ============================================================ */
+same( 'hours single', array( array( '09:00', '17:00' ) ), AIGS_Entity::parse_ranges( '9-17' ) );
+same( 'hours split', array( array( '09:00', '13:00' ), array( '14:30', '18:00' ) ), AIGS_Entity::parse_ranges( '09:00-13:00, 14:30–18:00' ) );
+same( 'hours 24h', array( array( '00:00', '23:59' ) ), AIGS_Entity::parse_ranges( '24h' ) );
+same( 'hours invalid dropped', array(), AIGS_Entity::parse_ranges( 'closed' ) );
+$oh = AIGS_Entity::opening_hours( array( 'mo' => '9-17', 'tu' => '09:00-17:00', 'sa' => '10-14', 'su' => '' ) );
+same( 'hours grouped', 2, count( $oh ) );
+same( 'hours grouped days', array( 'Monday', 'Tuesday' ), $oh[0]['dayOfWeek'] );
+update_option( 'aigs_settings', array( 'business_type' => 'Dentist', 'biz_street' => '1 Main St', 'biz_city' => 'Leeds', 'biz_country' => 'GB', 'biz_lat' => '53.8', 'biz_lng' => '-1.55', 'biz_area' => 'Leeds, York' ) );
+check( 'dentist is local', AIGS_Entity::is_local() );
+$lf = AIGS_Entity::local_fields();
+same( 'local address', 'Leeds', $lf['address']['addressLocality'] );
+same( 'local geo', -1.55, $lf['geo']['longitude'] );
+same( 'local area list', array( 'Leeds', 'York' ), $lf['areaServed'] );
+same( 'local missing phone + hours', array( 'phone', 'opening hours' ), AIGS_Entity::local_missing() );
+update_option( 'aigs_settings', array( 'business_type' => '<script>' ) );
+same( 'invalid type falls back', 'Organization', AIGS_Entity::schema_type() );
+check( 'org not local', ! AIGS_Entity::is_local() && array() === AIGS_Entity::local_missing() );
+
+/* ============================================================
+ * 1.2: brand facts / answer accuracy
+ * ============================================================ */
+$GLOBALS['__home'] = 'https://www.acmeplumbing.com';
+update_option(
+	'aigs_settings',
+	array(
+		'business_name' => 'Acme Plumbing',
+		'biz_phone'     => '+44 20 7946 0000',
+		'fact_emails'   => 'hello@acmeplumbing.com',
+		'fact_founded'  => '2009',
+		'fact_outdated' => "Old Kent Road\nAcme Drains",
+	)
+);
+check( 'same phone across formats', AIGS_AI_Visibility::same_phone( '+44 20 7946 0000', '020 7946 0000' ) );
+check( 'different phone', ! AIGS_AI_Visibility::same_phone( '+44 20 7946 0000', '020 7946 1111' ) );
+$ans = "Here are good plumbers in London:\n1. Acme Plumbing (since 2012) – call 020 7946 1234 or email info@acme-plumbing.co.uk, site: acmeplumbing-london.com\n   They were on Old Kent Road.\n2. Other Co – 020 1111 2222, founded 1999\nPrices: £80-£120, open 2019-2023.";
+$iss   = AIGS_AI_Visibility::accuracy( $ans );
+$types = array_map( function ( $i ) { return $i[0] . ':' . $i[1]; }, $iss );
+check( 'accuracy wrong phone', in_array( 'phone:020 7946 1234', $types, true ), wp_json_encode( $types ) );
+check( 'accuracy competitor phone ignored', ! in_array( 'phone:020 1111 2222', $types, true ) );
+check( 'accuracy wrong email', in_array( 'email:info@acme-plumbing.co.uk', $types, true ) );
+check( 'accuracy lookalike domain', in_array( 'domain:acmeplumbing-london.com', $types, true ) );
+check( 'accuracy founding year', in_array( 'founded:2012', $types, true ) );
+check( 'accuracy outdated statement', in_array( 'outdated:Old Kent Road', $types, true ) );
+check( 'accuracy no year-range phone', ! in_array( 'phone:2019-2023', $types, true ) );
+$ok = AIGS_AI_Visibility::accuracy( "Acme Plumbing (founded 2009): +44 20 7946 0000, hello@acmeplumbing.com, www.acmeplumbing.com" );
+same( 'accuracy correct answer has no issues', array(), $ok );
+same( 'accuracy brand absent', array(), AIGS_AI_Visibility::accuracy( 'Call 020 7946 1234 for Other Co.' ) );
+check( 'issue text', '' !== AIGS_AI_Visibility::issue_text( array( 'phone', '1', '' ) ) );
+$m = AIGS_Rules::meta( 'vis_fact_abc' );
+check( 'vis_fact meta high', $m && AIGS_Rules::HIGH === $m['sev'] );
+
+/* ============================================================
+ * 1.2: settings
+ * ============================================================ */
+update_option( 'aigs_settings', array() );
+$out = $admin->sanitize_settings(
+	array(
+		'section_settings' => 1,
+		'ai_provider'      => 'custom',
+		'ai_base_url'      => 'http://localhost:11434/v1',
+		'business_type'    => 'Plumber',
+		'biz_phone'        => '+1 (555) 010-0100 <b>',
+		'biz_lat'          => '200',
+		'biz_lng'          => '10',
+		'biz_country'      => 'gb',
+		'biz_hours'        => array( 'mo' => '9-17', 'tu' => 'whenever' ),
+	)
+);
+same( 'custom provider saved', 'custom', $out['ai_provider'] );
+same( 'base url saved', 'http://localhost:11434/v1', $out['ai_base_url'] );
+same( 'business type saved', 'Plumber', $out['business_type'] );
+same( 'phone cleaned', '+1 (555) 010-0100', trim( $out['biz_phone'] ) );
+same( 'invalid geo dropped', '', $out['biz_lat'] );
+same( 'country upper', 'GB', $out['biz_country'] );
+same( 'valid hours kept', '9-17', $out['biz_hours']['mo'] );
+same( 'invalid hours cleared', '', $out['biz_hours']['tu'] );
+$out = $admin->sanitize_settings( array( 'section_visibility' => 1, 'fact_founded' => '12', 'fact_phones' => "+1 555\n" ) );
+same( 'founded validated', '', $out['fact_founded'] );
+
 echo "\n{$GLOBALS['__pass']} passed, {$GLOBALS['__fail']} failed\n";
 exit( $GLOBALS['__fail'] ? 1 : 0 );

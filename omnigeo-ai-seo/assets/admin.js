@@ -234,6 +234,65 @@
 		} ).fail( function () { $b.prop( 'disabled', false ); toast( t( 'requestFailed' ), true ); } );
 	} );
 
+	/* ---------- One-click internal links ---------- */
+	$( document ).on( 'click', '[data-aigs-links]', function () {
+		var $b = $( this ), $row = $b.closest( '.aigs-row' ), $box = $row.find( '.aigs-linkbox' );
+		$b.prop( 'disabled', true );
+		$box.prop( 'hidden', false ).html( '<p class="aigs-muted aigs-small">' + esc( t( 'findingLinks' ) ) + '</p>' );
+		post( 'aigs_links_preview', { post_id: $b.attr( 'data-post' ), mode: $b.attr( 'data-aigs-links' ) } ).done( function ( res ) {
+			if ( ! res.success ) { $box.empty().prop( 'hidden', true ); toast( errMsg( res ), true ); return; }
+			var items = res.data.items || [];
+			if ( ! items.length ) { $box.html( '<p class="aigs-muted aigs-small">' + esc( t( 'noLinkSpots' ) ) + '</p>' ); return; }
+			var h = '<ul class="aigs-linklist">';
+			items.forEach( function ( it, i ) {
+				h += '<li><label><input type="checkbox" class="aigs-link-pick" checked data-i="' + i + '"> '
+					+ '<span class="aigs-linklist__meta">' + esc( t( 'linkFrom' ) ) + ' <strong dir="auto">' + esc( it.source_title ) + '</strong> ' + esc( t( 'linkTo' ) ) + ' <strong dir="auto">' + esc( it.target_title ) + '</strong></span>'
+					+ '<span class="aigs-linklist__snip" dir="auto">' + esc( it.snippet[ 0 ] ) + ' <mark>' + esc( it.snippet[ 1 ] ) + '</mark> ' + esc( it.snippet[ 2 ] ) + '</span></label></li>';
+			} );
+			h += '</ul><p><button type="button" class="aigs-btn aigs-btn--primary aigs-btn--sm aigs-links-apply">' + esc( t( 'insertLinks' ) ) + '</button></p>';
+			$box.html( h ).data( 'items', items );
+		} ).fail( function () { $box.empty().prop( 'hidden', true ); toast( t( 'requestFailed' ), true ); } )
+			.always( function () { $b.prop( 'disabled', false ); } );
+	} );
+
+	$( document ).on( 'click', '.aigs-links-apply', function () {
+		var $b = $( this ), $box = $b.closest( '.aigs-linkbox' ), all = $box.data( 'items' ) || [], items = [];
+		$box.find( '.aigs-link-pick:checked' ).each( function () {
+			var it = all[ parseInt( $( this ).attr( 'data-i' ), 10 ) ];
+			items.push( { source: it.source, target: it.target, anchor: it.anchor } );
+		} );
+		if ( ! items.length ) { return; }
+		$b.prop( 'disabled', true );
+		post( 'aigs_links_apply', { items: items } ).done( function ( res ) {
+			if ( ! res.success ) { $b.prop( 'disabled', false ); toast( errMsg( res ), true ); return; }
+			var msg = fmt( t( 'linksAdded' ), res.data.applied );
+			$box.html( '<p><span class="aigs-tag aigs-tag--yes">' + ICON.check + esc( msg ) + '</span> '
+				+ ( res.data.op ? '<button type="button" class="aigs-btn aigs-btn--ghost aigs-btn--sm" data-aigs-links-undo="' + esc( res.data.op ) + '">' + esc( t( 'undo' ) ) + '</button>' : '' ) + '</p>' );
+			toast( msg );
+		} ).fail( function () { $b.prop( 'disabled', false ); toast( t( 'requestFailed' ), true ); } );
+	} );
+
+	$( document ).on( 'click', '[data-aigs-links-undo]', function () {
+		var $b = $( this );
+		$b.prop( 'disabled', true );
+		post( 'aigs_links_undo', { op: $b.attr( 'data-aigs-links-undo' ) } ).done( function ( res ) {
+			if ( ! res.success ) { $b.prop( 'disabled', false ); toast( errMsg( res ), true ); return; }
+			toast( t( 'undone' ) );
+			$b.replaceWith( '<span class="aigs-muted aigs-small">' + esc( t( 'undone' ) ) + '</span>' );
+		} ).fail( function () { $b.prop( 'disabled', false ); toast( t( 'requestFailed' ), true ); } );
+	} );
+
+	/* ---------- Brand facts page draft ---------- */
+	$( document ).on( 'click', '#aigs-facts-page, [data-aigs-trigger-facts]', function () {
+		var $b = $( this );
+		$b.prop( 'disabled', true );
+		post( 'aigs_facts_page' ).done( function ( res ) {
+			if ( ! res.success ) { $b.prop( 'disabled', false ); toast( errMsg( res ), true ); return; }
+			toast( t( 'draftCreated' ) );
+			window.location.href = res.data.edit;
+		} ).fail( function () { $b.prop( 'disabled', false ); toast( t( 'requestFailed' ), true ); } );
+	} );
+
 	$( '#aigs-onboard-dismiss' ).on( 'click', function () {
 		post( 'aigs_onboarding_dismiss' );
 		$( '#aigs-onboard' ).slideUp( 180 );
@@ -326,6 +385,9 @@
 		$.each( d.competitors || {}, function ( name, hit ) { if ( hit ) { comps.push( name ); } } );
 		if ( comps.length ) {
 			html += '<p class="aigs-small"><strong>' + esc( t( 'competitors' ) ) + ':</strong> ' + esc( comps.join( ', ' ) ) + '</p>';
+		}
+		if ( d.issues && d.issues.length ) {
+			html += '<div class="aigs-callout aigs-callout--warn"><p><strong>' + esc( t( 'wrongFacts' ) ) + '</strong><br>' + d.issues.map( esc ).join( '<br>' ) + '</p></div>';
 		}
 		html += '<div class="aigs-answertext" dir="auto">' + esc( d.answer ).replace( /\n/g, '<br>' ) + '</div>';
 		if ( d.citations && d.citations.length ) {
@@ -705,6 +767,46 @@
 				var ed = window.tinymce.get( 'content' );
 				if ( ed ) { ed.on( 'keyup change', schedule ); }
 			}
+		} );
+	} )();
+
+	/* ---------- Settings: local business card ---------- */
+	( function () {
+		var $t = $( '#aigs_btype' );
+		if ( ! $t.length ) { return; }
+		function sync() { $( '.aigs-local-only' ).toggle( '1' === String( $t.find( 'option:selected' ).attr( 'data-local' ) ) ); }
+		$t.on( 'change', sync );
+		sync();
+	} )();
+
+	/* ---------- Settings: AI provider ---------- */
+	( function () {
+		var $sel = $( '#aigs_prov' );
+		if ( ! $sel.length ) { return; }
+		function sync() {
+			var $o = $sel.find( 'option:selected' ), v = $sel.val(), keys = $o.attr( 'data-keys' );
+			$( '.aigs-custom-only' ).toggle( 'custom' === v );
+			$( '.aigs-gateway-only' ).toggle( 'custom' === v || 'openrouter' === v );
+			$( '#aigs_model' ).attr( 'placeholder', $o.attr( 'data-model' ) || '' );
+			if ( keys ) {
+				$( '#aigs-keys-link' ).attr( 'href', keys );
+				$( '#aigs-keys-link-wrap' ).show();
+			} else {
+				$( '#aigs-keys-link-wrap' ).hide();
+			}
+		}
+		$sel.on( 'change', sync );
+		sync();
+		$( '#aigs-ai-test' ).on( 'click', function () {
+			var $b = $( this ), $out = $( '#aigs-ai-test-out' );
+			$b.prop( 'disabled', true );
+			$out.text( '…' );
+			post( 'aigs_ai_test' ).done( function ( res ) {
+				if ( ! res.success ) { $out.text( '' ); toast( errMsg( res ), true ); return; }
+				$out.text( res.data.message );
+				toast( res.data.message );
+			} ).fail( function () { $out.text( '' ); toast( t( 'requestFailed' ), true ); } )
+				.always( function () { $b.prop( 'disabled', false ); } );
 		} );
 	} )();
 

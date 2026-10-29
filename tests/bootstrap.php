@@ -63,6 +63,16 @@ function wp_trim_words( $text, $n = 55, $more = '…' ) {
 	return count( $w ) > $n ? implode( ' ', array_slice( $w, 0, $n ) ) . $more : implode( ' ', $w );
 }
 function wp_generate_password( $n ) { return str_repeat( 'k', $n ); }
+function remove_accents( $s ) { return iconv( 'UTF-8', 'ASCII//TRANSLIT//IGNORE', $s ); }
+function number_format_i18n( $n, $d = 0 ) { return number_format( $n, $d ); }
+// Captures outgoing HTTP calls; tests set $GLOBALS['__http_reply'] to the fake response body.
+$GLOBALS['__http'] = array();
+function wp_remote_post( $url, $args ) {
+	$GLOBALS['__http'][] = array( 'url' => $url, 'args' => $args );
+	return array( 'code' => 200, 'body' => isset( $GLOBALS['__http_reply'] ) ? $GLOBALS['__http_reply'] : '{}' );
+}
+function wp_remote_retrieve_response_code( $r ) { return is_array( $r ) && isset( $r['code'] ) ? $r['code'] : 0; }
+function wp_remote_retrieve_body( $r ) { return is_array( $r ) && isset( $r['body'] ) ? $r['body'] : ''; }
 function is_wp_error( $x ) { return $x instanceof WP_Error; }
 class WP_Error {
 	private $c;
@@ -85,7 +95,7 @@ function aigs_business_name() {
 }
 
 $dir = dirname( __DIR__ ) . '/omnigeo-ai-seo/includes/';
-foreach ( array( 'text', 'db', 'ai-client', 'tracker', 'seo', 'answer', 'rules', 'findings', 'ai-visibility', 'llms', 'audit', 'woocommerce', 'admin', 'actions', 'scanner' ) as $f ) {
+foreach ( array( 'text', 'db', 'ai-client', 'tracker', 'seo', 'answer', 'rules', 'findings', 'ai-visibility', 'llms', 'audit', 'woocommerce', 'admin', 'actions', 'scanner', 'entity', 'links', 'visibility' ) as $f ) {
 	require_once $dir . 'class-aigs-' . $f . '.php';
 }
 

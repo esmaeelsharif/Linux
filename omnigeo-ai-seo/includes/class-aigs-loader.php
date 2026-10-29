@@ -45,6 +45,7 @@ class AIGS_Loader {
 	 */
 	private function __construct() {
 		$this->modules['db']            = new AIGS_DB();
+		$this->modules['ai_client']     = new AIGS_AI_Client();
 		$this->modules['tracker']       = new AIGS_Tracker();
 		$this->modules['schema']        = new AIGS_Schema();
 		$this->modules['entity']        = new AIGS_Entity();
@@ -54,6 +55,7 @@ class AIGS_Loader {
 		$this->modules['extract']       = new AIGS_Extract();
 		$this->modules['scanner']       = new AIGS_Scanner();
 		$this->modules['actions']       = new AIGS_Actions();
+		$this->modules['links']         = new AIGS_Links();
 		$this->modules['visibility']    = new AIGS_Visibility();
 		$this->modules['ai_visibility'] = new AIGS_AI_Visibility();
 		$this->modules['woocommerce']   = new AIGS_WooCommerce();

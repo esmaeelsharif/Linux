@@ -89,6 +89,9 @@
 .aigs-app input[type="text"],
 .aigs-app input[type="url"],
 .aigs-app input[type="password"],
+.aigs-app input[type="tel"],
+.aigs-app input[type="email"],
+.aigs-app input[type="number"],
 .aigs-app textarea,
 .aigs-app select {
 	font-family: var(--font); font-size: 14px; color: var(--fg);
@@ -467,3 +470,28 @@ a.aigs-stat { color: inherit; text-decoration: none; display: block; }
 .rtl .aigs-today__c { align-items: flex-start; }
 .rtl .aigs-btn svg[aria-hidden] path[d^="M5 12h14"] { transform: scaleX(-1); transform-origin: center; }
 .rtl .aigs-app { --font: Vazirmatn, Tahoma, -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif; }
+
+/* One-click internal links */
+.aigs-linkbox { flex-basis: 100%; padding: 12px 14px; background: var(--surface-2); border-radius: var(--r-sm); }
+.aigs-linklist { list-style: none; margin: 0; padding: 0; }
+.aigs-linklist li { padding: 8px 0; border-bottom: 1px solid var(--border); }
+.aigs-linklist li:last-child { border-bottom: 0; }
+.aigs-linklist label { display: grid; grid-template-columns: auto 1fr; gap: 4px 10px; cursor: pointer; }
+.aigs-linklist input { grid-row: span 2; margin-top: 3px; }
+.aigs-linklist__meta { font-size: 12.5px; color: var(--fg-2); }
+.aigs-linklist__snip { font-size: 13px; line-height: 1.6; }
+.aigs-linklist mark { background: var(--warn-bg); color: var(--fg); padding: 0 2px; border-radius: 3px; }
+
+/* Opening hours grid */
+.aigs-hours { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 8px 14px; max-width: 720px; }
+.aigs-hours label { display: flex; align-items: center; gap: 8px; }
+.aigs-hours span { width: 82px; font-size: 13px; color: var(--fg-2); flex: none; }
+.aigs-hours input { flex: 1; min-width: 0; }
+
+/* Brand facts */
+.aigs-facts { border: 1px solid var(--border); border-radius: var(--r-sm); padding: 10px 14px; margin: 14px 0; }
+.aigs-facts summary { cursor: pointer; display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; }
+.aigs-facts[open] summary { margin-bottom: 6px; }
+.aigs-callout--warn { background: var(--warn-bg); border-color: transparent; }
+.aigs-callout--warn svg, .aigs-callout--warn p { color: var(--warn); }
+.aigs-tag--warn { background: var(--warn-bg); color: var(--warn); }

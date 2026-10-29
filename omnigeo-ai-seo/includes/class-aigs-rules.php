@@ -50,8 +50,11 @@ class AIGS_Rules {
 			'site_noindex'          => array( 'site', self::CRITICAL, 'technical', __( 'Your whole site is hidden from search engines', 'omnigeo-ai-seo' ), __( 'Settings → Reading → “Discourage search engines” is on. Search engines, and the AI answers built on their indexes, will drop your pages.', 'omnigeo-ai-seo' ), __( 'Untick “Discourage search engines from indexing this site” unless this is a staging site.', 'omnigeo-ai-seo' ), 'settings:options-reading.php' ),
 			'site_plain_permalinks' => array( 'site', self::MEDIUM, 'technical', __( 'Use readable permalinks', 'omnigeo-ai-seo' ), __( 'URLs like ?p=123 say nothing about the page and are harder to cite.', 'omnigeo-ai-seo' ), __( 'Choose “Post name” under Settings → Permalinks.', 'omnigeo-ai-seo' ), 'settings:options-permalink.php' ),
 			'site_entity_incomplete' => array( 'site', self::MEDIUM, 'trust', __( 'Complete your brand entity profile', 'omnigeo-ai-seo' ), __( 'Assistants decide who you are from consistent identity data. Your Organization profile is missing a logo or sameAs links to official profiles.', 'omnigeo-ai-seo' ), __( 'Add your logo and links to official profiles (LinkedIn, Instagram, Wikipedia/Wikidata if you have them) in Settings.', 'omnigeo-ai-seo' ), 'settings:aigs-settings' ),
+			'site_local_incomplete' => array( 'site', self::MEDIUM, 'trust', __( 'Complete your local business details', 'omnigeo-ai-seo' ), __( 'People ask assistants “near me”, “open now” and “phone number” questions. Without an address, phone and opening hours in your LocalBusiness data, assistants guess or use outdated directory data.', 'omnigeo-ai-seo' ), __( 'Fill in the address, phone and opening hours under Settings → Local business details. Keep them identical to your Google Business Profile and other listings.', 'omnigeo-ai-seo' ), 'settings:aigs-settings#aigs-local' ),
 			'site_ai_blocked'       => array( 'site', self::HIGH, 'technical', __( 'AI search crawlers are blocked', 'omnigeo-ai-seo' ), __( 'Your robots.txt rule blocks all AI crawlers, including the search bots that power ChatGPT search and Perplexity answers.', 'omnigeo-ai-seo' ), __( 'If you want to appear in AI answers but not in training data, choose “Allow AI search, block AI training” in Settings.', 'omnigeo-ai-seo' ), 'settings:aigs-settings' ),
 			'site_meta_fallback'    => array( 'site', self::MEDIUM, 'technical', __( 'Your pages have no meta descriptions', 'omnigeo-ai-seo' ), __( 'No SEO plugin is active, so WordPress prints no meta description. Search engines and assistants then guess a summary.', 'omnigeo-ai-seo' ), __( 'Turn on the automatic meta description (built from each excerpt or opening paragraph).', 'omnigeo-ai-seo' ), 'auto:enable_meta_fallback' ),
+			'edge_blocks_ai'        => array( 'site', self::HIGH, 'technical', __( 'Your CDN or firewall blocks AI crawlers', 'omnigeo-ai-seo' ), __( 'A test request to your homepage with an AI search crawler’s user agent was blocked or challenged, while a normal browser request worked. Your robots.txt may allow these bots, but they never reach your pages, so AI search cannot read or cite you.', 'omnigeo-ai-seo' ), __( 'Allow the AI search crawlers you want in your CDN, firewall or security plugin. The details below name the edge network that answered.', 'omnigeo-ai-seo' ), '' ),
+			'ai_bots_absent'        => array( 'site', self::MEDIUM, 'technical', __( 'No AI search crawler has visited in 3 weeks', 'omnigeo-ai-seo' ), __( 'Tracking has been on for over three weeks and not a single AI search crawler or assistant fetch was recorded. Most often a CDN, firewall or security plugin blocks them before WordPress sees the request.', 'omnigeo-ai-seo' ), __( 'Check your CDN, firewall and security plugin for bot blocking, and make sure the AI search crawlers you want are allowed.', 'omnigeo-ai-seo' ), '' ),
 			'bot_404'               => array( 'site', self::HIGH, 'technical', __( 'AI bots are hitting missing pages', 'omnigeo-ai-seo' ), __( 'AI crawlers and assistants requested URLs on your site that return “not found”. These are often old links that assistants still remember.', 'omnigeo-ai-seo' ), __( 'Redirect each URL to the closest live page (for example with a redirect plugin) or restore the content.', 'omnigeo-ai-seo' ), '' ),
 
 			/* ---------- Page: indexability ---------- */
@@ -153,6 +156,17 @@ class AIGS_Rules {
 				'why'   => __( 'In your latest AI visibility check, the assistant named competitors for this question but not your brand.', 'omnigeo-ai-seo' ),
 				'fix'   => __( 'Create or improve a page that answers this exact question, with a direct answer, specifics and proof. Then link to it from related pages.', 'omnigeo-ai-seo' ),
 				'act'   => 'draft',
+			);
+		}
+		if ( 0 === strpos( $rule, 'vis_fact_' ) ) {
+			return array(
+				'grp'   => 'vis',
+				'sev'   => self::HIGH,
+				'cat'   => 'visibility',
+				'title' => __( 'AI answers state wrong facts about you', 'omnigeo-ai-seo' ),
+				'why'   => __( 'An assistant mentioned your brand with details that do not match your official facts, such as an old phone number, an unofficial website or a founding year. People act on these answers.', 'omnigeo-ai-seo' ),
+				'fix'   => __( 'Correct the detail everywhere it appears: your site, schema, Google Business Profile and other listings, directories and old press pages. A short “key facts” page helps assistants find the right version.', 'omnigeo-ai-seo' ),
+				'act'   => 'facts',
 			);
 		}
 		$cat = self::catalog();

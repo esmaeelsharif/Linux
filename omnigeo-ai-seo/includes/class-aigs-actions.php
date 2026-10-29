@@ -44,7 +44,7 @@ class AIGS_Actions {
 				continue;
 			}
 			// AI visibility gaps are one task per question; group them for the list.
-			$key = 'vis' === $m['grp'] ? 'vis_gap' : $rule;
+			$key = 'vis' === $m['grp'] ? ( 0 === strpos( $rule, 'vis_fact_' ) ? 'vis_fact' : 'vis_gap' ) : $rule;
 			if ( ! isset( $out[ $key ] ) ) {
 				$out[ $key ] = array_merge(
 					$m,
@@ -80,10 +80,10 @@ class AIGS_Actions {
 	 * @return array
 	 */
 	public static function task_rows( $rule, $limit = 100 ) {
-		if ( 'vis_gap' === $rule ) {
+		if ( 'vis_gap' === $rule || 'vis_fact' === $rule ) {
 			$rows = array();
 			foreach ( AIGS_Findings::query( array( 'post_id' => 0, 'limit' => 200 ) ) as $r ) {
-				if ( 0 === strpos( $r['rule'], 'vis_gap_' ) ) {
+				if ( 0 === strpos( $r['rule'], $rule . '_' ) ) {
 					$rows[] = $r;
 				}
 			}
@@ -145,6 +145,15 @@ class AIGS_Actions {
 			case 'ai_read_weak':
 				/* translators: %d: reads. */
 				return sprintf( _n( 'Read %d time by AI assistants in 30 days', 'Read %d times by AI assistants in 30 days', isset( $e['reads'] ) ? (int) $e['reads'] : 0, 'omnigeo-ai-seo' ), isset( $e['reads'] ) ? (int) $e['reads'] : 0 );
+			case 'edge_blocks_ai':
+				$who = ! empty( $e['cdn'] ) ? $e['cdn'] : __( 'an unknown edge network', 'omnigeo-ai-seo' );
+				/* translators: 1: CDN name, 2: bot names. */
+				return sprintf( __( 'Answered by %1$s. Blocked: %2$s.', 'omnigeo-ai-seo' ), $who, implode( ', ', isset( $e['blocked'] ) ? (array) $e['blocked'] : array() ) ) . ' ' . AIGS_Visibility::edge_fix_hint( isset( $e['cdn'] ) ? $e['cdn'] : '' );
+			case 'site_local_incomplete':
+				/* translators: %s: missing items. */
+				return sprintf( __( 'Missing: %s', 'omnigeo-ai-seo' ), implode( ', ', isset( $e['missing'] ) ? (array) $e['missing'] : array() ) );
+			case 'ai_bots_absent':
+				return AIGS_Visibility::edge_fix_hint( isset( $e['cdn'] ) ? $e['cdn'] : '' );
 			case 'site_entity_incomplete':
 				$miss = array();
 				if ( empty( $e['logo'] ) ) {
@@ -155,6 +164,9 @@ class AIGS_Actions {
 				}
 				/* translators: %s: missing items. */
 				return sprintf( __( 'Missing: %s', 'omnigeo-ai-seo' ), implode( ', ', $miss ) );
+		}
+		if ( 0 === strpos( $rule, 'vis_fact_' ) && isset( $e['issues'] ) ) {
+			return implode( ' · ', array_map( array( 'AIGS_AI_Visibility', 'issue_text' ), (array) $e['issues'] ) );
 		}
 		if ( 0 === strpos( $rule, 'vis_gap_' ) && isset( $e['competitors'] ) ) {
 			/* translators: %s: competitor names. */

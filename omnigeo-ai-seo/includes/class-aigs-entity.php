@@ -39,7 +39,14 @@ class AIGS_Entity {
 	public function output() {
 		// Avoid duplicate schema: if an SEO plugin already emits an entity graph,
 		// defer to it (unless the user forces our output off this behaviour).
+		// A local business still gets its own LocalBusiness node on the homepage,
+		// because general SEO plugins do not output address and opening hours.
 		if ( 'off' !== aigs_get( 'dedupe_schema', 'auto' ) && AIGS_SEO::outputs_schema() ) {
+			if ( self::is_local() && ( is_front_page() || is_home() ) ) {
+				$node = self::local_node_standalone();
+				echo "\n<!-- OmniGEO Ai SEO local business -->\n";
+				echo '<script type="application/ld+json">' . wp_json_encode( array_merge( array( '@context' => 'https://schema.org' ), $node ), JSON_HEX_TAG | JSON_HEX_AMP | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES ) . '</script>' . "\n";
+			}
 			return;
 		}
 
@@ -49,11 +56,12 @@ class AIGS_Entity {
 
 		// Organization (site-wide).
 		$org = array(
-			'@type' => 'Organization',
+			'@type' => self::schema_type(),
 			'@id'   => $org_id,
 			'name'  => aigs_business_name(),
 			'url'   => home_url( '/' ),
 		);
+		$org = array_merge( $org, self::contact_fields(), self::is_local() ? self::local_fields() : array() );
 		$logo = aigs_get( 'org_logo', '' );
 		if ( $logo ) {
 			$org['logo'] = array(
@@ -185,6 +193,274 @@ class AIGS_Entity {
 
 		echo "\n<!-- OmniGEO Ai SEO entity graph -->\n";
 		echo '<script type="application/ld+json">' . wp_json_encode( $json, JSON_HEX_TAG | JSON_HEX_AMP | JSON_UNESCAPED_UNICODE ) . '</script>' . "\n";
+	}
+
+	/* ============================================================
+	 * Business type and local business data
+	 * ============================================================ */
+
+	/**
+	 * Supported schema.org types: organisations and local businesses.
+	 *
+	 * @return array{org:array,local:array}
+	 */
+	public static function business_types() {
+		return array(
+			'org'   => array(
+				'Organization'            => __( 'Organization (general)', 'omnigeo-ai-seo' ),
+				'Corporation'             => __( 'Corporation', 'omnigeo-ai-seo' ),
+				'OnlineStore'             => __( 'Online store', 'omnigeo-ai-seo' ),
+				'NewsMediaOrganization'   => __( 'News / media publisher', 'omnigeo-ai-seo' ),
+				'EducationalOrganization' => __( 'Educational organization', 'omnigeo-ai-seo' ),
+				'NGO'                     => __( 'Non-profit / NGO', 'omnigeo-ai-seo' ),
+			),
+			'local' => array(
+				'LocalBusiness'               => __( 'Local business (general)', 'omnigeo-ai-seo' ),
+				'Store'                       => __( 'Shop / store', 'omnigeo-ai-seo' ),
+				'Restaurant'                  => __( 'Restaurant', 'omnigeo-ai-seo' ),
+				'CafeOrCoffeeShop'            => __( 'Café / coffee shop', 'omnigeo-ai-seo' ),
+				'Dentist'                     => __( 'Dentist', 'omnigeo-ai-seo' ),
+				'MedicalClinic'               => __( 'Medical clinic', 'omnigeo-ai-seo' ),
+				'Physician'                   => __( 'Physician / doctor', 'omnigeo-ai-seo' ),
+				'Pharmacy'                    => __( 'Pharmacy', 'omnigeo-ai-seo' ),
+				'VeterinaryCare'              => __( 'Veterinary care', 'omnigeo-ai-seo' ),
+				'LegalService'                => __( 'Legal service / law firm', 'omnigeo-ai-seo' ),
+				'AccountingService'           => __( 'Accounting service', 'omnigeo-ai-seo' ),
+				'FinancialService'            => __( 'Financial service', 'omnigeo-ai-seo' ),
+				'InsuranceAgency'             => __( 'Insurance agency', 'omnigeo-ai-seo' ),
+				'RealEstateAgent'             => __( 'Real estate agent', 'omnigeo-ai-seo' ),
+				'ProfessionalService'         => __( 'Professional service', 'omnigeo-ai-seo' ),
+				'HomeAndConstructionBusiness' => __( 'Home services / construction', 'omnigeo-ai-seo' ),
+				'Plumber'                     => __( 'Plumber', 'omnigeo-ai-seo' ),
+				'Electrician'                 => __( 'Electrician', 'omnigeo-ai-seo' ),
+				'HVACBusiness'                => __( 'Heating & air conditioning', 'omnigeo-ai-seo' ),
+				'AutoRepair'                  => __( 'Car repair', 'omnigeo-ai-seo' ),
+				'AutoDealer'                  => __( 'Car dealer', 'omnigeo-ai-seo' ),
+				'BeautySalon'                 => __( 'Beauty salon', 'omnigeo-ai-seo' ),
+				'HairSalon'                   => __( 'Hair salon', 'omnigeo-ai-seo' ),
+				'DaySpa'                      => __( 'Spa', 'omnigeo-ai-seo' ),
+				'HealthClub'                  => __( 'Gym / health club', 'omnigeo-ai-seo' ),
+				'Hotel'                       => __( 'Hotel', 'omnigeo-ai-seo' ),
+				'LodgingBusiness'             => __( 'Lodging (B&B, hostel…)', 'omnigeo-ai-seo' ),
+				'TravelAgency'                => __( 'Travel agency', 'omnigeo-ai-seo' ),
+				'ChildCare'                   => __( 'Child care', 'omnigeo-ai-seo' ),
+			),
+		);
+	}
+
+	/**
+	 * Saved type, validated (legacy "business_type" values fall back to Organization).
+	 *
+	 * @return string
+	 */
+	public static function schema_type() {
+		$t     = (string) aigs_get( 'business_type', 'Organization' );
+		$types = self::business_types();
+		return ( isset( $types['org'][ $t ] ) || isset( $types['local'][ $t ] ) ) ? $t : 'Organization';
+	}
+
+	/**
+	 * Is the business a local (physical) business?
+	 *
+	 * @return bool
+	 */
+	public static function is_local() {
+		$types = self::business_types();
+		return isset( $types['local'][ self::schema_type() ] );
+	}
+
+	/**
+	 * Days used for opening hours.
+	 *
+	 * @return array key => schema.org day
+	 */
+	public static function days() {
+		return array(
+			'mo' => 'Monday',
+			'tu' => 'Tuesday',
+			'we' => 'Wednesday',
+			'th' => 'Thursday',
+			'fr' => 'Friday',
+			'sa' => 'Saturday',
+			'su' => 'Sunday',
+		);
+	}
+
+	/**
+	 * Parse "09:00-13:00, 14:00-18:00" (or "24h") into ranges. Invalid parts are dropped.
+	 *
+	 * @param string $raw Raw text.
+	 * @return array [ [open, close] ]
+	 */
+	public static function parse_ranges( $raw ) {
+		$raw = strtolower( trim( strtr( (string) $raw, array( '–' => '-', '—' => '-', '.' => ':' ) ) ) );
+		if ( '' === $raw ) {
+			return array();
+		}
+		if ( in_array( $raw, array( '24h', '24/7', '24 h', '00:00-24:00' ), true ) ) {
+			return array( array( '00:00', '23:59' ) );
+		}
+		$out = array();
+		foreach ( preg_split( '/[,;]+/', $raw ) as $part ) {
+			if ( preg_match( '/^\s*(\d{1,2})(?::(\d{2}))?\s*-\s*(\d{1,2})(?::(\d{2}))?\s*$/', $part, $m ) ) {
+				$o  = (int) $m[1];
+				$om = isset( $m[2] ) && '' !== $m[2] ? (int) $m[2] : 0;
+				$c  = (int) $m[3];
+				$cm = isset( $m[4] ) && '' !== $m[4] ? (int) $m[4] : 0;
+				if ( $o > 24 || $c > 24 || $om > 59 || $cm > 59 ) {
+					continue;
+				}
+				if ( 24 === $c ) {
+					$c  = 23;
+					$cm = 59;
+				}
+				$out[] = array( sprintf( '%02d:%02d', $o % 24, $om ), sprintf( '%02d:%02d', $c, $cm ) );
+			}
+		}
+		return $out;
+	}
+
+	/**
+	 * openingHoursSpecification grouped by identical hours.
+	 *
+	 * @param array $hours day key => raw.
+	 * @return array
+	 */
+	public static function opening_hours( $hours ) {
+		$groups = array();
+		foreach ( self::days() as $k => $day ) {
+			$raw = isset( $hours[ $k ] ) ? $hours[ $k ] : '';
+			foreach ( self::parse_ranges( $raw ) as $r ) {
+				$groups[ $r[0] . '|' . $r[1] ][] = $day;
+			}
+		}
+		$out = array();
+		foreach ( $groups as $key => $days ) {
+			list( $open, $close ) = explode( '|', $key );
+			$out[] = array(
+				'@type'     => 'OpeningHoursSpecification',
+				'dayOfWeek' => count( $days ) > 1 ? $days : $days[0],
+				'opens'     => $open,
+				'closes'    => $close,
+			);
+		}
+		return $out;
+	}
+
+	/**
+	 * Phone and email (any organisation).
+	 *
+	 * @return array
+	 */
+	public static function contact_fields() {
+		$out   = array();
+		$phone = trim( (string) aigs_get( 'biz_phone', '' ) );
+		$email = sanitize_email( (string) aigs_get( 'biz_email', '' ) );
+		if ( '' !== $phone ) {
+			$out['telephone'] = $phone;
+		}
+		if ( '' !== $email ) {
+			$out['email'] = $email;
+		}
+		return $out;
+	}
+
+	/**
+	 * Local business properties (address, geo, hours…).
+	 *
+	 * @return array
+	 */
+	public static function local_fields() {
+		$out  = array();
+		$addr = array_filter(
+			array(
+				'streetAddress'   => trim( (string) aigs_get( 'biz_street', '' ) ),
+				'addressLocality' => trim( (string) aigs_get( 'biz_city', '' ) ),
+				'addressRegion'   => trim( (string) aigs_get( 'biz_region', '' ) ),
+				'postalCode'      => trim( (string) aigs_get( 'biz_postal', '' ) ),
+				'addressCountry'  => trim( (string) aigs_get( 'biz_country', '' ) ),
+			)
+		);
+		if ( $addr ) {
+			$out['address'] = array_merge( array( '@type' => 'PostalAddress' ), $addr );
+		}
+		$lat = aigs_get( 'biz_lat', '' );
+		$lng = aigs_get( 'biz_lng', '' );
+		if ( '' !== (string) $lat && '' !== (string) $lng ) {
+			$out['geo'] = array(
+				'@type'     => 'GeoCoordinates',
+				'latitude'  => (float) $lat,
+				'longitude' => (float) $lng,
+			);
+		}
+		$hours = self::opening_hours( (array) aigs_get( 'biz_hours', array() ) );
+		if ( $hours ) {
+			$out['openingHoursSpecification'] = $hours;
+		}
+		$price = trim( (string) aigs_get( 'biz_price', '' ) );
+		if ( '' !== $price ) {
+			$out['priceRange'] = $price;
+		}
+		$area = array_values( array_filter( array_map( 'trim', explode( ',', (string) aigs_get( 'biz_area', '' ) ) ) ) );
+		if ( $area ) {
+			$out['areaServed'] = count( $area ) > 1 ? $area : $area[0];
+		}
+		$map = (string) aigs_get( 'biz_map', '' );
+		if ( '' !== $map ) {
+			$out['hasMap'] = $map;
+		}
+		$logo = (string) aigs_get( 'org_logo', '' );
+		if ( '' !== $logo ) {
+			$out['image'] = $logo;
+		}
+		return $out;
+	}
+
+	/**
+	 * LocalBusiness node printed next to an SEO plugin's graph.
+	 *
+	 * @return array
+	 */
+	public static function local_node_standalone() {
+		$node = array(
+			'@type' => self::schema_type(),
+			'@id'   => home_url( '/#localbusiness' ),
+			'name'  => aigs_business_name(),
+			'url'   => home_url( '/' ),
+		);
+		$same = array();
+		foreach ( preg_split( '/[,\n]+/u', (string) aigs_get( 'org_sameas', '' ) ) as $u ) {
+			$u = trim( $u );
+			if ( filter_var( $u, FILTER_VALIDATE_URL ) ) {
+				$same[] = $u;
+			}
+		}
+		if ( $same ) {
+			$node['sameAs'] = $same;
+		}
+		return array_merge( $node, self::contact_fields(), self::local_fields() );
+	}
+
+	/**
+	 * What a local business profile is missing (empty when complete or not local).
+	 *
+	 * @return array Labels.
+	 */
+	public static function local_missing() {
+		if ( ! self::is_local() ) {
+			return array();
+		}
+		$miss = array();
+		if ( '' === trim( (string) aigs_get( 'biz_street', '' ) ) || '' === trim( (string) aigs_get( 'biz_city', '' ) ) ) {
+			$miss[] = __( 'address', 'omnigeo-ai-seo' );
+		}
+		if ( '' === trim( (string) aigs_get( 'biz_phone', '' ) ) ) {
+			$miss[] = __( 'phone', 'omnigeo-ai-seo' );
+		}
+		if ( ! self::opening_hours( (array) aigs_get( 'biz_hours', array() ) ) ) {
+			$miss[] = __( 'opening hours', 'omnigeo-ai-seo' );
+		}
+		return $miss;
 	}
 
 	/**

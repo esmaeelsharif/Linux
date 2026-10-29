@@ -744,6 +744,43 @@ class AIGS_Scanner {
 	}
 
 	/**
+	 * Re-evaluate the internal-link rules (orphan, no internal links) for a few
+	 * posts right away, using the link data stored by scan_post(). The full
+	 * scan does the same for every page.
+	 *
+	 * @param array $ids Post IDs.
+	 */
+	public static function refresh_link_rules( $ids ) {
+		global $wpdb;
+		$menu  = self::menu_ids();
+		$front = array( (int) get_option( 'page_on_front' ), (int) get_option( 'page_for_posts' ) );
+		foreach ( array_unique( array_map( 'intval', (array) $ids ) ) as $id ) {
+			$post = get_post( $id );
+			if ( ! $post || '' === get_post_meta( $id, '_aigs_scanned_at', true ) ) {
+				continue;
+			}
+			// Serialized int arrays store each ID as i:<id>; — count posts linking here.
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- small targeted count.
+			$inbound = (int) $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM {$wpdb->postmeta} m JOIN {$wpdb->posts} p ON p.ID = m.post_id WHERE m.meta_key = '_aigs_links_out' AND m.meta_value LIKE %s AND p.post_status = 'publish' AND p.ID <> %d", '%' . $wpdb->esc_like( 'i:' . $id . ';' ) . '%', $id ) );
+			$out     = get_post_meta( $id, '_aigs_links_out', true );
+			$out     = is_array( $out ) ? count( $out ) : 0;
+			$low     = (int) get_post_meta( $id, '_aigs_low', true );
+			$words   = (int) get_post_meta( $id, '_aigs_words', true );
+			$is_prod = 'product' === $post->post_type;
+			$found   = array();
+			if ( ! $is_prod && ! $low && ! in_array( $id, $front, true ) && 0 === $inbound && ! isset( $menu[ $id ] ) ) {
+				$found['orphan'] = array( 'suggest' => self::related( $post, array() ) );
+			}
+			if ( ! $is_prod && ! $low && 0 === $out && $words >= 300 ) {
+				$found['no_internal_links'] = array( 'suggest' => self::related( $post, array() ) );
+			}
+			update_post_meta( $id, '_aigs_links_in', $inbound );
+			AIGS_Findings::sync( $id, array( 'orphan', 'no_internal_links' ), $found );
+			self::refresh_score( $id );
+		}
+	}
+
+	/**
 	 * Site-level rule evaluation.
 	 *
 	 * @return array rule => evidence
@@ -765,8 +802,26 @@ class AIGS_Scanner {
 		if ( 'disallow' === aigs_get( 'ai_access', 'allow' ) ) {
 			$f['site_ai_blocked'] = array();
 		}
+		$local_missing = AIGS_Entity::local_missing();
+		if ( $local_missing ) {
+			$f['site_local_incomplete'] = array( 'missing' => $local_missing );
+		}
 		if ( '' === AIGS_SEO::active() && ! aigs_get( 'meta_fallback', 0 ) ) {
 			$f['site_meta_fallback'] = array();
+		}
+		if ( '0' !== (string) get_option( 'blog_public' ) && 'disallow' !== aigs_get( 'ai_access', 'allow' ) ) {
+			$probe = AIGS_Visibility::edge_probe();
+			if ( '' === $probe['error'] && $probe['blocked'] ) {
+				$f['edge_blocks_ai'] = array(
+					'cdn'     => $probe['cdn'],
+					'blocked' => $probe['blocked'],
+					'tested'  => $probe['tested'],
+				);
+			}
+			$since = (int) get_option( 'aigs_tracking_since', 0 );
+			if ( aigs_get( 'enable_tracking', 1 ) && $since && ( time() - $since ) > 21 * DAY_IN_SECONDS && ! isset( $f['edge_blocks_ai'] ) && 0 === AIGS_Tracker::ai_visits( 21 ) ) {
+				$f['ai_bots_absent'] = array( 'cdn' => $probe['cdn'] );
+			}
 		}
 		$missing = AIGS_Tracker::bot_404s( 30, 10 );
 		if ( $missing ) {

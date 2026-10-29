@@ -52,6 +52,18 @@ if ( file_exists( $tsv ) ) {
 	}
 }
 
+// Additions keyed by msgid (msgid<TAB>translation), merged on top and then removed.
+$add = __DIR__ . '/fa_IR.add.tsv';
+if ( file_exists( $add ) ) {
+	foreach ( file( $add, FILE_IGNORE_NEW_LINES ) as $line ) {
+		if ( '' === trim( $line ) ) {
+			continue;
+		}
+		list( $id, $t ) = explode( "\t", $line, 2 );
+		$tr[ str_replace( '\\n', "\n", $id ) ] = str_replace( '\\n', "\n", $t );
+	}
+}
+
 // Validate placeholders and tags.
 $errors  = 0;
 $missing = 0;
@@ -132,4 +144,7 @@ foreach ( $offsets as $o ) {
 $mo .= $ids . $strs;
 file_put_contents( $lang . 'omnigeo-ai-seo-fa_IR.mo', $mo );
 
+if ( file_exists( $add ) ) {
+	unlink( $add );
+}
 echo count( $entries ) . " strings, {$missing} untranslated, .po and .mo written\n";

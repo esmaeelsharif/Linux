@@ -20,7 +20,7 @@ class AIGS_DB {
 	/**
 	 * Bump whenever a table definition changes.
 	 */
-	const SCHEMA_VERSION = '3';
+	const SCHEMA_VERSION = '4';
 
 	/**
 	 * Register hooks.
@@ -109,6 +109,7 @@ class AIGS_DB {
 			position SMALLINT(5) UNSIGNED NOT NULL DEFAULT 0,
 			competitors TEXT NULL,
 			citations TEXT NULL,
+			issues TEXT NULL,
 			answer LONGTEXT NULL,
 			created_at DATETIME NOT NULL,
 			PRIMARY KEY  (id),
@@ -134,6 +135,14 @@ class AIGS_DB {
 
 		// Rows logged by 1.0.0 have no class; derive it from the bot map.
 		self::backfill_bot_class();
+
+		// When tracking started (used to tell "no AI bots yet" from "blocked").
+		if ( ! get_option( 'aigs_tracking_since' ) ) {
+			// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- one-off read of our own table.
+			$first = $wpdb->get_var( "SELECT MIN(created_at) FROM {$hits}" );
+			$ts    = $first ? strtotime( $first . ' UTC' ) - (int) ( get_option( 'gmt_offset' ) * HOUR_IN_SECONDS ) : time();
+			update_option( 'aigs_tracking_since', $ts ? $ts : time(), false );
+		}
 
 		update_option( 'aigs_db_version', self::SCHEMA_VERSION );
 	}

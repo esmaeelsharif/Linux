@@ -686,6 +686,19 @@ class AIGS_Tracker {
 	}
 
 	/**
+	 * Requests from AI search crawlers and assistant fetches (not training bots).
+	 *
+	 * @param int $days Window.
+	 * @return int
+	 */
+	public static function ai_visits( $days = 21 ) {
+		global $wpdb;
+		$table = self::table();
+		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- custom table.
+		return (int) $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM {$table} WHERE bot_class IN ('fetch','search') AND bot NOT IN ('bingbot','Applebot') AND created_at >= %s", AIGS_DB::since( $days ) ) );
+	}
+
+	/**
 	 * Missing URLs (404) requested by AI bots.
 	 *
 	 * @param int $days  Window.

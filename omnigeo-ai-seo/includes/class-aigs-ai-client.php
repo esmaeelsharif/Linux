@@ -2,9 +2,11 @@
 /**
  * Bring-your-own-key AI client.
  *
- * One place that talks to OpenAI, Anthropic and Perplexity, returns a uniform
- * result (text, model, citations, whether the answer was web-grounded) and
- * enforces a hard monthly request cap so a schedule can never run up a bill.
+ * One place that talks to OpenAI, Anthropic, Perplexity, Google Gemini,
+ * OpenRouter, Mistral, DeepSeek or any OpenAI-compatible endpoint (gateways,
+ * Azure-style proxies, local Ollama / LM Studio). Returns a uniform result
+ * (text, model, citations, whether the answer was web-grounded) and enforces a
+ * hard monthly request cap so a schedule can never run up a bill.
  *
  * @package OmniGEO_Ai_SEO
  */
@@ -21,7 +23,9 @@ class AIGS_AI_Client {
 	/**
 	 * Provider catalogue.
 	 *
+	 * url      = OpenAI-compatible chat completions endpoint ('' = native API or custom).
 	 * grounded = the provider answers with a live web search and returns sources.
+	 * keyless  = a key is optional (local servers).
 	 *
 	 * @return array
 	 */
@@ -30,17 +34,59 @@ class AIGS_AI_Client {
 			'openai'     => array(
 				'label'    => 'OpenAI (ChatGPT API)',
 				'model'    => 'gpt-4o-mini',
+				'url'      => 'https://api.openai.com/v1/chat/completions',
 				'grounded' => false,
+				'keys'     => 'https://platform.openai.com/api-keys',
 			),
 			'anthropic'  => array(
 				'label'    => 'Anthropic (Claude API)',
 				'model'    => 'claude-haiku-5-5',
+				'url'      => '',
 				'grounded' => false,
+				'keys'     => 'https://console.anthropic.com/settings/keys',
 			),
 			'perplexity' => array(
 				'label'    => 'Perplexity (Sonar, web search)',
 				'model'    => 'sonar',
+				'url'      => 'https://api.perplexity.ai/chat/completions',
 				'grounded' => true,
+				'keys'     => 'https://www.perplexity.ai/settings/api',
+			),
+			'gemini'     => array(
+				'label'    => 'Google Gemini',
+				'model'    => 'gemini-2.5-flash',
+				'url'      => 'https://generativelanguage.googleapis.com/v1beta/openai/chat/completions',
+				'grounded' => false,
+				'keys'     => 'https://aistudio.google.com/apikey',
+			),
+			'openrouter' => array(
+				'label'    => 'OpenRouter (hundreds of models, one key)',
+				'model'    => 'openai/gpt-4o-mini',
+				'url'      => 'https://openrouter.ai/api/v1/chat/completions',
+				'grounded' => false,
+				'keys'     => 'https://openrouter.ai/keys',
+			),
+			'mistral'    => array(
+				'label'    => 'Mistral AI',
+				'model'    => 'mistral-small-latest',
+				'url'      => 'https://api.mistral.ai/v1/chat/completions',
+				'grounded' => false,
+				'keys'     => 'https://console.mistral.ai/api-keys',
+			),
+			'deepseek'   => array(
+				'label'    => 'DeepSeek',
+				'model'    => 'deepseek-chat',
+				'url'      => 'https://api.deepseek.com/chat/completions',
+				'grounded' => false,
+				'keys'     => 'https://platform.deepseek.com/api_keys',
+			),
+			'custom'     => array(
+				'label'    => __( 'Other OpenAI-compatible endpoint', 'omnigeo-ai-seo' ),
+				'model'    => '',
+				'url'      => '',
+				'grounded' => false,
+				'keys'     => '',
+				'keyless'  => true,
 			),
 		);
 	}
@@ -70,6 +116,40 @@ class AIGS_AI_Client {
 	}
 
 	/**
+	 * Turn a base URL ("https://host/v1") or a full endpoint into the
+	 * chat-completions endpoint. Returns '' for anything that is not http(s).
+	 *
+	 * @param string $url Raw URL.
+	 * @return string
+	 */
+	public static function normalize_endpoint( $url ) {
+		$url = trim( (string) $url );
+		if ( '' === $url || ! preg_match( '#^https?://[^\s/]+#i', $url ) ) {
+			return '';
+		}
+		$url = preg_replace( '#[?\#].*$#', '', $url );
+		$url = rtrim( $url, '/' );
+		if ( ! preg_match( '#/chat/completions$#', $url ) ) {
+			$url .= '/chat/completions';
+		}
+		return $url;
+	}
+
+	/**
+	 * Endpoint for the active provider ('' when not applicable / not set).
+	 *
+	 * @return string
+	 */
+	public static function endpoint() {
+		$p   = self::provider();
+		$all = self::providers();
+		if ( 'custom' === $p ) {
+			return self::normalize_endpoint( aigs_get( 'ai_base_url', '' ) );
+		}
+		return $all[ $p ]['url'];
+	}
+
+	/**
 	 * API key. A wp-config.php constant wins over the database value.
 	 *
 	 * @return string
@@ -82,11 +162,14 @@ class AIGS_AI_Client {
 	}
 
 	/**
-	 * Is a key configured?
+	 * Is the provider configured well enough to send a request?
 	 *
 	 * @return bool
 	 */
 	public static function ready() {
+		if ( 'custom' === self::provider() ) {
+			return '' !== self::endpoint() && '' !== self::model();
+		}
 		return '' !== self::key();
 	}
 
@@ -96,8 +179,24 @@ class AIGS_AI_Client {
 	 * @return bool
 	 */
 	public static function grounded() {
+		$p = self::provider();
+		if ( in_array( $p, array( 'custom', 'openrouter' ), true ) ) {
+			// Gateways serve many models; the user says whether theirs searches the web
+			// (for example Perplexity models or ":online" variants on OpenRouter).
+			return (bool) aigs_get( 'ai_grounded', 0 );
+		}
 		$all = self::providers();
-		return ! empty( $all[ self::provider() ]['grounded'] );
+		return ! empty( $all[ $p ]['grounded'] );
+	}
+
+	/**
+	 * Human label of the active provider.
+	 *
+	 * @return string
+	 */
+	public static function label() {
+		$all = self::providers();
+		return $all[ self::provider() ]['label'];
 	}
 
 	/**
@@ -149,8 +248,12 @@ class AIGS_AI_Client {
 	 * @return array|WP_Error { text, model, provider, grounded, citations[] }
 	 */
 	public static function ask( $prompt, $args = array() ) {
-		$key = self::key();
-		if ( '' === $key ) {
+		$provider = self::provider();
+		$key      = self::key();
+		if ( ! self::ready() ) {
+			if ( 'custom' === $provider ) {
+				return new WP_Error( 'aigs_no_key', __( 'Enter the endpoint URL and model of your OpenAI-compatible provider in Settings first.', 'omnigeo-ai-seo' ) );
+			}
 			return new WP_Error( 'aigs_no_key', __( 'Add your AI API key in Settings first.', 'omnigeo-ai-seo' ) );
 		}
 		if ( self::remaining() <= 0 ) {
@@ -165,19 +268,24 @@ class AIGS_AI_Client {
 			)
 		);
 
-		$provider = self::provider();
-		$model    = self::model();
+		$model = self::model();
 		self::count_usage();
 
-		switch ( $provider ) {
-			case 'anthropic':
-				$res = self::anthropic( $key, $model, $prompt, $args );
-				break;
-			case 'perplexity':
-				$res = self::chat_completions( 'https://api.perplexity.ai/chat/completions', $key, $model, $prompt, $args );
-				break;
-			default:
-				$res = self::chat_completions( 'https://api.openai.com/v1/chat/completions', $key, $model, $prompt, $args );
+		if ( 'anthropic' === $provider ) {
+			$res = self::anthropic( $key, $model, $prompt, $args );
+		} else {
+			$headers = array();
+			if ( '' !== $key ) {
+				$headers['Authorization'] = 'Bearer ' . $key;
+			}
+			if ( 'openrouter' === $provider ) {
+				// Optional attribution headers recommended by OpenRouter.
+				$headers['HTTP-Referer'] = home_url( '/' );
+				$headers['X-Title']      = 'OmniGEO Ai SEO';
+			}
+			// OpenAI's newer models reject "max_tokens"; every current chat model accepts this name.
+			$args['token_param'] = 'openai' === $provider ? 'max_completion_tokens' : 'max_tokens';
+			$res                 = self::chat_completions( self::endpoint(), $headers, $model, $prompt, $args );
 		}
 		if ( is_wp_error( $res ) ) {
 			return $res;
@@ -227,16 +335,17 @@ class AIGS_AI_Client {
 	}
 
 	/**
-	 * OpenAI-compatible chat completions (OpenAI, Perplexity).
+	 * OpenAI-compatible chat completions (OpenAI, Perplexity, Gemini, OpenRouter,
+	 * Mistral, DeepSeek, custom).
 	 *
-	 * @param string $url    Endpoint.
-	 * @param string $key    Key.
-	 * @param string $model  Model.
-	 * @param string $prompt Prompt.
-	 * @param array  $args   Args.
+	 * @param string $url     Endpoint.
+	 * @param array  $headers Auth / extra headers.
+	 * @param string $model   Model.
+	 * @param string $prompt  Prompt.
+	 * @param array  $args    Args.
 	 * @return array|WP_Error
 	 */
-	private static function chat_completions( $url, $key, $model, $prompt, $args ) {
+	private static function chat_completions( $url, $headers, $model, $prompt, $args ) {
 		$messages = array();
 		if ( '' !== $args['system'] ) {
 			$messages[] = array(
@@ -248,19 +357,33 @@ class AIGS_AI_Client {
 			'role'    => 'user',
 			'content' => $prompt,
 		);
-		$data = self::post_json(
+		$param = isset( $args['token_param'] ) ? $args['token_param'] : 'max_tokens';
+		$data  = self::post_json(
 			$url,
-			array( 'Authorization' => 'Bearer ' . $key ),
+			$headers,
 			array(
-				'model'      => $model,
-				'messages'   => $messages,
-				'max_tokens' => (int) $args['max_tokens'],
+				'model'    => $model,
+				'messages' => $messages,
+				$param     => (int) $args['max_tokens'],
 			)
 		);
 		if ( is_wp_error( $data ) ) {
 			return $data;
 		}
-		$text = isset( $data['choices'][0]['message']['content'] ) ? (string) $data['choices'][0]['message']['content'] : '';
+		$text = isset( $data['choices'][0]['message']['content'] ) ? $data['choices'][0]['message']['content'] : '';
+		if ( is_array( $text ) ) {
+			// Some gateways return content parts: [ { type: text, text: … } ].
+			$joined = '';
+			foreach ( $text as $part ) {
+				if ( is_array( $part ) && isset( $part['text'] ) ) {
+					$joined .= $part['text'];
+				}
+			}
+			$text = $joined;
+		}
+		$text = (string) $text;
+		// Reasoning models served through gateways may wrap their thinking in <think> tags.
+		$text = trim( preg_replace( '#<think>.*?</think>#s', '', $text ) );
 
 		// Perplexity returns its sources as `citations` (URLs) and/or `search_results`.
 		$cites = array();
@@ -270,6 +393,14 @@ class AIGS_AI_Client {
 					$cites[] = $c;
 				} elseif ( is_array( $c ) && ! empty( $c['url'] ) ) {
 					$cites[] = $c['url'];
+				}
+			}
+		}
+		if ( ! empty( $data['choices'][0]['message']['annotations'] ) && is_array( $data['choices'][0]['message']['annotations'] ) ) {
+			// OpenRouter web search and OpenAI search models: url_citation annotations.
+			foreach ( $data['choices'][0]['message']['annotations'] as $an ) {
+				if ( isset( $an['url_citation']['url'] ) ) {
+					$cites[] = $an['url_citation']['url'];
 				}
 			}
 		}
@@ -361,6 +492,38 @@ class AIGS_AI_Client {
 			}
 		}
 		return array_slice( array_keys( $out ), 0, 30 );
+	}
+
+	/**
+	 * Register hooks.
+	 */
+	public function hooks() {
+		add_action( 'wp_ajax_aigs_ai_test', array( $this, 'ajax_test' ) );
+	}
+
+	/**
+	 * AJAX: send a tiny request to confirm the provider, key and model work.
+	 */
+	public function ajax_test() {
+		check_ajax_referer( 'aigs_admin', 'nonce' );
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_send_json_error( array( 'message' => __( 'Permission denied.', 'omnigeo-ai-seo' ) ) );
+		}
+		$start = microtime( true );
+		$res   = self::ask(
+			'Reply with the single word: OK',
+			array( 'max_tokens' => 20 )
+		);
+		if ( is_wp_error( $res ) ) {
+			wp_send_json_error( array( 'message' => $res->get_error_message() ) );
+		}
+		wp_send_json_success(
+			array(
+				/* translators: 1: provider label, 2: model, 3: seconds. */
+				'message' => sprintf( __( 'Connected to %1$s (%2$s) in %3$s s.', 'omnigeo-ai-seo' ), self::label(), $res['model'], number_format_i18n( microtime( true ) - $start, 1 ) ),
+				'left'    => self::remaining(),
+			)
+		);
 	}
 
 	/**
