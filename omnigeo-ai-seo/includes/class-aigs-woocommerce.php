@@ -158,11 +158,10 @@ class AIGS_WooCommerce {
 					return '';
 				}
 				$plain = implode( "\n", $facts );
-				$lang  = AIGS_Text::is_rtl_script( $plain ) ? 'Persian/Arabic script, the same language as the data' : 'the same language as the data';
 				$res   = AIGS_AI_Client::ask(
 					"Product data:\n{$plain}\n\nWrite a 25 to 50 word product summary: what it is, who it is for and the most important specification. Return only the summary text.",
 					array(
-						'system'     => 'You write e-commerce product summaries in ' . $lang . '. Use only the facts provided. Never invent prices, materials, sizes, certifications or claims.',
+						'system'     => 'You write e-commerce product summaries in the same language and script as the product data. Use only the facts provided. Never invent prices, materials, sizes, certifications or claims.',
 						'max_tokens' => 300,
 					)
 				);

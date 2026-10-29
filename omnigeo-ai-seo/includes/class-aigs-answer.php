@@ -381,8 +381,7 @@ class AIGS_Answer {
 			wp_send_json_success( $cached );
 		}
 
-		$lang   = AIGS_Text::is_rtl_script( $plain ) ? 'the same language as the page (Persian/Arabic script)' : 'the same language as the page';
-		$system = 'You edit web pages so answer engines can quote them. Write in ' . $lang . '. Use only facts stated in the page text. Do not invent numbers, prices, names or claims. If the page does not contain the answer, reply exactly: NO_ANSWER';
+		$system = 'You edit web pages so answer engines can quote them. Write in the same language and script as the page text. Use only facts stated in the page text. Do not invent numbers, prices, names or claims. If the page does not contain the answer, reply exactly: NO_ANSWER';
 		$prompt = "Question: {$question}\n\nPage title: {$title}\n\nPage text:\n{$plain}\n\nWrite one direct answer paragraph of 40 to 60 words that answers the question in the first sentence and could be quoted on its own. Return only the paragraph, no heading, no quotes, no markdown.";
 
 		$res = AIGS_AI_Client::ask(

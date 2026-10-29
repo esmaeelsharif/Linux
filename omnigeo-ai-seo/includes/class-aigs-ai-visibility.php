@@ -67,7 +67,7 @@ class AIGS_AI_Visibility {
 	}
 
 	/**
-	 * Brand name + aliases (e.g. Persian and Latin spellings).
+	 * Brand name + aliases (other spellings, scripts, abbreviations).
 	 *
 	 * @return array
 	 */
@@ -138,7 +138,9 @@ class AIGS_AI_Visibility {
 	}
 
 	/**
-	 * Build suggested prompts from the business profile, in the site language.
+	 * Build suggested prompts from the business profile. The templates are
+	 * translatable, so a site in German, Spanish, Arabic… gets prompts in its own
+	 * language once the plugin is translated.
 	 *
 	 * @return array
 	 */
@@ -146,29 +148,37 @@ class AIGS_AI_Visibility {
 		$industry = trim( (string) aigs_get( 'industry', '' ) );
 		$location = trim( (string) aigs_get( 'location', '' ) );
 		$name     = aigs_business_name();
-		$fa       = AIGS_Text::is_rtl_script( $industry . $location . $name ) || 0 === strpos( get_locale(), 'fa' );
+		$ind      = '' !== $industry ? $industry : __( 'this industry', 'omnigeo-ai-seo' );
 
-		if ( $fa ) {
-			$ind = '' !== $industry ? $industry : 'این حوزه';
-			$loc = '' !== $location ? ' در ' . $location : '';
+		if ( '' !== $location ) {
 			return array(
-				'بهترین ' . $ind . $loc . ' کدام است؟',
-				'یک ' . $ind . ' معتبر و قابل اعتماد' . $loc . ' معرفی کن.',
-				'برای ' . $ind . $loc . ' به کجا مراجعه کنم؟',
-				'مقایسه بهترین گزینه‌های ' . $ind . ' برای کسب‌وکارهای کوچک',
-				'آیا ' . $name . ' انتخاب خوبی است و چه جایگزین‌هایی دارد؟',
-				'قیمت ' . $ind . $loc . ' چقدر است و کدام ارزش خرید دارد؟',
+				/* translators: 1: industry, 2: location. */
+				sprintf( __( 'What are the best %1$s providers in %2$s?', 'omnigeo-ai-seo' ), $ind, $location ),
+				/* translators: 1: industry, 2: location. */
+				sprintf( __( 'Recommend a trustworthy %1$s company in %2$s.', 'omnigeo-ai-seo' ), $ind, $location ),
+				/* translators: 1: industry, 2: location. */
+				sprintf( __( 'Who should I contact for %1$s services in %2$s?', 'omnigeo-ai-seo' ), $ind, $location ),
+				/* translators: %s: industry. */
+				sprintf( __( 'Compare top %s options for a small business.', 'omnigeo-ai-seo' ), $ind ),
+				/* translators: %s: brand name. */
+				sprintf( __( 'Is %s a good choice and what are the alternatives?', 'omnigeo-ai-seo' ), $name ),
+				/* translators: 1: industry, 2: location. */
+				sprintf( __( 'How much does %1$s cost in %2$s and which option is worth it?', 'omnigeo-ai-seo' ), $ind, $location ),
 			);
 		}
-		$ind = '' !== $industry ? $industry : __( 'this industry', 'omnigeo-ai-seo' );
-		$loc = '' !== $location ? ' in ' . $location : '';
 		return array(
-			sprintf( 'What are the best %1$s providers%2$s?', $ind, $loc ),
-			sprintf( 'Recommend a trustworthy %1$s company%2$s.', $ind, $loc ),
-			sprintf( 'Who should I contact for %1$s services%2$s?', $ind, $loc ),
-			sprintf( 'Compare top %s options for a small business.', $ind ),
-			sprintf( 'Is %s a good choice and what are the alternatives?', $name ),
-			sprintf( 'How much does %1$s cost%2$s and which option is worth it?', $ind, $loc ),
+			/* translators: %s: industry. */
+			sprintf( __( 'What are the best %s providers?', 'omnigeo-ai-seo' ), $ind ),
+			/* translators: %s: industry. */
+			sprintf( __( 'Recommend a trustworthy %s company.', 'omnigeo-ai-seo' ), $ind ),
+			/* translators: %s: industry. */
+			sprintf( __( 'Who should I contact for %s services?', 'omnigeo-ai-seo' ), $ind ),
+			/* translators: %s: industry. */
+			sprintf( __( 'Compare top %s options for a small business.', 'omnigeo-ai-seo' ), $ind ),
+			/* translators: %s: brand name. */
+			sprintf( __( 'Is %s a good choice and what are the alternatives?', 'omnigeo-ai-seo' ), $name ),
+			/* translators: %s: industry. */
+			sprintf( __( 'How much does %s cost and which option is worth it?', 'omnigeo-ai-seo' ), $ind ),
 		);
 	}
 
@@ -341,7 +351,7 @@ class AIGS_AI_Visibility {
 	}
 
 	/**
-	 * Digits only (Persian/Arabic digits converted).
+	 * Digits only (non-Latin digits converted).
 	 *
 	 * @param string $s Text.
 	 * @return string
@@ -962,9 +972,8 @@ class AIGS_AI_Visibility {
 		if ( '' === $prompt ) {
 			wp_send_json_error( array( 'message' => __( 'Not found.', 'omnigeo-ai-seo' ) ) );
 		}
-		$fa    = AIGS_Text::is_rtl_script( $prompt );
 		$brand = aigs_business_name();
-		$title = trim( preg_replace( '/[?؟]+\s*$/u', '', $prompt ) );
+		$title = trim( preg_replace( '/[?\x{061F}]+\s*$/u', '', $prompt ) );
 
 		$h = static function ( $text ) {
 			return "<!-- wp:heading -->\n<h2 class=\"wp-block-heading\">" . esc_html( $text ) . "</h2>\n<!-- /wp:heading -->\n\n";
@@ -972,19 +981,14 @@ class AIGS_AI_Visibility {
 		$p = static function ( $text ) {
 			return "<!-- wp:paragraph -->\n<p>" . esc_html( $text ) . "</p>\n<!-- /wp:paragraph -->\n\n";
 		};
-		if ( $fa ) {
-			$content = $p( '[پاسخ مستقیم: در ۴۰ تا ۶۰ کلمه به «' . $prompt . '» پاسخ دهید. جمله اول خود پاسخ باشد.]' )
-				. $h( 'معیارهای انتخاب' ) . $p( '[معیارهایی که خریدار بر اساس آن تصمیم می‌گیرد را فهرست کنید.]' )
-				. $h( 'مقایسه گزینه‌ها' ) . $p( '[یک جدول مقایسه با اطلاعات واقعی و قابل بررسی اضافه کنید.]' )
-				. $h( 'چرا ' . $brand . '؟' ) . $p( '[شواهد مشخص: تجربه، آمار، نظر مشتریان، گواهی‌ها.]' )
-				. $h( 'سؤالات متداول' ) . $p( '[۳ تا ۵ سؤال واقعی مشتریان با پاسخ کوتاه.]' );
-		} else {
-			$content = $p( '[Direct answer: answer “' . $prompt . '” in 40–60 words. Make the first sentence the answer.]' )
-				. $h( 'How to choose' ) . $p( '[List the criteria buyers actually decide on.]' )
-				. $h( 'Options compared' ) . $p( '[Add a comparison table with real, checkable facts.]' )
-				. $h( 'Why ' . $brand ) . $p( '[Concrete proof: experience, numbers, reviews, certifications.]' )
-				. $h( 'Frequently asked questions' ) . $p( '[3–5 real customer questions with short answers.]' );
-		}
+		// Outline placeholders follow the site language (translatable strings).
+		/* translators: %s: the question. */
+		$content = $p( sprintf( __( '[Direct answer: answer “%s” in 40–60 words. Make the first sentence the answer.]', 'omnigeo-ai-seo' ), $prompt ) )
+			. $h( __( 'How to choose', 'omnigeo-ai-seo' ) ) . $p( __( '[List the criteria buyers actually decide on.]', 'omnigeo-ai-seo' ) )
+			. $h( __( 'Options compared', 'omnigeo-ai-seo' ) ) . $p( __( '[Add a comparison table with real, checkable facts.]', 'omnigeo-ai-seo' ) )
+			/* translators: %s: brand name. */
+			. $h( sprintf( __( 'Why %s', 'omnigeo-ai-seo' ), $brand ) ) . $p( __( '[Concrete proof: experience, numbers, reviews, certifications.]', 'omnigeo-ai-seo' ) )
+			. $h( __( 'Frequently asked questions', 'omnigeo-ai-seo' ) ) . $p( __( '[3–5 real customer questions with short answers.]', 'omnigeo-ai-seo' ) );
 
 		$post_id = wp_insert_post(
 			array(

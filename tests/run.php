@@ -520,5 +520,22 @@ same( 'no upgrade while locked', '1', get_option( 'aigs_db_version' ) );
 delete_option( 'aigs_upgrade_lock' );
 $GLOBALS['__is_admin'] = false;
 
+/* ============================================================
+ * 1.2.1: international text handling
+ * ============================================================ */
+same( 'word count chinese (one per character)', 7, AIGS_Text::word_count( '我们的产品很好' ) );
+same( 'word count japanese mixed', 7, AIGS_Text::word_count( 'WordPressのプラグイン' ) );
+same( 'word count korean by spaces', 3, AIGS_Text::word_count( '워드프레스 플러그인 설치' ) );
+check( 'brand accent folding', AIGS_Text::contains_term( 'Best cafe in town: Cafe Muller', 'Café Müller' ) );
+check( 'brand accent folding reverse', AIGS_Text::contains_term( 'Visit Café Müller today', 'Cafe Muller' ) );
+same( 'normalize accents', 'creme brulee', AIGS_Text::normalize( 'Crème Brûlée' ) );
+update_option( 'aigs_settings', array( 'industry' => 'dental clinic', 'location' => 'Berlin' ) );
+$vis = new AIGS_AI_Visibility();
+$sp  = $vis->suggested_prompts();
+same( 'suggested prompt with location', 'What are the best dental clinic providers in Berlin?', $sp[0] );
+update_option( 'aigs_settings', array( 'industry' => 'dental clinic' ) );
+$sp = $vis->suggested_prompts();
+same( 'suggested prompt without location', 'What are the best dental clinic providers?', $sp[0] );
+
 echo "\n{$GLOBALS['__pass']} passed, {$GLOBALS['__fail']} failed\n";
 exit( $GLOBALS['__fail'] ? 1 : 0 );

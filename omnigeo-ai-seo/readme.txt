@@ -30,8 +30,8 @@ Everything core runs locally on your site and is free. Optional AI features use 
 
 = Answer Optimizer (in the editor) =
 
-* Detects the main question a page should answer (from the title or focus keyword, in Persian or English).
-* Checks whether the opening actually answers it, and flags filler openings such as “In this article…” or “در این مقاله…”.
+* Detects the main question a page should answer, from the title or focus keyword.
+* Checks whether the opening actually answers it, and flags filler openings such as “In this article…”.
 * Finds question headings without a direct answer, comparison pages without a table and how-to pages without numbered steps.
 * Turns answered question headings into **FAQ schema** with one click.
 * Optional: **drafts a 40–60 word direct answer** from your own text with your AI key, for you to review and insert. Revisions keep your previous version.
@@ -57,13 +57,13 @@ Everything core runs locally on your site and is free. Optional AI features use 
 
 = AI Visibility monitoring =
 
-* Save the questions buyers ask, your brand spellings (for example Persian and Latin) and up to 10 competitors.
+* Save the questions buyers ask, other spellings of your brand (abbreviations, local-language or other-script versions) and up to 10 competitors.
 * Each check stores the full answers and measures **mentions, recommendations, citations, position and share of voice**, compared with the previous check.
 * Shows the **sources assistants cited** and labels them as yours, a competitor or an opportunity.
 * Questions where competitors appear and you do not become tasks, with a one-click **draft page** outline.
 * **Brand facts accuracy check**: enter your official phone numbers, emails, domains, founding year and statements that are outdated. Every answer that mentions you is checked, and wrong details (an old phone number, a lookalike domain, a wrong founding year) become a high-priority task. Create a “key facts” page draft from your facts in one click.
 * Answers from providers without live web search are labelled as model knowledge, not web citations.
-* Matching handles Persian script variants (ی/ي, ک/ك), half-spaces and Persian digits.
+* Brand matching ignores letter case, accents, spacing and hyphens, and works with non-Latin scripts.
 
 = AI Traffic (Bot & Referral Intelligence) =
 
@@ -141,9 +141,6 @@ OpenAI, Anthropic, Perplexity, Google Gemini, OpenRouter, Mistral, DeepSeek, or 
 = My robots.txt allows AI bots. Why don't they visit? =
 Often a CDN or firewall (for example Cloudflare's AI bot blocking or Bot Fight Mode) stops them before WordPress sees the request. OmniGEO's CDN check tests this and tells you where to change it.
 
-= Does it work for Persian (Farsi) sites? =
-Yes. Word counts, question detection, filler-opening detection and brand matching handle Persian and Arabic script, including ی/ي and ک/ك variants, half-spaces (ZWNJ), Persian digits and Solar Hijri years in titles. The admin supports right-to-left layouts.
-
 = Does it work with Yoast SEO and Rank Math? =
 Yes. It reads your focus keyword from Yoast, Rank Math, SEOPress or All in One SEO, and it steps aside on schema so you never get a duplicate entity graph.
 
@@ -153,8 +150,8 @@ Yes. On product pages it lets WooCommerce own the Product schema to avoid confli
 = Does it cost money or need a cloud account? =
 No. Everything runs on your own site. The only outside calls are the optional AI features, which use your own API key and a monthly limit you set, the optional bot verification, and IndexNow.
 
-= Does it work for non English content? =
-Yes. The extractability analyzer counts and reads non Latin text correctly, including Persian, Arabic and CJK.
+= Does it work for content that is not in English? =
+Yes. Word counts and brand matching work across languages and scripts, including accented Latin languages, right-to-left languages such as Arabic and Hebrew, and Chinese and Japanese, which are written without spaces. Questions are recognised by their question mark in any language, and by question words in several languages. The admin supports right-to-left layouts, and the interface is fully translatable.
 
 == Screenshots ==
 
@@ -169,6 +166,8 @@ Yes. The extractability analyzer counts and reads non Latin text correctly, incl
 
 = 1.2.1 =
 Important stability fix, please update:
+* Brand matching now ignores Latin accents (Café = Cafe), and word counts are correct for Chinese and Japanese.
+* Suggested AI visibility questions and the draft page outline are translatable and follow your site language.
 * The database upgrade no longer runs during visitors' page loads. On sites with a large AI-bot log from 1.0, the upgrade could lock the table while every visitor tried to run it at the same time, making the site unresponsive. It now runs once, in the admin or cron, behind a lock, and old rows are updated in small background batches.
 * Bot logging pauses until the upgrade is done.
 * Every feature that runs on the public site or in cron is now isolated: if one fails, it is skipped and logged, and the site keeps working. Administrators see a notice with the error to report.
@@ -186,17 +185,17 @@ New:
 * Growth Center dashboard with answer-readiness score, trend, today's top tasks, recent wins and a getting-started checklist.
 * Site-wide scanner (batched, cached by content hash, weekly background run) with a versioned rule engine.
 * Action Center: prioritised tasks with explanations, affected pages, link suggestions, Re-check to verify fixes, mark as intentional, and important-page flag.
-* Answer Optimizer in the editor: main question, direct-answer check, filler-opening detection (English and Persian), unanswered question headings, one-click FAQ schema, optional AI draft of a direct answer.
+* Answer Optimizer in the editor: main question, direct-answer check, filler-opening detection, unanswered question headings, one-click FAQ schema, optional AI draft of a direct answer.
 * WooCommerce Catalog Copilot: product checks and bulk fixes with preview, approval and undo.
 * AI Visibility monitoring: tracked questions, brand aliases, competitors, run history, mentions, recommendations, citations, position, share of voice, cited sources and visibility gaps as tasks.
 * Bot & Referral Intelligence: bot purpose classes, optional identity verification, 404s requested by AI bots, utm_source detection, log retention with daily roll-ups.
 * robots.txt mode "Allow AI search, block AI training".
 * Optional meta description fallback, automatic IndexNow pings and weekly email report.
-* Persian/Arabic-aware text handling throughout, and right-to-left admin styles.
+* Multilingual text handling (non-Latin scripts and digits) and right-to-left admin styles.
 
 Fixes and hardening:
 * robots.txt: the plugin no longer adds "Allow: /" groups for AI bots. Those groups overrode your default rules (such as Disallow: /wp-admin/), and on sites set to discourage search engines they re-opened the site to AI bots. "Block all" no longer blocks Bing and Apple search.
-* URL audit: redirects are re-validated against private addresses, response size is limited, word counts are correct for Persian/Arabic text, and FAQ/Speakable markup is reported as optional instead of failing. New checks: noindex (meta and header), canonical and AI search crawler access.
+* URL audit: redirects are re-validated against private addresses, response size is limited, word counts are correct for non-Latin text, and FAQ/Speakable markup is reported as optional instead of failing. New checks: noindex (meta and header), canonical and AI search crawler access.
 * The saved API key is no longer printed into the settings page; it can be removed or set in wp-config.php (AIGS_AI_API_KEY). Provider values are validated. AI requests have a monthly limit.
 * Anthropic requests use a current model and read the text block of the reply correctly.
 * FAQ schema is skipped when a Yoast or Rank Math FAQ block already outputs it. HowTo nodes without steps are no longer printed.

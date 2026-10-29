@@ -59,7 +59,7 @@ msgid "%1$d questions · %2$s. Every number links back to a stored answer."
 msgstr "%1$d سؤال – %2$s. هر عدد به یک پاسخ ذخیره‌شده قابل ردیابی است."
 
 #. translators: 1: brand, 2: industry, 3: location.
-#: includes/class-aigs-ai-visibility.php:1033
+#: includes/class-aigs-ai-visibility.php:1037
 #, php-format
 msgid "%1$s is a %2$s based in %3$s."
 msgstr "%1$s یک %2$s مستقر در %3$s است."
@@ -141,7 +141,7 @@ msgid_plural "%d products"
 msgstr[0] "%d محصول"
 
 #. translators: %d is a value inserted into the message.
-#: includes/class-aigs-woocommerce.php:456
+#: includes/class-aigs-woocommerce.php:455
 #, php-format
 msgid "%d product attributes set, ideal for AI comparison."
 msgstr "%d ویژگی محصول تعریف شده، عالی برای مقایسه توسط هوش مصنوعی."
@@ -168,7 +168,7 @@ msgid_plural "%d requests"
 msgstr[0] "%d درخواست"
 
 #. translators: %d is a value inserted into the message.
-#: includes/class-aigs-woocommerce.php:467
+#: includes/class-aigs-woocommerce.php:466
 #, php-format
 msgid "%d review(s), social proof AI favours."
 msgstr "%d نظر، اعتبار اجتماعی که هوش مصنوعی ترجیح می‌دهد."
@@ -382,7 +382,7 @@ msgid "API key"
 msgstr "کلید API"
 
 #. translators: %s: brand name.
-#: includes/class-aigs-ai-visibility.php:1099
+#: includes/class-aigs-ai-visibility.php:1103
 #, php-format
 msgid "About %s: key facts"
 msgstr "درباره %s: اطلاعات کلیدی"
@@ -451,7 +451,7 @@ msgstr "از ۲ تا ۳ صفحه مرتبط به آن لینک دهید. پیش�
 msgid "Add a short bio and the OmniGEO author fields (job title, LinkedIn) to the user profile."
 msgstr "یک بیوگرافی کوتاه و فیلدهای نویسنده OmniGEO (عنوان شغلی، لینکدین) را در پروفایل کاربر وارد کنید."
 
-#: includes/class-aigs-woocommerce.php:430
+#: includes/class-aigs-woocommerce.php:429
 msgid "Add a short description, AI uses it as the product’s one-line summary."
 msgstr "توضیح کوتاه اضافه کنید؛ هوش مصنوعی از آن به‌عنوان خلاصه یک‌خطی محصول استفاده می‌کند."
 
@@ -471,7 +471,7 @@ msgstr "برای تصاویر محصولات متن جایگزین بنویسی�
 msgid "Add at least 2–3 attributes under Product data → Attributes."
 msgstr "دست‌کم ۲ تا ۳ ویژگی در «اطلاعات محصول ← ویژگی‌ها» اضافه کنید."
 
-#: includes/class-aigs-ai-visibility.php:593
+#: includes/class-aigs-ai-visibility.php:603
 msgid "Add at least one tracked question first."
 msgstr "ابتدا دست‌کم یک سؤال برای پیگیری اضافه کنید."
 
@@ -523,7 +523,7 @@ msgstr "واقعیت‌ها، مراحل، مثال‌ها و جزئیاتی ر�
 msgid "Add to FAQ schema"
 msgstr "افزودن به اسکیمای FAQ"
 
-#: includes/class-aigs-ai-client.php:257 includes/class-aigs-ai-visibility.php:596 includes/class-aigs-answer.php:361 includes/class-aigs-woocommerce.php:198
+#: includes/class-aigs-ai-client.php:257 includes/class-aigs-ai-visibility.php:606 includes/class-aigs-answer.php:361 includes/class-aigs-woocommerce.php:197
 msgid "Add your AI API key in Settings first."
 msgstr "ابتدا کلید API هوش مصنوعی را در تنظیمات وارد کنید."
 
@@ -546,7 +546,7 @@ msgid "Added to the FAQ list in the Schema box. Save the post to publish it."
 msgstr "به فهرست سؤالات متداول در کادر اسکیما اضافه شد. برای انتشار، نوشته را ذخیره کنید."
 
 #. translators: %s: address.
-#: includes/class-aigs-ai-visibility.php:1057
+#: includes/class-aigs-ai-visibility.php:1061
 #, php-format
 msgid "Address: %s"
 msgstr "آدرس: %s"
@@ -721,7 +721,7 @@ msgstr "%1$d از %2$d سؤال پرسیده شد"
 msgid "Assign a specific product category."
 msgstr "یک دسته‌بندی مشخص برای محصول انتخاب کنید."
 
-#: includes/class-aigs-woocommerce.php:488
+#: includes/class-aigs-woocommerce.php:487
 msgid "Assigned to a product category."
 msgstr "در یک دسته‌بندی محصول قرار دارد."
 
@@ -883,7 +883,7 @@ msgstr "سلامت کاتالوگ"
 msgid "Categorize products"
 msgstr "محصولات را دسته‌بندی کنید"
 
-#: includes/class-aigs-woocommerce.php:488 includes/class-aigs-woocommerce.php:490
+#: includes/class-aigs-woocommerce.php:487 includes/class-aigs-woocommerce.php:489
 msgid "Categorized"
 msgstr "دسته‌بندی‌شده"
 
@@ -959,6 +959,12 @@ msgstr "بستن"
 msgid "Cloudflare (CF-Connecting-IP)"
 msgstr "کلودفلر (CF-Connecting-IP)"
 
+#. translators: %s: industry.
+#: includes/class-aigs-ai-visibility.php:162 includes/class-aigs-ai-visibility.php:177
+#, php-format
+msgid "Compare top %s options for a small business."
+msgstr "مقایسه بهترین گزینه‌های %s برای کسب‌وکارهای کوچک."
+
 #: includes/class-aigs-extract.php:404
 msgid "Comparison content includes a table, the easiest format for assistants to reuse."
 msgstr "محتوای مقایسه‌ای جدول دارد؛ ساده‌ترین قالب برای استفاده دستیارها."
@@ -1002,7 +1008,7 @@ msgid "Concise %d-word opener AI can extract directly."
 msgstr "شروع فشرده %d کلمه‌ای که هوش مصنوعی مستقیم می‌تواند استخراج کند."
 
 #. translators: %d is a value inserted into the message.
-#: includes/class-aigs-woocommerce.php:433
+#: includes/class-aigs-woocommerce.php:432
 #, php-format
 msgid "Concise summary present (%d words)."
 msgstr "خلاصه فشرده وجود دارد (%d کلمه)."
@@ -1204,7 +1210,7 @@ msgid "Electrician"
 msgstr "برق‌کار"
 
 #. translators: %s: email address.
-#: includes/class-aigs-ai-visibility.php:524
+#: includes/class-aigs-ai-visibility.php:534
 #, php-format
 msgid "Email address not on your list: %s"
 msgstr "ایمیلی که در فهرست شما نیست: %s"
@@ -1214,7 +1220,7 @@ msgid "Email me a short progress report after the weekly scan"
 msgstr "پس از اسکن هفتگی، گزارش کوتاه پیشرفت را برایم ایمیل کن"
 
 #. translators: %s: emails.
-#: includes/class-aigs-ai-visibility.php:1051
+#: includes/class-aigs-ai-visibility.php:1055
 #, php-format
 msgid "Email: %s"
 msgstr "ایمیل: %s"
@@ -1224,7 +1230,7 @@ msgstr "ایمیل: %s"
 msgid "Emphasis is used sparingly to mark key claims."
 msgstr "تأکید (بولد) به‌اندازه برای مشخص‌کردن ادعاهای کلیدی استفاده شده است."
 
-#: includes/class-aigs-ai-visibility.php:882
+#: includes/class-aigs-ai-visibility.php:892
 msgid "Empty prompt."
 msgstr "پرسش خالی است."
 
@@ -1292,11 +1298,11 @@ msgstr "ناموفق"
 msgid "Fake"
 msgstr "جعلی"
 
-#: includes/class-aigs-woocommerce.php:479
+#: includes/class-aigs-woocommerce.php:478
 msgid "Featured image has alt text."
 msgstr "تصویر شاخص متن جایگزین دارد."
 
-#: includes/class-aigs-woocommerce.php:481
+#: includes/class-aigs-woocommerce.php:480
 msgid "Featured image is missing alt text."
 msgstr "تصویر شاخص متن جایگزین ندارد."
 
@@ -1375,7 +1381,7 @@ msgid "For your whole site, use the <a href=\"%s\">Action Center</a>. This tool 
 msgstr "برای کل سایت از <a href=\"%s\">مرکز اقدام</a> استفاده کنید. این ابزار یک آدرس را دقیقاً همان‌طور که خزنده می‌بیند دریافت می‌کند؛ برای بررسی خروجی قالب و سایت‌های دیگر مفید است."
 
 #. translators: %s: year.
-#: includes/class-aigs-ai-visibility.php:1043
+#: includes/class-aigs-ai-visibility.php:1047
 #, php-format
 msgid "Founded: %s"
 msgstr "تأسیس: %s"
@@ -1385,17 +1391,22 @@ msgid "Founding year"
 msgstr "سال تأسیس"
 
 #. translators: 1: year in answer, 2: official year.
-#: includes/class-aigs-ai-visibility.php:530
+#: includes/class-aigs-ai-visibility.php:540
 #, php-format
 msgid "Founding year %1$s (yours: %2$s)"
 msgstr "سال تأسیس %1$s (سال درست: %2$s)"
 
-#: includes/class-aigs-admin.php:1975 includes/class-aigs-ai-visibility.php:1069
+#. translators: %s: brand name.
+#: includes/class-aigs-ai-visibility.php:991
+msgid "Frequently asked questions"
+msgstr "سؤالات متداول"
+
+#: includes/class-aigs-admin.php:1975 includes/class-aigs-ai-visibility.php:1073
 msgid "Friday"
 msgstr "جمعه"
 
 #. translators: %d is a value inserted into the message.
-#: includes/class-aigs-woocommerce.php:443 includes/class-aigs-woocommerce.php:446 includes/class-aigs-woocommerce.php:448
+#: includes/class-aigs-woocommerce.php:442 includes/class-aigs-woocommerce.php:445 includes/class-aigs-woocommerce.php:447
 msgid "Full description"
 msgstr "توضیحات کامل"
 
@@ -1532,9 +1543,26 @@ msgstr "تازگی صفحه اصلی"
 msgid "Hotel"
 msgstr "هتل"
 
+#. translators: 1: industry, 2: location.
+#: includes/class-aigs-ai-visibility.php:166
+#, php-format
+msgid "How much does %1$s cost in %2$s and which option is worth it?"
+msgstr "هزینه %1$s در %2$s چقدر است و کدام گزینه ارزش انتخاب دارد؟"
+
+#. translators: %s: industry.
+#: includes/class-aigs-ai-visibility.php:181
+#, php-format
+msgid "How much does %s cost and which option is worth it?"
+msgstr "هزینه %s چقدر است و کدام گزینه ارزش انتخاب دارد؟"
+
 #: includes/class-aigs-admin.php:2197
 msgid "How this works"
 msgstr "این بخش چطور کار می‌کند"
+
+#. translators: %s: the question.
+#: includes/class-aigs-ai-visibility.php:987
+msgid "How to choose"
+msgstr "معیارهای انتخاب"
 
 #: includes/class-aigs-admin.php:1029
 msgid "How to fix:"
@@ -1682,6 +1710,12 @@ msgstr "لینک‌های داخلی"
 msgid "International format with country code works best."
 msgstr "قالب بین‌المللی با کد کشور بهترین است."
 
+#. translators: %s: brand name.
+#: includes/class-aigs-ai-visibility.php:164 includes/class-aigs-ai-visibility.php:179
+#, php-format
+msgid "Is %s a good choice and what are the alternatives?"
+msgstr "آیا %s انتخاب خوبی است و چه جایگزین‌هایی دارد؟"
+
 #. translators: %d: count.
 #: includes/class-aigs-actions.php:331
 #, php-format
@@ -1716,7 +1750,7 @@ msgstr "در هر پاراگراف یک ایده، حدود ۴۰ تا ۸۰ کل�
 msgid "Keep pages fresh. Updating now and then is a small sign that you are still the right source."
 msgstr "صفحات را تازه نگه دارید. به‌روزرسانی گاه‌به‌گاه نشانه کوچکی است که هنوز منبع درستی هستید."
 
-#: includes/class-aigs-ai-visibility.php:1060
+#: includes/class-aigs-ai-visibility.php:1064
 msgid "Key facts"
 msgstr "اطلاعات کلیدی"
 
@@ -1816,7 +1850,7 @@ msgstr "فهرست برای مراحل و نکات"
 msgid "Live web search"
 msgstr "جست‌وجوی زنده وب"
 
-#: includes/class-aigs-admin.php:303 includes/class-aigs-ai-visibility.php:890
+#: includes/class-aigs-admin.php:303 includes/class-aigs-ai-visibility.php:900
 msgid "Live web search answer"
 msgstr "پاسخ مبتنی بر جست‌وجوی زنده وب"
 
@@ -1954,7 +1988,7 @@ msgstr "مدل"
 msgid "Model knowledge only"
 msgstr "فقط دانش مدل"
 
-#: includes/class-aigs-admin.php:304 includes/class-aigs-ai-visibility.php:890
+#: includes/class-aigs-admin.php:304 includes/class-aigs-ai-visibility.php:900
 msgid "Model knowledge only (no live web search)"
 msgstr "فقط دانش مدل (بدون جست‌وجوی زنده وب)"
 
@@ -1962,7 +1996,7 @@ msgstr "فقط دانش مدل (بدون جست‌وجوی زنده وب)"
 msgid "Model training crawls"
 msgstr "خزش برای آموزش مدل"
 
-#: includes/class-aigs-admin.php:1971 includes/class-aigs-ai-visibility.php:1065
+#: includes/class-aigs-admin.php:1971 includes/class-aigs-ai-visibility.php:1069
 msgid "Monday"
 msgstr "دوشنبه"
 
@@ -1978,7 +2012,7 @@ msgstr "سقف ماهانه درخواست‌های هوش مصنوعی پر ش�
 msgid "Monthly request limit"
 msgstr "سقف درخواست ماهانه"
 
-#: includes/class-aigs-ai-visibility.php:1092
+#: includes/class-aigs-ai-visibility.php:1096
 msgid "More about us"
 msgstr "بیشتر درباره ما"
 
@@ -2085,7 +2119,7 @@ msgid "No direct answer"
 msgstr "بدون پاسخ مستقیم"
 
 #. translators: %d is a value inserted into the message.
-#: includes/class-aigs-woocommerce.php:448
+#: includes/class-aigs-woocommerce.php:447
 msgid "No full description, AI has almost nothing to cite about this product."
 msgstr "توضیحات کامل ندارد؛ هوش مصنوعی تقریباً چیزی برای نقل درباره این محصول ندارد."
 
@@ -2142,16 +2176,16 @@ msgstr "هیچ صفحه دیگری از سایت به اینجا لینک ندا
 msgid "No paragraphs detected."
 msgstr "پاراگرافی پیدا نشد."
 
-#: includes/class-aigs-woocommerce.php:460
+#: includes/class-aigs-woocommerce.php:459
 msgid "No product attributes. Add specs so AI can match buyer queries and comparisons."
 msgstr "محصول ویژگی ندارد. مشخصات اضافه کنید تا هوش مصنوعی بتواند آن را با جست‌وجوها و مقایسه‌های خریداران تطبیق دهد."
 
-#: includes/class-aigs-woocommerce.php:475
+#: includes/class-aigs-woocommerce.php:474
 msgid "No product image. Add one with descriptive alt text."
 msgstr "محصول تصویر ندارد. یک تصویر با متن جایگزین توصیفی اضافه کنید."
 
 #. translators: %d is a value inserted into the message.
-#: includes/class-aigs-woocommerce.php:469
+#: includes/class-aigs-woocommerce.php:468
 msgid "No reviews yet. AI tends to recommend products with social proof."
 msgstr "هنوز نظری ثبت نشده است. هوش مصنوعی معمولاً محصولاتی با اعتبار اجتماعی را پیشنهاد می‌دهد."
 
@@ -2179,7 +2213,7 @@ msgstr "HTTPS نیست؛ پیش از هر چیز این را درست کنید."
 msgid "Not analyzed yet. Open the editor or run a site scan."
 msgstr "هنوز تحلیل نشده. ویرایشگر را باز کنید یا اسکن سایت را اجرا کنید."
 
-#: includes/class-aigs-woocommerce.php:490
+#: includes/class-aigs-woocommerce.php:489
 msgid "Not categorized, categories help AI place the product."
 msgstr "دسته‌بندی ندارد؛ دسته‌بندی به هوش مصنوعی کمک می‌کند جایگاه محصول را بفهمد."
 
@@ -2187,7 +2221,7 @@ msgstr "دسته‌بندی ندارد؛ دسته‌بندی به هوش مصن�
 msgid "Not cited"
 msgstr "ذکر منبع نشد"
 
-#: includes/class-aigs-actions.php:191 includes/class-aigs-ai-visibility.php:939 includes/class-aigs-ai-visibility.php:958 includes/class-aigs-ai-visibility.php:963
+#: includes/class-aigs-actions.php:191 includes/class-aigs-ai-visibility.php:949 includes/class-aigs-ai-visibility.php:968 includes/class-aigs-ai-visibility.php:973
 msgid "Not found."
 msgstr "پیدا نشد."
 
@@ -2240,7 +2274,7 @@ msgid "Official email addresses (one per line)"
 msgstr "ایمیل‌های رسمی (هر خط یکی)"
 
 #. translators: %s: brand name.
-#: includes/class-aigs-ai-visibility.php:1038
+#: includes/class-aigs-ai-visibility.php:1042
 #, php-format
 msgid "Official name: %s"
 msgstr "نام رسمی: %s"
@@ -2249,12 +2283,12 @@ msgstr "نام رسمی: %s"
 msgid "Official phone numbers (one per line)"
 msgstr "شماره‌تلفن‌های رسمی (هر خط یکی)"
 
-#: includes/class-aigs-ai-visibility.php:1089
+#: includes/class-aigs-ai-visibility.php:1093
 msgid "Official profiles"
 msgstr "پروفایل‌های رسمی"
 
 #. translators: %s: list of domains.
-#: includes/class-aigs-ai-visibility.php:1040
+#: includes/class-aigs-ai-visibility.php:1044
 #, php-format
 msgid "Official website: %s"
 msgstr "وب‌سایت رسمی: %s"
@@ -2326,12 +2360,12 @@ msgid "Only changes how AI Visibility results are labelled."
 msgstr "فقط برچسب نتایج دیده‌شدن در هوش مصنوعی را تغییر می‌دهد."
 
 #. translators: %d is a value inserted into the message.
-#: includes/class-aigs-woocommerce.php:458
+#: includes/class-aigs-woocommerce.php:457
 msgid "Only one attribute. Add specs (material, size, compatibility…) AI can match to queries."
 msgstr "فقط یک ویژگی. مشخصاتی (جنس، اندازه، سازگاری…) اضافه کنید که هوش مصنوعی بتواند با جست‌وجوها تطبیق دهد."
 
 #. translators: %d is a value inserted into the message.
-#: includes/class-aigs-woocommerce.php:446
+#: includes/class-aigs-woocommerce.php:445
 #, php-format
 msgid "Only ~%d words, expand benefits, use-cases and specs."
 msgstr "فقط حدود %d کلمه؛ مزایا، کاربردها و مشخصات را گسترش دهید."
@@ -2392,7 +2426,7 @@ msgstr "صفحه را باز کنید و نکات بهینه‌ساز پاسخ �
 msgid "Open with 40–60 words that answer the main question directly. The Answer Optimizer in the editor can draft it from your own text."
 msgstr "با ۴۰ تا ۶۰ کلمه شروع کنید که مستقیماً به سؤال اصلی پاسخ دهد. بهینه‌ساز پاسخ در ویرایشگر می‌تواند آن را از متن خودتان پیش‌نویس کند."
 
-#: includes/class-aigs-admin.php:1966 includes/class-aigs-ai-visibility.php:1078
+#: includes/class-aigs-admin.php:1966 includes/class-aigs-ai-visibility.php:1082
 msgid "Opening hours"
 msgstr "ساعت کاری"
 
@@ -2431,6 +2465,11 @@ msgstr "اختیاری. نشانه‌گذاری FAQ را فقط وقتی اضا�
 #: includes/class-aigs-admin.php:2001
 msgid "Optional. Right-click your location in a map app to copy them."
 msgstr "اختیاری. در اپ نقشه روی موقعیت خود راست‌کلیک کنید تا کپی شوند."
+
+#. translators: %s: the question.
+#: includes/class-aigs-ai-visibility.php:988
+msgid "Options compared"
+msgstr "مقایسه گزینه‌ها"
 
 #: includes/class-aigs-admin.php:786
 msgid "Ordered by impact: how serious the issue is and how important the affected pages are."
@@ -2522,7 +2561,7 @@ msgstr "کلید خود را وارد کنید"
 msgid "People ask assistants “near me”, “open now” and “phone number” questions. Without an address, phone and opening hours in your LocalBusiness data, assistants guess or use outdated directory data."
 msgstr "مردم از دستیارها سؤال‌هایی مثل «نزدیک من»، «الان باز است» و «شماره تلفن» می‌پرسند. بدون آدرس، تلفن و ساعت کاری در داده LocalBusiness، دستیارها حدس می‌زنند یا از داده‌های قدیمی دایرکتوری‌ها استفاده می‌کنند."
 
-#: includes/class-aigs-actions.php:195 includes/class-aigs-actions.php:212 includes/class-aigs-actions.php:247 includes/class-aigs-actions.php:276 includes/class-aigs-ai-client.php:510 includes/class-aigs-ai-visibility.php:871
+#: includes/class-aigs-actions.php:195 includes/class-aigs-actions.php:212 includes/class-aigs-actions.php:247 includes/class-aigs-actions.php:276 includes/class-aigs-ai-client.php:510 includes/class-aigs-ai-visibility.php:881
 msgid "Permission denied."
 msgstr "دسترسی مجاز نیست."
 
@@ -2531,13 +2570,13 @@ msgid "Pharmacy"
 msgstr "داروخانه"
 
 #. translators: %s: phone number.
-#: includes/class-aigs-ai-visibility.php:521
+#: includes/class-aigs-ai-visibility.php:531
 #, php-format
 msgid "Phone number not on your list: %s"
 msgstr "شماره تلفنی که در فهرست شما نیست: %s"
 
 #. translators: %s: phones.
-#: includes/class-aigs-ai-visibility.php:1047
+#: includes/class-aigs-ai-visibility.php:1051
 #, php-format
 msgid "Phone: %s"
 msgstr "تلفن: %s"
@@ -2602,7 +2641,7 @@ msgstr "به‌صورت اسکیمای LocalBusiness در صفحه اصلی چا
 msgid "Product"
 msgstr "محصول"
 
-#: includes/class-aigs-woocommerce.php:475 includes/class-aigs-woocommerce.php:479 includes/class-aigs-woocommerce.php:481
+#: includes/class-aigs-woocommerce.php:474 includes/class-aigs-woocommerce.php:478 includes/class-aigs-woocommerce.php:480
 msgid "Product image"
 msgstr "تصویر محصول"
 
@@ -2735,6 +2774,18 @@ msgstr "بردهای اخیر"
 msgid "Recently updated content signals relevance."
 msgstr "محتوای تازه به‌روزشده نشانه مرتبط‌بودن است."
 
+#. translators: 1: industry, 2: location.
+#: includes/class-aigs-ai-visibility.php:158
+#, php-format
+msgid "Recommend a trustworthy %1$s company in %2$s."
+msgstr "یک %1$s معتبر و قابل اعتماد در %2$s معرفی کن."
+
+#. translators: %s: industry.
+#: includes/class-aigs-ai-visibility.php:173
+#, php-format
+msgid "Recommend a trustworthy %s company."
+msgstr "یک %s معتبر و قابل اعتماد معرفی کن."
+
 #: includes/class-aigs-admin.php:254 includes/class-aigs-admin.php:1579
 msgid "Recommended"
 msgstr "پیشنهادشده"
@@ -2780,7 +2831,7 @@ msgid "Reopen"
 msgstr "بازکردن دوباره"
 
 #. translators: %s: statement.
-#: includes/class-aigs-ai-visibility.php:533
+#: includes/class-aigs-ai-visibility.php:543
 #, php-format
 msgid "Repeats something you marked as outdated: “%s”"
 msgstr "چیزی را تکرار می‌کند که قدیمی علامت زده‌اید: «%s»"
@@ -2831,7 +2882,7 @@ msgid "Review facts, prices and examples, then update the page."
 msgstr "اطلاعات، قیمت‌ها و مثال‌ها را بازبینی و سپس صفحه را به‌روز کنید."
 
 #. translators: %d is a value inserted into the message.
-#: includes/class-aigs-woocommerce.php:467 includes/class-aigs-woocommerce.php:469
+#: includes/class-aigs-woocommerce.php:466 includes/class-aigs-woocommerce.php:468
 msgid "Reviews / ratings"
 msgstr "نظرات / امتیازها"
 
@@ -2891,7 +2942,7 @@ msgstr "مشابه با:"
 msgid "SameAs URLs (comma separated, Wikipedia, Wikidata, social, etc.)"
 msgstr "آدرس‌های SameAs (جداشده با ویرگول؛ ویکی‌پدیا، ویکی‌داده، شبکه‌های اجتماعی و…)"
 
-#: includes/class-aigs-admin.php:1976 includes/class-aigs-ai-visibility.php:1070
+#: includes/class-aigs-admin.php:1976 includes/class-aigs-ai-visibility.php:1074
 msgid "Saturday"
 msgstr "شنبه"
 
@@ -3058,7 +3109,7 @@ msgid "Shoppers ask assistants detailed questions. A thin description gives them
 msgstr "خریداران سؤالات جزئی از دستیارها می‌پرسند. توضیحات کم‌حجم چیزی برای پاسخ به آن‌ها نمی‌دهد."
 
 #. translators: %d is a value inserted into the message.
-#: includes/class-aigs-woocommerce.php:430 includes/class-aigs-woocommerce.php:433 includes/class-aigs-woocommerce.php:436
+#: includes/class-aigs-woocommerce.php:429 includes/class-aigs-woocommerce.php:432 includes/class-aigs-woocommerce.php:435
 msgid "Short description"
 msgstr "توضیح کوتاه"
 
@@ -3071,7 +3122,7 @@ msgid "Short description from full description"
 msgstr "توضیح کوتاه از توضیحات کامل"
 
 #. translators: %d is a value inserted into the message.
-#: includes/class-aigs-woocommerce.php:436
+#: includes/class-aigs-woocommerce.php:435
 #, php-format
 msgid "Short description is %d words, aim for a tight 20–60 word summary."
 msgstr "توضیح کوتاه %d کلمه است؛ یک خلاصه فشرده ۲۰ تا ۶۰ کلمه‌ای هدف بگیرید."
@@ -3122,7 +3173,7 @@ msgid "Spa"
 msgstr "اسپا"
 
 #. translators: %d is a value inserted into the message.
-#: includes/class-aigs-woocommerce.php:456 includes/class-aigs-woocommerce.php:458 includes/class-aigs-woocommerce.php:460
+#: includes/class-aigs-woocommerce.php:455 includes/class-aigs-woocommerce.php:457 includes/class-aigs-woocommerce.php:459
 msgid "Specs / attributes"
 msgstr "مشخصات / ویژگی‌ها"
 
@@ -3179,7 +3230,7 @@ msgstr "به IndexNow ارسال شد"
 msgid "Suggest questions"
 msgstr "پیشنهاد سؤال"
 
-#: includes/class-aigs-admin.php:1977 includes/class-aigs-ai-visibility.php:1071
+#: includes/class-aigs-admin.php:1977 includes/class-aigs-ai-visibility.php:1075
 msgid "Sunday"
 msgstr "یکشنبه"
 
@@ -3211,7 +3262,7 @@ msgstr "این آدرس معتبر نیست. از یک آدرس عمومی http 
 msgid "That is really all you need to start. The rest is here when you feel like going deeper."
 msgstr "برای شروع همین کافی است. بقیه هر وقت خواستید عمیق‌تر شوید اینجاست."
 
-#: includes/class-aigs-links.php:564 includes/class-aigs-woocommerce.php:336
+#: includes/class-aigs-links.php:564 includes/class-aigs-woocommerce.php:335
 msgid "That operation can no longer be undone."
 msgstr "این عملیات دیگر قابل بازگشت نیست."
 
@@ -3280,8 +3331,8 @@ msgid "The page opens with an introduction (“In this article…”) instead of
 msgstr "صفحه به‌جای پاسخ با مقدمه («در این مقاله…») شروع می‌شود."
 
 #: includes/class-aigs-rules.php:71
-msgid "The page opens with filler such as “In this article…” or “در این مقاله…”, which assistants skip."
-msgstr "صفحه با جمله‌های پرکننده‌ای مثل «در این مقاله…» یا «In this article…» شروع می‌شود که دستیارها از آن رد می‌شوند."
+msgid "The page opens with filler such as “In this article…” or “Today we will look at…”, which assistants skip."
+msgstr "صفحه با جمله‌های پرکننده‌ای مثل «در این مقاله…» یا «امروز می‌خواهیم…» شروع می‌شود که دستیارها از آن رد می‌شوند."
 
 #. translators: %d is the HTTP status code.
 #: includes/class-aigs-audit.php:83
@@ -3297,7 +3348,7 @@ msgstr "صفحه محتوای HTML برای تحلیل برنگرداند."
 msgid "The page says noindex (meta robots or X-Robots-Tag). Search engines and search-based AI answers will skip it."
 msgstr "صفحه noindex اعلام کرده است (متا robots یا X-Robots-Tag). موتورهای جست‌وجو و پاسخ‌های هوش مصنوعی مبتنی بر آن‌ها از آن رد می‌شوند."
 
-#: includes/class-aigs-answer.php:401
+#: includes/class-aigs-answer.php:400
 msgid "The page text does not contain enough information to answer the question. Add the facts first, then try again."
 msgstr "متن صفحه اطلاعات کافی برای پاسخ به این سؤال ندارد. ابتدا اطلاعات را اضافه کنید، سپس دوباره تلاش کنید."
 
@@ -3330,7 +3381,7 @@ msgid "Third-party sites that assistants rely on are where reviews, listings, co
 msgstr "سایت‌های واسطی که دستیارها به آن‌ها تکیه می‌کنند همان جاهایی هستند که نظرات، فهرست‌ها، مقایسه‌ها و روابط عمومی می‌توانند شما را دیده‌پذیر کنند. ذکر این منابع به این معنی نیست که حضور شما در آن‌ها حتماً پاسخ‌های هوش مصنوعی را تغییر می‌دهد."
 
 #. translators: 1: requests needed, 2: requests left this month.
-#: includes/class-aigs-ai-visibility.php:600
+#: includes/class-aigs-ai-visibility.php:610
 #, php-format
 msgid "This check needs %1$d AI requests but only %2$d are left this month. Remove some questions or raise the monthly limit in Settings."
 msgstr "این بررسی به %1$d درخواست هوش مصنوعی نیاز دارد اما این ماه فقط %2$d درخواست باقی مانده است. چند سؤال را حذف کنید یا سقف ماهانه را در تنظیمات بالا ببرید."
@@ -3391,7 +3442,7 @@ msgstr "این ارائه‌دهنده بدون جست‌وجوی زنده وب 
 msgid "Three separate layers, never added together: requests from bots that say they are AI bots (anyone can fake a user agent), bots whose identity was verified, and human visits that arrived from an AI product. A bot reading a page is not the same as your page being shown in an answer."
 msgstr "سه لایه جدا که هرگز با هم جمع نمی‌شوند: درخواست ربات‌هایی که خود را ربات هوش مصنوعی معرفی می‌کنند (هر کسی می‌تواند user agent را جعل کند)، ربات‌هایی که هویتشان تأیید شده، و بازدیدهای انسانی که از یک محصول هوش مصنوعی آمده‌اند. خواندن صفحه توسط ربات با نمایش صفحه شما در یک پاسخ یکی نیست."
 
-#: includes/class-aigs-admin.php:1974 includes/class-aigs-ai-visibility.php:1068
+#: includes/class-aigs-admin.php:1974 includes/class-aigs-ai-visibility.php:1072
 msgid "Thursday"
 msgstr "پنجشنبه"
 
@@ -3443,7 +3494,7 @@ msgstr "آژانس مسافرتی"
 msgid "Trust & entity"
 msgstr "اعتماد و موجودیت"
 
-#: includes/class-aigs-admin.php:1972 includes/class-aigs-ai-visibility.php:1066
+#: includes/class-aigs-admin.php:1972 includes/class-aigs-ai-visibility.php:1070
 msgid "Tuesday"
 msgstr "سه‌شنبه"
 
@@ -3488,7 +3539,7 @@ msgstr "بازگردانی"
 msgid "Undo restores the page exactly as it was before the links were added. WordPress revisions also keep every version."
 msgstr "بازگردانی، صفحه را دقیقاً به حالت پیش از افزودن لینک‌ها برمی‌گرداند. بازنگری‌های وردپرس هم همه نسخه‌ها را نگه می‌دارند."
 
-#: includes/class-aigs-actions.php:260 includes/class-aigs-woocommerce.php:195 includes/class-aigs-woocommerce.php:240
+#: includes/class-aigs-actions.php:260 includes/class-aigs-woocommerce.php:194 includes/class-aigs-woocommerce.php:239
 msgid "Unknown fix."
 msgstr "اصلاح ناشناخته."
 
@@ -3501,7 +3552,7 @@ msgid "Unknown task."
 msgstr "وظیفه ناشناخته."
 
 #. translators: %s: domain.
-#: includes/class-aigs-ai-visibility.php:527
+#: includes/class-aigs-ai-visibility.php:537
 #, php-format
 msgid "Unofficial website that looks like yours: %s"
 msgstr "وب‌سایت غیررسمی شبیه سایت شما: %s"
@@ -3594,7 +3645,7 @@ msgstr "بازدیدکنندگان از پاسخ‌های هوش مصنوعی"
 msgid "Visitors from AI answers · 30d"
 msgstr "بازدیدکنندگان از پاسخ‌های هوش مصنوعی – ۳۰ روز"
 
-#: includes/class-aigs-admin.php:1973 includes/class-aigs-ai-visibility.php:1067
+#: includes/class-aigs-admin.php:1973 includes/class-aigs-ai-visibility.php:1071
 msgid "Wednesday"
 msgstr "چهارشنبه"
 
@@ -3632,6 +3683,18 @@ msgstr "طول توضیحات متا مناسب است."
 msgid "What actually helps you show up"
 msgstr "آنچه واقعاً به دیده‌شدن کمک می‌کند"
 
+#. translators: 1: industry, 2: location.
+#: includes/class-aigs-ai-visibility.php:156
+#, php-format
+msgid "What are the best %1$s providers in %2$s?"
+msgstr "بهترین ارائه‌دهندگان %1$s در %2$s کدام‌اند؟"
+
+#. translators: %s: industry.
+#: includes/class-aigs-ai-visibility.php:171
+#, php-format
+msgid "What are the best %s providers?"
+msgstr "بهترین ارائه‌دهندگان %s کدام‌اند؟"
+
 #: includes/class-aigs-admin.php:2262
 msgid "What each part does"
 msgstr "هر بخش چه کاری می‌کند"
@@ -3664,9 +3727,27 @@ msgstr "کدام ربات‌های هوش مصنوعی سایت شما را می
 msgid "Which AI systems read your site, and which people arrive from AI answers."
 msgstr "کدام سیستم‌های هوش مصنوعی سایت شما را می‌خوانند و چه کسانی از پاسخ‌های هوش مصنوعی وارد سایت می‌شوند."
 
+#. translators: 1: industry, 2: location.
+#: includes/class-aigs-ai-visibility.php:160
+#, php-format
+msgid "Who should I contact for %1$s services in %2$s?"
+msgstr "برای خدمات %1$s در %2$s به چه کسی مراجعه کنم؟"
+
+#. translators: %s: industry.
+#: includes/class-aigs-ai-visibility.php:175
+#, php-format
+msgid "Who should I contact for %s services?"
+msgstr "برای خدمات %s به چه کسی مراجعه کنم؟"
+
 #: includes/class-aigs-admin.php:876 includes/class-aigs-admin.php:1211
 msgid "Whole site"
 msgstr "کل سایت"
+
+#. translators: %s: brand name.
+#: includes/class-aigs-ai-visibility.php:990
+#, php-format
+msgid "Why %s"
+msgstr "چرا %s"
 
 #: includes/class-aigs-admin.php:1028
 msgid "Why it matters:"
@@ -3761,8 +3842,8 @@ msgstr "اصلاحات شما پس از تأیید با بررسی مجدد ای
 #. translators: %s: brand name.
 #: includes/class-aigs-admin.php:1388
 #, php-format
-msgid "Your main name “%s” is always included. Matching ignores ی/ي, ک/ك, half-spaces and Persian digits."
-msgstr "نام اصلی شما «%s» همیشه لحاظ می‌شود. تطبیق، تفاوت ی/ي، ک/ك، نیم‌فاصله و اعداد فارسی را نادیده می‌گیرد."
+msgid "Your main name “%s” is always included. Matching ignores letter case, accents, spacing and hyphens, and handles non-Latin scripts."
+msgstr "نام اصلی شما «%s» همیشه لحاظ می‌شود. تطبیق، بزرگی و کوچکی حروف، علامت‌های حروف، فاصله و خط‌تیره را نادیده می‌گیرد و با خط‌های غیرلاتین هم کار می‌کند."
 
 #: includes/class-aigs-admin.php:1413
 msgid "Your main phone from Settings is always included."
@@ -3798,22 +3879,48 @@ msgstr "کل سایت شما از موتورهای جست‌وجو پنهان ا
 msgid "[%s] Your weekly AI visibility report"
 msgstr "[%s] گزارش هفتگی دیده‌شدن در هوش مصنوعی"
 
+#. translators: %s: brand name.
+#: includes/class-aigs-ai-visibility.php:991
+msgid "[3–5 real customer questions with short answers.]"
+msgstr "[۳ تا ۵ سؤال واقعی مشتریان با پاسخ کوتاه.]"
+
+#. translators: %s: the question.
+#: includes/class-aigs-ai-visibility.php:988
+msgid "[Add a comparison table with real, checkable facts.]"
+msgstr "[یک جدول مقایسه با اطلاعات واقعی و قابل بررسی اضافه کنید.]"
+
 #. translators: 1: brand, 2: industry, 3: location.
-#: includes/class-aigs-ai-visibility.php:1034
+#: includes/class-aigs-ai-visibility.php:1038
 msgid "[Add one or two sentences on what you offer and for whom.]"
 msgstr "[یکی دو جمله درباره اینکه چه چیزی و برای چه کسانی ارائه می‌دهید اضافه کنید.]"
 
-#: includes/class-aigs-ai-visibility.php:1094
+#. translators: %s: brand name.
+#: includes/class-aigs-ai-visibility.php:990
+msgid "[Concrete proof: experience, numbers, reviews, certifications.]"
+msgstr "[شواهد مشخص: تجربه، آمار، نظر مشتریان، گواهی‌ها.]"
+
+#. translators: %s: the question.
+#: includes/class-aigs-ai-visibility.php:986
+#, php-format
+msgid "[Direct answer: answer “%s” in 40–60 words. Make the first sentence the answer.]"
+msgstr "[پاسخ مستقیم: در ۴۰ تا ۶۰ کلمه به «%s» پاسخ دهید. جمله اول خود پاسخ باشد.]"
+
+#: includes/class-aigs-ai-visibility.php:1098
 msgid "[Last reviewed: add the date you checked these facts.]"
 msgstr "[آخرین بازبینی: تاریخ بررسی این اطلاعات را اضافه کنید.]"
 
+#. translators: %s: the question.
+#: includes/class-aigs-ai-visibility.php:987
+msgid "[List the criteria buyers actually decide on.]"
+msgstr "[معیارهایی که خریدار بر اساس آن تصمیم می‌گیرد را فهرست کنید.]"
+
 #. translators: 1: brand, 2: industry, 3: location.
-#: includes/class-aigs-ai-visibility.php:1033
+#: includes/class-aigs-ai-visibility.php:1037
 msgid "[location]"
 msgstr "[موقعیت]"
 
 #. translators: 1: brand, 2: industry, 3: location.
-#: includes/class-aigs-ai-visibility.php:1033
+#: includes/class-aigs-ai-visibility.php:1037
 msgid "[what you do]"
 msgstr "[حوزه فعالیت]"
 
@@ -3843,7 +3950,7 @@ msgstr "به سایت شما ارجاع یا لینک می‌دهند"
 msgid "cited your site"
 msgstr "به سایت شما ارجاع دادند"
 
-#: includes/class-aigs-ai-visibility.php:1076
+#: includes/class-aigs-ai-visibility.php:1080
 msgid "closed"
 msgstr "تعطیل"
 
@@ -3872,8 +3979,8 @@ msgid "e.g. dental clinic"
 msgstr "مثلاً کلینیک دندانپزشکی"
 
 #: includes/class-aigs-admin.php:1384
-msgid "e.g. the Persian and English spellings of your brand,\nor a short name customers use"
-msgstr "مثلاً املای فارسی و انگلیسی برند،\nیا نام کوتاهی که مشتریان استفاده می‌کنند"
+msgid "e.g. your brand in another language or script,\nan abbreviation, or a short name customers use"
+msgstr "مثلاً نام برند به زبان یا خط دیگر،\nمخفف آن یا نام کوتاهی که مشتریان استفاده می‌کنند"
 
 #: includes/class-aigs-admin.php:268
 msgid "from the title"
@@ -4008,7 +4115,7 @@ msgstr "سهم صدا در برابر رقبا"
 msgid "the opening"
 msgstr "شروع متن"
 
-#: includes/class-aigs-ai-visibility.php:163
+#: includes/class-aigs-ai-visibility.php:151
 msgid "this industry"
 msgstr "این حوزه"
 
@@ -4017,7 +4124,7 @@ msgid "via"
 msgstr "از طریق"
 
 #. translators: %d is a value inserted into the message.
-#: includes/class-aigs-woocommerce.php:443
+#: includes/class-aigs-woocommerce.php:442
 #, php-format
 msgid "~%d words of product detail."
 msgstr "حدود %d کلمه جزئیات محصول."

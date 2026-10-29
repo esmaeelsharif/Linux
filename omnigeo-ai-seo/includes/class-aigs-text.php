@@ -2,9 +2,10 @@
 /**
  * Multilingual text helpers.
  *
- * Normalizes Persian/Arabic script variants (ي/ی, ك/ک, ZWNJ, digits, diacritics)
- * so matching, word counting and question detection behave the same whether
- * content is written in Persian, Arabic or a Latin language.
+ * Language-aware normalisation so matching, word counting and question
+ * detection work across scripts: Latin accents are folded, Arabic-script letter
+ * variants, zero-width joiners and non-Latin digits are unified, and Chinese /
+ * Japanese text (written without spaces) is counted correctly.
  *
  * @package OmniGEO_Ai_SEO
  */
@@ -68,6 +69,10 @@ class AIGS_Text {
 		$text = wp_strip_all_tags( (string) $text );
 		$text = html_entity_decode( $text, ENT_QUOTES, 'UTF-8' );
 		$text = strtr( $text, self::char_map() );
+		// Fold Latin accents so "Café" matches "Cafe" and "Müller" matches "Muller".
+		if ( function_exists( 'remove_accents' ) && preg_match( '/[\x{00C0}-\x{024F}]/u', $text ) ) {
+			$text = remove_accents( $text );
+		}
 		// Arabic diacritics (harakat), superscript alef and tatweel.
 		$text = preg_replace( '/[\x{064B}-\x{065F}\x{0670}\x{0640}]/u', '', $text );
 		// ZWNJ / ZWJ / soft hyphen become a plain separator.
@@ -98,12 +103,17 @@ class AIGS_Text {
 		if ( '' === $text ) {
 			return 0;
 		}
-		$text  = preg_replace( '/[\x{200C}\x{200D}]/u', '', $text );
+		$text = preg_replace( '/[\x{200C}\x{200D}]/u', '', $text );
+		// Chinese and Japanese are written without spaces: count each character
+		// as one word (the usual convention), then count the rest by spaces.
+		$count = (int) preg_match_all( '/[\p{Han}\p{Hiragana}\p{Katakana}]/u', $text );
+		if ( $count ) {
+			$text = preg_replace( '/[\p{Han}\p{Hiragana}\p{Katakana}]/u', ' ', $text );
+		}
 		$parts = preg_split( '/[\s]+/u', $text, -1, PREG_SPLIT_NO_EMPTY );
 		if ( ! is_array( $parts ) ) {
-			return 0;
+			return $count;
 		}
-		$count = 0;
 		foreach ( $parts as $p ) {
 			// Ignore pure punctuation tokens such as "-" or "،".
 			if ( preg_match( '/[\p{L}\p{N}]/u', $p ) ) {

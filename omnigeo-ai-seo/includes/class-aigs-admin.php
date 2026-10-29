@@ -1381,17 +1381,17 @@ class AIGS_Admin {
 					<input type="hidden" name="aigs_settings[section_visibility]" value="1" />
 					<div class="aigs-field">
 						<label for="aigs_aliases"><?php esc_html_e( 'Other names for your brand (one per line)', 'omnigeo-ai-seo' ); ?></label>
-						<textarea id="aigs_aliases" name="aigs_settings[brand_aliases]" rows="3" placeholder="<?php esc_attr_e( "e.g. the Persian and English spellings of your brand,\nor a short name customers use", 'omnigeo-ai-seo' ); ?>"><?php echo esc_textarea( aigs_get( 'brand_aliases', '' ) ); ?></textarea>
+						<textarea id="aigs_aliases" name="aigs_settings[brand_aliases]" rows="3" placeholder="<?php esc_attr_e( "e.g. your brand in another language or script,\nan abbreviation, or a short name customers use", 'omnigeo-ai-seo' ); ?>"><?php echo esc_textarea( aigs_get( 'brand_aliases', '' ) ); ?></textarea>
 						<p class="description">
 						<?php
 						/* translators: %s: brand name. */
-						printf( esc_html__( 'Your main name “%s” is always included. Matching ignores ی/ي, ک/ك, half-spaces and Persian digits.', 'omnigeo-ai-seo' ), esc_html( aigs_business_name() ) );
+						printf( esc_html__( 'Your main name “%s” is always included. Matching ignores letter case, accents, spacing and hyphens, and handles non-Latin scripts.', 'omnigeo-ai-seo' ), esc_html( aigs_business_name() ) );
 						?>
 						</p>
 					</div>
 					<div class="aigs-field">
 						<label for="aigs_comp"><?php esc_html_e( 'Competitors (one per line: Name | domain.com)', 'omnigeo-ai-seo' ); ?></label>
-						<textarea id="aigs_comp" name="aigs_settings[competitors]" rows="4" class="aigs-code" placeholder="Competitor One | competitor-one.com&#10;Competitor Two | competitor-two.ir"><?php echo esc_textarea( aigs_get( 'competitors', '' ) ); ?></textarea>
+						<textarea id="aigs_comp" name="aigs_settings[competitors]" rows="4" class="aigs-code" placeholder="Competitor One | competitor-one.com&#10;Competitor Two | competitor-two.co.uk"><?php echo esc_textarea( aigs_get( 'competitors', '' ) ); ?></textarea>
 						<p class="description"><?php esc_html_e( 'Up to 10. Add more spellings after another “|”, e.g. Name | domain.com | Other spelling.', 'omnigeo-ai-seo' ); ?></p>
 					</div>
 					<div class="aigs-field">
