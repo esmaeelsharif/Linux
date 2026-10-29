@@ -166,8 +166,6 @@ Yes. Word counts and brand matching work across languages and scripts, including
 
 = 1.2.1 =
 Important stability fix, please update:
-* Brand matching now ignores Latin accents (Café = Cafe), and word counts are correct for Chinese and Japanese.
-* Suggested AI visibility questions and the draft page outline are translatable and follow your site language.
 * The database upgrade no longer runs during visitors' page loads. On sites with a large AI-bot log from 1.0, the upgrade could lock the table while every visitor tried to run it at the same time, making the site unresponsive. It now runs once, in the admin or cron, behind a lock, and old rows are updated in small background batches.
 * Bot logging pauses until the upgrade is done.
 * Every feature that runs on the public site or in cron is now isolated: if one fails, it is skipped and logged, and the site keeps working. Administrators see a notice with the error to report.
