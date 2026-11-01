@@ -18,6 +18,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 class AIGS_Admin {
 
 	use AIGS_Admin_Toolbox;
+	use AIGS_Admin_Autopilot;
 
 	/**
 	 * Module references.
@@ -41,6 +42,7 @@ class AIGS_Admin {
 	public function hooks() {
 		add_action( 'admin_menu', array( $this, 'menu' ) );
 		add_action( 'admin_init', array( $this, 'register_settings' ) );
+		add_action( 'admin_enqueue_scripts', array( $this, 'menu_style' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'assets' ) );
 		add_action( 'wp_dashboard_setup', array( $this, 'dashboard_widget' ) );
 	}
@@ -184,6 +186,7 @@ class AIGS_Admin {
 		$pages = array(
 			'omnigeo-ai-seo'     => array( __( 'Growth Center', 'omnigeo-ai-seo' ), 'page_dashboard', __( 'Growth Center', 'omnigeo-ai-seo' ) ),
 			'aigs-actions'       => array( __( 'Action Center', 'omnigeo-ai-seo' ), 'page_actions', $label ),
+			'aigs-autopilot'     => array( __( 'AI Autopilot', 'omnigeo-ai-seo' ), 'page_autopilot', __( 'AI Autopilot', 'omnigeo-ai-seo' ) ),
 		);
 		if ( AIGS_WooCommerce::active() ) {
 			$pages['aigs-products'] = array( __( 'Products', 'omnigeo-ai-seo' ), 'page_products', __( 'Products', 'omnigeo-ai-seo' ) );
@@ -197,10 +200,18 @@ class AIGS_Admin {
 			'aigs-toolbox'       => array( __( 'Toolbox', 'omnigeo-ai-seo' ), 'page_toolbox', __( 'Toolbox', 'omnigeo-ai-seo' ) ),
 			'aigs-settings'      => array( __( 'Settings', 'omnigeo-ai-seo' ), 'page_settings', __( 'Settings', 'omnigeo-ai-seo' ) ),
 			'aigs-help'          => array( __( 'Guide', 'omnigeo-ai-seo' ), 'page_help', __( 'Guide', 'omnigeo-ai-seo' ) ),
+			'aigs-support'       => array( __( 'Support OmniGEO', 'omnigeo-ai-seo' ), 'page_support', '<span class="aigs-menu-coffee">☕ ' . esc_html__( 'Buy me a coffee', 'omnigeo-ai-seo' ) . '</span>' ),
 		);
 		foreach ( $pages as $slug => $p ) {
 			add_submenu_page( 'omnigeo-ai-seo', $p[0], $p[2], 'manage_options', $slug, array( $this, $p[1] ) );
 		}
+	}
+
+	/**
+	 * Tiny style for the coffee menu item (the menu shows on every admin screen).
+	 */
+	public function menu_style() {
+		wp_add_inline_style( 'admin-menu', '#adminmenu .aigs-menu-coffee{display:inline-block;padding:1px 8px;border-radius:999px;background:#ffdd00;color:#1d2327;font-weight:600}#adminmenu a:hover .aigs-menu-coffee,#adminmenu .current .aigs-menu-coffee{background:#ffe94d;color:#1d2327}' );
 	}
 
 	/**
@@ -318,6 +329,14 @@ class AIGS_Admin {
 					'wrongFacts'    => __( 'Wrong facts about you in this answer:', 'omnigeo-ai-seo' ),
 					'passages'      => __( 'Passage citability', 'omnigeo-ai-seo' ),
 					'passagesHelp'  => __( 'Assistants quote single sections. Each section under an H2/H3 is scored on whether it stands alone, its length, data and sources, sentence clarity, and answering first.', 'omnigeo-ai-seo' ),
+					'optMax'        => __( 'Up to 10 pages per run keeps it fast and affordable.', 'omnigeo-ai-seo' ),
+					'optPick'       => __( 'Tick at least one improvement and one page.', 'omnigeo-ai-seo' ),
+					/* translators: 1: current page, 2: total pages. */
+					'optProgress'   => __( 'Writing suggestions for page %1$d of %2$d…', 'omnigeo-ai-seo' ),
+					/* translators: %d: number of pages. */
+					'optDone'       => __( 'Suggestions ready for %d pages. Opening the review…', 'omnigeo-ai-seo' ),
+					'optApplied'    => __( 'Applied', 'omnigeo-ai-seo' ),
+					'optAllApplied' => __( 'All ticked suggestions applied.', 'omnigeo-ai-seo' ),
 					'passagesNone'  => __( 'Add H2 or H3 headings to split the page into sections that can be quoted on their own.', 'omnigeo-ai-seo' ),
 					/* translators: 1: page score, 2: weak sections, 3: total sections. */
 					'passagesSum'   => __( 'Page %1$d/100 · %2$d of %3$d sections need work', 'omnigeo-ai-seo' ),
@@ -1110,6 +1129,9 @@ class AIGS_Admin {
 			</div>
 			<?php if ( 'site' !== $meta['grp'] && 'vis' !== $meta['grp'] && $rows ) : ?>
 				<div class="aigs-taskhead__r">
+					<?php if ( in_array( $rule, array( 'title_length', 'meta_desc_missing', 'meta_desc_length', 'faq_empty', 'unanswered_questions', 'no_direct_answer' ), true ) ) : ?>
+						<a class="aigs-btn aigs-btn--primary aigs-btn--sm" href="<?php echo esc_url( admin_url( 'admin.php?page=aigs-autopilot' ) ); ?>"><?php self::i( 'sparkles', 15 ); ?><?php esc_html_e( 'Fix many pages with AI Autopilot', 'omnigeo-ai-seo' ); ?></a>
+					<?php endif; ?>
 					<button type="button" class="aigs-btn aigs-btn--ghost aigs-btn--sm" data-aigs-ignore-rule="<?php echo esc_attr( $rule ); ?>"><?php esc_html_e( 'This is intentional for all pages', 'omnigeo-ai-seo' ); ?></button>
 				</div>
 			<?php endif; ?>

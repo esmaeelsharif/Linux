@@ -39,11 +39,11 @@ function add_query_arg( $k, $v, $u = null ) {
 }
 function wp_list_pluck( $list, $field ) { return array_map( static function ( $r ) use ( $field ) { return is_array( $r ) ? $r[ $field ] : $r->$field; }, $list ); }
 function get_post( $id ) { return (object) array( 'ID' => $id, 'post_type' => 'post', 'post_title' => 'Post ' . $id, 'post_content' => '<p>x</p>' ); }
-function get_post_meta( $id, $k = '', $single = false ) { $m = array( '_aigs_importance' => '70', '_aigs_page_score' => '58', '_aigs_important' => '' ); return isset( $m[ $k ] ) ? $m[ $k ] : ''; }
+function get_post_meta( $id, $k = '', $single = false ) { if ( isset( $GLOBALS['__meta'][ $k ] ) ) { return $GLOBALS['__meta'][ $k ]; } $m = array( '_aigs_importance' => '70', '_aigs_page_score' => '58', '_aigs_important' => '' ); return isset( $m[ $k ] ) ? $m[ $k ] : ''; }
 function get_the_title( $p ) { return 'Title ' . ( is_object( $p ) ? $p->ID : $p ); }
 function get_post_type_object( $t ) { return (object) array( 'labels' => (object) array( 'singular_name' => 'Post' ), 'public' => true ); }
 function get_edit_post_link( $id ) { return 'https://example.ir/wp-admin/post.php?post=' . $id; }
-function get_permalink( $id ) { return 'https://example.ir/?p=' . $id; }
+function get_permalink( $id ) { return 'https://example.ir/?p=' . ( is_object( $id ) ? $id->ID : $id ); }
 function get_edit_user_link( $id ) { return 'https://example.ir/wp-admin/user-edit.php?user_id=' . $id; }
 function _prime_post_caches() {}
 function human_time_diff( $a, $b ) { return abs( $b - $a ) . ' s'; }
@@ -61,7 +61,7 @@ function register_setting() {}
 function get_userdata() { return false; }
 function did_action() { return 0; }
 function get_pages() { return array(); }
-function get_posts() { return array(); }
+function get_posts() { return isset( $GLOBALS['__posts'] ) ? $GLOBALS['__posts'] : array(); }
 function wp_specialchars_decode( $s ) { return $s; }
 function wp_unslash( $s ) { return $s; }
 $GLOBALS['__transients'] = array();
@@ -315,6 +315,26 @@ foreach ( array( 'ai', 'redirects', 'search', 'tools' ) as $tab ) {
 	}
 }
 $_GET = array();
+
+
+// AI Autopilot with a pending proposal and an applied change; Support page.
+$GLOBALS['__posts'] = array( (object) array( 'ID' => 9, 'post_type' => 'page', 'post_title' => 'Mugs', 'post_content' => '<p>x</p>', 'post_excerpt' => '' ) );
+$GLOBALS['__meta']  = array(
+	AIGS_Optimizer::PROPOSAL => array( 'time' => time(), 'model' => 'm', 'items' => array( 'title' => 'New title', 'desc' => 'New desc', 'faq' => array( 'heading' => 'FAQ', 'items' => array( array( 'q' => 'Q1?', 'a' => 'A1' ) ) ), 'questions' => array( array( 'from' => 'Old', 'to' => 'New?' ) ) ) ),
+	AIGS_Optimizer::UNDO     => array( 'time' => time(), 'done' => array( 'faq' ), 'content' => null, 'meta' => array() ),
+);
+$_GET = array();
+ob_start();
+$admin->page_autopilot();
+$html = ob_get_clean();
+check( 'autopilot byok banner', false !== strpos( $html, 'aigs-byok' ) );
+check( 'autopilot review card', false !== strpos( $html, 'data-kind="title"' ) && false !== strpos( $html, 'data-kind="faq"' ) && false !== strpos( $html, 'data-from="Old"' ) );
+check( 'autopilot undo row', false !== strpos( $html, 'data-aigs-opt-undo' ) );
+unset( $GLOBALS['__posts'], $GLOBALS['__meta'] );
+ob_start();
+$admin->page_support();
+$html = ob_get_clean();
+check( 'support links to coffee page', false !== strpos( $html, 'https://buymeacoffee.com/deepwp' ) && false !== strpos( $html, 'rel="noopener"' ) );
 
 // Menu + localized strings.
 $GLOBALS['__menu'] = array();

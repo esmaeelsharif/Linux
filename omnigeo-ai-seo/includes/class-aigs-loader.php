@@ -64,6 +64,7 @@ class AIGS_Loader {
 		$this->modules['head']          = new AIGS_Head();
 		$this->modules['markdown']      = new AIGS_Markdown();
 		$this->modules['tools']         = new AIGS_Tools();
+		$this->modules['optimizer']     = new AIGS_Optimizer();
 		$this->modules['admin']         = new AIGS_Admin( $this->modules );
 
 		foreach ( $this->modules as $module ) {

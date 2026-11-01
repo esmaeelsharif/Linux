@@ -985,4 +985,144 @@
 		} );
 	} );
 
+	/* ---------- AI Autopilot ---------- */
+	$( document ).on( 'change', '[data-aigs-opt-all]', function () {
+		var on = this.checked;
+		$( '[data-aigs-opt-post]' ).each( function ( i ) {
+			$( this ).prop( 'checked', on && i < 10 );
+		} );
+	} );
+	$( document ).on( 'change', '[data-aigs-opt-post]', function () {
+		if ( this.checked && $( '[data-aigs-opt-post]:checked' ).length > 10 ) {
+			this.checked = false;
+			toast( t( 'optMax' ), true );
+		}
+	} );
+	$( document ).on( 'click', '[data-aigs-opt-generate]', function () {
+		var $btn = $( this );
+		var kinds = $( '[data-aigs-kind]:checked' ).map( function () { return this.value; } ).get();
+		var ids = $( '[data-aigs-opt-post]:checked' ).map( function () { return this.value; } ).get();
+		var $status = $( '.aigs-optgo__status' ), $bar = $( '.aigs-progress' );
+		if ( ! kinds.length || ! ids.length ) {
+			toast( t( 'optPick' ), true );
+			return;
+		}
+		$btn.prop( 'disabled', true );
+		$bar.prop( 'hidden', false ).find( 'span' ).css( 'width', '4%' );
+		var done = 0, made = 0, errors = [];
+		function next() {
+			if ( ! ids.length ) {
+				$status.text( fmt( t( 'optDone' ), made ) );
+				if ( errors.length ) {
+					toast( errors[ 0 ], true );
+				}
+				if ( made ) {
+					setTimeout( function () { window.location.hash = 'aigs-review'; window.location.reload(); }, 700 );
+				} else {
+					$btn.prop( 'disabled', false );
+				}
+				return;
+			}
+			var id = ids.shift(), total = done + ids.length + 1;
+			$status.text( fmt( t( 'optProgress' ), done + 1, total ) );
+			post( 'aigs_opt_generate', { post_id: id, kinds: kinds } ).done( function ( res ) {
+				if ( res && res.success ) {
+					made++;
+				} else {
+					errors.push( errMsg( res ) );
+					if ( res && res.data && res.data.stop ) {
+						ids = [];
+					}
+				}
+			} ).fail( function () {
+				errors.push( t( 'requestFailed' ) );
+			} ).always( function () {
+				done++;
+				$bar.find( 'span' ).css( 'width', Math.round( 100 * done / ( done + ids.length ) ) + '%' );
+				next();
+			} );
+		}
+		next();
+	} );
+
+	function collectProposal( $card ) {
+		var items = {};
+		$card.find( '.aigs-prop__row' ).each( function () {
+			var $row = $( this ), kind = $row.data( 'kind' );
+			if ( ! $row.find( '.aigs-prop__tick input' ).prop( 'checked' ) ) {
+				return;
+			}
+			if ( 'title' === kind || 'desc' === kind ) {
+				items[ kind ] = $row.find( '.aigs-prop__val' ).val();
+			} else if ( 'questions' === kind ) {
+				items.questions = [];
+				$row.find( '.aigs-prop__q' ).each( function () {
+					if ( $( this ).find( 'input[type=checkbox]' ).prop( 'checked' ) ) {
+						items.questions.push( { from: $( this ).data( 'from' ), to: $( this ).find( 'input[type=text]' ).val() } );
+					}
+				} );
+			} else if ( 'faq' === kind ) {
+				items.faq = { heading: $row.find( '.aigs-prop__faqh' ).val(), items: [] };
+				$row.find( '.aigs-prop__faq' ).each( function () {
+					if ( $( this ).find( 'input[type=checkbox]' ).prop( 'checked' ) ) {
+						items.faq.items.push( { q: $( this ).find( '.aigs-prop__fq' ).val(), a: $( this ).find( '.aigs-prop__fa' ).val() } );
+					}
+				} );
+			}
+		} );
+		return items;
+	}
+	function applyProposal( $card ) {
+		return post( 'aigs_opt_apply', { post_id: $card.data( 'post' ), items: JSON.stringify( collectProposal( $card ) ) } ).done( function ( res ) {
+			if ( res && res.success ) {
+				$card.addClass( 'is-done' ).find( 'button' ).prop( 'disabled', true );
+				$card.find( '.aigs-prop__head .aigs-push' ).html( '<span class="aigs-chip aigs-chip--ok">' + ICON.check + ' ' + esc( t( 'optApplied' ) ) + '</span>' );
+			} else {
+				toast( errMsg( res ), true );
+			}
+		} );
+	}
+	$( document ).on( 'click', '[data-aigs-opt-apply]', function () {
+		$( this ).prop( 'disabled', true );
+		applyProposal( $( this ).closest( '.aigs-prop' ) ).done( function ( res ) {
+			if ( res && res.success ) {
+				toast( res.data.message );
+			}
+		} );
+	} );
+	$( document ).on( 'click', '[data-aigs-opt-apply-all]', function () {
+		var $btn = $( this ), cards = $( '.aigs-prop:not(.is-done)' ).get();
+		$btn.prop( 'disabled', true );
+		( function step() {
+			if ( ! cards.length ) {
+				toast( t( 'optAllApplied' ) );
+				setTimeout( function () { window.location.reload(); }, 900 );
+				return;
+			}
+			applyProposal( $( cards.shift() ) ).always( step );
+		}() );
+	} );
+	$( document ).on( 'click', '[data-aigs-opt-reject]', function () {
+		var $card = $( this ).closest( '.aigs-prop' );
+		post( 'aigs_opt_reject', { post_id: $card.data( 'post' ) } ).done( function () {
+			$card.slideUp( 200, function () { $card.remove(); } );
+		} );
+	} );
+	$( document ).on( 'click', '[data-aigs-opt-undo]', function () {
+		var $tr = $( this ).closest( 'tr' ), $btn = $( this );
+		$btn.prop( 'disabled', true );
+		post( 'aigs_opt_undo', { post_id: $tr.data( 'post' ) } ).done( function ( res ) {
+			if ( res && res.success ) {
+				toast( res.data.message );
+				$tr.fadeOut( 200 );
+			} else {
+				toast( errMsg( res ), true );
+				$btn.prop( 'disabled', false );
+			}
+		} );
+	} );
+	$( document ).on( 'change', '.aigs-prop__tick input', function () {
+		$( this ).closest( '.aigs-prop__row' ).toggleClass( 'is-off', ! this.checked );
+	} );
+
 } )( jQuery );

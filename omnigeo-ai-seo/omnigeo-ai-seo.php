@@ -3,7 +3,7 @@
  * Plugin Name:       OmniGEO Ai SEO
  * Plugin URI:        https://wordpress.org/plugins/omnigeo-ai-seo/
  * Description:       AEO and GEO for WordPress: scan your site, fix prioritised tasks, optimise answers in the editor, improve WooCommerce products and track AI visibility.
- * Version:           1.5.0
+ * Version:           1.6.0
  * Requires at least: 5.8
  * Requires PHP:      7.2
  * Author:            Deepwp
@@ -20,7 +20,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'AIGS_VERSION', '1.5.0' );
+define( 'AIGS_VERSION', '1.6.0' );
 define( 'AIGS_FILE', __FILE__ );
 define( 'AIGS_DIR', plugin_dir_path( __FILE__ ) );
 define( 'AIGS_URL', plugin_dir_url( __FILE__ ) );
@@ -51,7 +51,9 @@ require_once AIGS_DIR . 'includes/class-aigs-redirects.php';
 require_once AIGS_DIR . 'includes/class-aigs-head.php';
 require_once AIGS_DIR . 'includes/class-aigs-markdown.php';
 require_once AIGS_DIR . 'includes/class-aigs-tools.php';
+require_once AIGS_DIR . 'includes/class-aigs-optimizer.php';
 require_once AIGS_DIR . 'includes/class-aigs-admin-toolbox.php';
+require_once AIGS_DIR . 'includes/class-aigs-admin-autopilot.php';
 require_once AIGS_DIR . 'includes/class-aigs-admin.php';
 require_once AIGS_DIR . 'includes/class-aigs-loader.php';
 

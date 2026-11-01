@@ -719,5 +719,48 @@ same( 'restore redirects', $h . '/new/', $res[1]['/old']['to'] );
 check( 'restore rejects other files', is_wp_error( AIGS_Tools::restore( array(), array( 'settings' => array() ) ) ) );
 check( 'duplicate copies author fields only', AIGS_Tools::copy_meta_key( '_aigs_faqs' ) && ! AIGS_Tools::copy_meta_key( '_aigs_scan_hash' ) && ! AIGS_Tools::copy_meta_key( '_edit_lock' ) && AIGS_Tools::copy_meta_key( '_thumbnail_id' ) );
 
+
+/* ============================================================
+ * AI Autopilot (1.6.0)
+ * ============================================================ */
+$heads = array( 'Pricing', 'Delivery times', 'How do I return an item?' );
+$reply = "```json\n" . json_encode( array(
+	'title'       => 'Handmade Coffee Mugs: Prices, Delivery and Returns',
+	'description' => 'Handmade stoneware coffee mugs from 18 dollars, shipped in 3 to 5 days, with free returns within 30 days of delivery for every order.',
+	'faq_heading' => 'Questions',
+	'faq'         => array(
+		array( 'q' => 'How much does a mug cost?', 'a' => 'Each handmade stoneware mug costs 18 dollars, and sets of four cost 64 dollars.' ),
+		array( 'q' => 'How long is delivery?', 'a' => 'Orders ship within 3 to 5 working days from our studio.' ),
+		array( 'q' => 'Bad', 'a' => 'Too short' ),
+	),
+	'headings'    => array(
+		array( 'from' => 'pricing', 'to' => 'How much do the mugs cost?' ),
+		array( 'from' => 'Invented heading', 'to' => 'Should be dropped?' ),
+		array( 'from' => 'How do I return an item?', 'to' => 'How do I return an item?' ),
+	),
+) ) . "\n```";
+$pp = AIGS_Optimizer::parse( $reply, $heads, array( 'title', 'desc', 'faq', 'questions' ) );
+check( 'opt parse ok', is_array( $pp ) );
+same( 'opt title', 'Handmade Coffee Mugs: Prices, Delivery and Returns', $pp['title'] );
+check( 'opt desc kept', mb_strlen( $pp['desc'] ) <= 160 && mb_strlen( $pp['desc'] ) > 100 );
+same( 'opt faq filters short answers', 2, count( $pp['faq']['items'] ) );
+same( 'opt faq heading', 'Questions', $pp['faq']['heading'] );
+same( 'opt only real headings changed', array( array( 'from' => 'Pricing', 'to' => 'How much do the mugs cost?' ) ), $pp['questions'] );
+$only = AIGS_Optimizer::parse( $reply, $heads, array( 'desc' ) );
+same( 'opt only requested kinds', array( 'desc' ), array_keys( $only ) );
+check( 'opt bad json', is_wp_error( AIGS_Optimizer::parse( 'Sorry, I cannot.', $heads, array( 'title' ) ) ) );
+check( 'opt empty result is error', is_wp_error( AIGS_Optimizer::parse( '{"title":"x"}', $heads, array( 'title' ) ) ) );
+$html = "<!-- wp:heading -->\n<h2 class=\"wp-block-heading\" id=\"p\">Pricing</h2>\n<!-- /wp:heading -->\n<p>Pricing info</p><h3>Delivery &amp; times</h3><h2>Pricing</h2>";
+$rw = AIGS_Optimizer::rewrite_headings( $html, array( array( 'from' => 'Pricing', 'to' => 'How much & when?' ), array( 'from' => 'Delivery & times', 'to' => 'When will it arrive?' ) ) );
+check( 'opt heading keeps attributes', false !== strpos( $rw, '<h2 class="wp-block-heading" id="p">How much &amp; when?</h2>' ) );
+check( 'opt heading entity match', false !== strpos( $rw, '<h3>When will it arrive?</h3>' ) );
+check( 'opt only first duplicate heading', false !== strpos( $rw, '<h2>Pricing</h2>' ) );
+check( 'opt paragraph untouched', false !== strpos( $rw, '<p>Pricing info</p>' ) );
+$fm = AIGS_Optimizer::faq_markup( 'FAQ', array( array( 'q' => 'Q <1>?', 'a' => 'A' ) ), true );
+check( 'opt faq blocks valid', false !== strpos( $fm, '<!-- wp:heading {"level":3} -->' ) && false !== strpos( $fm, 'Q &lt;1&gt;?' ) && substr_count( $fm, '<!-- wp:' ) === substr_count( $fm, '<!-- /wp:' ) );
+check( 'opt faq classic', false !== strpos( AIGS_Optimizer::faq_markup( 'FAQ', array( array( 'q' => 'Q', 'a' => 'A' ) ), false ), "<h3>Q</h3>\n<p>A</p>" ) );
+list( $sys, $pr ) = AIGS_Optimizer::prompt( 'T', 'text', array( 'H1' ), array( 'faq' ), 'Site' );
+check( 'opt prompt asks only faq', false !== strpos( $pr, '"faq"' ) && false === strpos( $pr, '"title"' ) && false !== strpos( $sys, 'never invent' ) );
+
 echo "\n{$GLOBALS['__pass']} passed, {$GLOBALS['__fail']} failed\n";
 exit( $GLOBALS['__fail'] ? 1 : 0 );

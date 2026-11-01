@@ -51,6 +51,8 @@ $aigs_keys = array(
 	'_aigs_link_undo',
 	'_aigs_seo_title',
 	'_aigs_seo_desc',
+	'_aigs_proposal',
+	'_aigs_opt_undo',
 );
 foreach ( $aigs_keys as $aigs_k ) {
 	delete_post_meta_by_key( $aigs_k );

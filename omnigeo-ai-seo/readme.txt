@@ -4,7 +4,7 @@ Tags: ai seo, geo, aeo, ai visibility, answer engine optimization
 Requires at least: 5.8
 Tested up to: 7.0
 Requires PHP: 7.2
-Stable tag: 1.5.0
+Stable tag: 1.6.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -27,6 +27,15 @@ Everything core runs locally on your site and is free. Optional AI features use 
 * **Duplicate titles, meta descriptions and product descriptions** across the site.
 * **Mark as intentional** for deliberate choices, so they stop counting against your score.
 * **Score history, recent wins** and an optional **weekly email** report.
+
+= AI Autopilot: improvements written for you, approved by you =
+
+* Pick what to improve, **search titles, meta descriptions, FAQ sections or question-style headings**, and the pages that need it most. AI writes suggestions for up to 10 pages per run.
+* Every suggestion is built only from facts already on the page. Review it side by side with the current version, edit anything, untick what you do not want, then apply one page or all of them.
+* FAQ sections are added as visible questions and answers at the end of the page, with FAQ schema, so the markup always matches what readers see.
+* Titles and descriptions are saved where your SEO plugin reads them (Yoast SEO, Rank Math, SEOPress) or in OmniGEO's own snippet fields.
+* Every applied change can be undone, and content edits also go through WordPress revisions.
+* **Your own API key, no credits:** other AI SEO plugins sell AI credits. OmniGEO uses the provider you choose (OpenAI, Anthropic, Gemini, OpenRouter, Mistral, DeepSeek, Perplexity or a local model) and you pay that provider directly, usually less than one cent per page with small models.
 
 = Answer Optimizer (in the editor) =
 
@@ -187,6 +196,10 @@ Yes. Word counts and brand matching work across languages and scripts, including
 
 == Changelog ==
 
+= 1.6.0 =
+* New: AI Autopilot. AI writes search titles, meta descriptions, FAQ sections and question-style headings for many pages at once, using only facts from each page. You review, edit and approve every change, and can undo it.
+* Other plugins charge you for AI credits. OmniGEO uses your own API key with the provider you choose, so you pay the provider directly with no markup.
+
 = 1.5.0 =
 * New: Toolbox. Control each AI crawler, add Content Signals, offer pages as Markdown with /llms-full.txt, manage redirects with a 404 log and one-click fixes, edit search snippets in bulk, add social cards, verification and analytics, and check your setup in plain words.
 
@@ -244,6 +257,9 @@ First public release. Includes:
 * Yoast SEO and Rank Math integration with schema de duplication, and WooCommerce support with product specific checks.
 
 == Upgrade Notice ==
+
+= 1.6.0 =
+New AI Autopilot: titles, descriptions, FAQs and question headings for many pages at once, with your own API key and no credits.
 
 = 1.5.0 =
 New Toolbox: per-crawler AI access, Markdown copies for AI, redirects and 404 fixes, snippets, social cards and a setup check.
