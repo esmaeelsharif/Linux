@@ -1,6 +1,6 @@
-=== OmniGEO Ai SEO ===
+=== OmniGEO – AI SEO, GEO & AEO, llms.txt & AI Visibility ===
 Contributors: deepwp24
-Tags: ai seo, geo, aeo, ai visibility, answer engine optimization
+Tags: ai seo, geo, aeo, llms.txt, schema
 Requires at least: 5.8
 Tested up to: 7.0
 Requires PHP: 7.2
@@ -8,121 +8,81 @@ Stable tag: 1.6.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Find what stops search engines and AI assistants from quoting your site, fix it with guided tasks, and track AI visibility.
+Get quoted by ChatGPT, Perplexity, Gemini and AI Overviews. AI fixes your pages with your own API key: no credits, no upsells.
 
 == Description ==
 
-People now ask ChatGPT, Perplexity, Gemini, Claude and Google AI Overviews instead of typing into a search box, and those tools quote a small set of pages. OmniGEO checks your WordPress site for search engines and AI answer engines, explains every problem and opportunity in plain language, proposes safe fixes, and confirms when they are fixed.
+**Your customers stopped searching. They ask AI.**
 
-It is built around one simple loop: **scan → fix the most valuable task → re-check → see your progress**.
+They ask ChatGPT which dentist to book, Perplexity which CRM to buy and Google's AI Overview how to fix a leaking tap. The answer names a few sources. The other sites get nothing.
 
-Everything core runs locally on your site and is free. Optional AI features use your own API key from OpenAI, Anthropic, Perplexity, Google Gemini, OpenRouter, Mistral, DeepSeek or any OpenAI-compatible endpoint (including a local Ollama or LM Studio server), with a hard monthly limit you control.
+**OmniGEO makes your WordPress site one of the sources AI quotes.** It finds what stops assistants from reading, trusting and quoting your pages, fixes most of it for you, and shows you the AI crawlers, AI visitors and AI sales that follow.
 
-= Growth Center and Action Center =
+= Why site owners switch to OmniGEO =
 
-* **Site-wide scan** of posts, pages, products and custom post types, read straight from WordPress in small batches, so it is safe on shared hosting. Unchanged pages are skipped on re-scans. A light background scan runs weekly (can be turned off).
-* **Action Center**: every issue grouped into clear tasks, ordered by impact (severity × page importance), each with why it matters, how to fix it, the affected pages and a Re-check button that confirms the fix.
-* **Page importance** is calculated for you: front page, menu links, internal links, AI bot reads, sales, freshness, plus a star to mark your money pages.
-* **Internal link opportunities**: orphan pages and pages without internal links, with suggested related pages.
-* **Duplicate titles, meta descriptions and product descriptions** across the site.
-* **Mark as intentional** for deliberate choices, so they stop counting against your score.
-* **Score history, recent wins** and an optional **weekly email** report.
+* **It does the work, not just a checklist.** AI Autopilot writes titles, meta descriptions, FAQ sections and question-style headings for many pages at once. You approve. Done.
+* **Your own AI key. No credits. No markup.** Other AI SEO plugins resell AI credits at a premium. OmniGEO talks straight to the provider you choose (OpenAI, Anthropic, Gemini, OpenRouter, Mistral, DeepSeek, Perplexity or a free local model), so a page usually costs less than one cent.
+* **Nothing goes live without you.** Every AI change is shown side by side with your current text, can be edited, and can be undone in one click.
+* **No cloud account, no sign-up.** It runs inside your WordPress. Scanning, tasks, schema, bot tracking, redirects and llms.txt all work without AI at all.
+* **Plays nicely with Yoast SEO, Rank Math, SEOPress and All in One SEO.** It reads their settings, writes titles where they expect them, and steps aside so you never get duplicate schema or tags.
 
-= AI Autopilot: improvements written for you, approved by you =
+= How it works: 3 steps, 10 minutes =
 
-* Pick what to improve, **search titles, meta descriptions, FAQ sections or question-style headings**, and the pages that need it most. AI writes suggestions for up to 10 pages per run.
-* Every suggestion is built only from facts already on the page. Review it side by side with the current version, edit anything, untick what you do not want, then apply one page or all of them.
-* FAQ sections are added as visible questions and answers at the end of the page, with FAQ schema, so the markup always matches what readers see.
-* Titles and descriptions are saved where your SEO plugin reads them (Yoast SEO, Rank Math, SEOPress) or in OmniGEO's own snippet fields.
-* Every applied change can be undone, and content edits also go through WordPress revisions.
-* **Your own API key, no credits:** other AI SEO plugins sell AI credits. OmniGEO uses the provider you choose (OpenAI, Anthropic, Gemini, OpenRouter, Mistral, DeepSeek, Perplexity or a local model) and you pay that provider directly, usually less than one cent per page with small models.
+1. **Scan.** One click reads every post, page and product straight from WordPress, safely, in small batches. You get a score and a list of tasks ordered by business impact.
+2. **Fix.** Work through the Action Center or let AI Autopilot write the fixes for the pages that matter most. Each task explains why it matters and confirms the fix with a Re-check button.
+3. **Measure.** Watch AI crawlers read your pages, visitors arrive from ChatGPT and Perplexity, and (with WooCommerce) the orders and revenue they bring.
 
-= Answer Optimizer (in the editor) =
+= What you get =
 
-* Detects the main question a page should answer, from the title or focus keyword.
-* Checks whether the opening actually answers it, and flags filler openings such as “In this article…”.
-* Finds question headings without a direct answer, comparison pages without a table and how-to pages without numbered steps.
-* Turns answered question headings into **FAQ schema** with one click.
-* Optional: **drafts a 40–60 word direct answer** from your own text with your AI key, for you to review and insert. Revisions keep your previous version.
-* Live **answer-readiness score** while you write, plus an AI Score column on your lists.
+**AI Autopilot**
+Search titles, meta descriptions, FAQ sections and question headings written from the facts already on each page, for up to 10 pages per run. Review, edit, apply, undo. FAQs are added as visible text with matching FAQ schema.
 
-= Passage citability =
+**Action Center**
+Every problem across your site, grouped into clear tasks and ranked by severity × page importance: missing answers, thin sections, duplicate titles and descriptions, orphan pages, outdated years, missing alt text, schema errors and more.
 
-* AI answers quote one section of a page, not the whole page. Every section under an H2 or H3 gets a 0–100 citability score with one concrete tip.
-* Five transparent criteria: the section stands on its own, has a quotable length, includes data and a source, uses clear sentences, and answers first.
-* The site scan adds two tasks: “Strengthen passages AI can quote” and “Back up claims with data and sources”.
+**Answer Optimizer in the editor**
+While you write: finds the main question the page should answer, checks whether your opening answers it, flags filler openings, scores every section for citability, and drafts a 40–60 word direct answer from your own text.
 
-= One-click internal links =
+**AI Visibility tracking**
+Ask AI the questions your buyers ask and see whether you are mentioned, recommended or cited, your share of voice against up to 10 competitors, and which sources the assistants trust. Wrong facts about you (an old phone number, a lookalike domain) become high-priority tasks.
 
-* For orphan pages and pages without internal links, OmniGEO finds sentences on your site that already mention the topic and shows them with the phrase highlighted.
-* Tick the ones you like and insert the links in one click. Only visible text is changed: never existing links, headings, code, block settings or shortcodes.
-* Every change can be undone, and WordPress revisions keep each version.
+**AI Traffic**
+Which AI crawlers read your site, which are verified, which pages assistants fetched for real users, the visitors AI sends you, and the missing pages AI bots keep requesting. A CDN and firewall check tells you if Cloudflare or another firewall silently blocks the AI crawlers you allowed.
 
-= Local business schema =
+**AI revenue for WooCommerce**
+Orders and revenue that came from ChatGPT, Perplexity, Gemini, Claude and Copilot, by assistant, landing page and product, plus a Catalog Copilot that finds and bulk-fixes weak product data with undo.
 
-* Choose from 30 business types (dentist, restaurant, law firm, plumber, hotel, store…) and add address, phone, opening hours, service area, price range, map link and coordinates.
-* Output as LocalBusiness schema, and as a separate homepage node when Yoast, Rank Math, SEOPress or All in One SEO output the main graph.
-* The scan tells you when address, phone or hours are missing.
+**Schema that AI understands**
+Organization, WebSite, Person, Article, FAQ, Product and LocalBusiness (30 business types with address, hours and service area), linked together and never duplicated with your SEO plugin.
 
-= WooCommerce Catalog Copilot =
+**One-click internal links**
+Finds sentences on your site that already mention a topic and turns them into links in one click, with undo.
 
-* Checks every product: short and full description, specifications, images and alt text, category, price, GTIN/EAN and copied descriptions.
-* **Bulk fixes with preview, approval and undo**: alt text from product name, short description from the full description, or AI-drafted summaries for up to 10 selected products at a time. Existing values are never overwritten.
-* Adds your brand to WooCommerce Product schema when it has none, and lets WooCommerce own Product schema to avoid duplicates.
+**Toolbox**
+* AI crawler control with four presets, a switch per crawler and Content Signals.
+* Markdown copies of every page and /llms-full.txt, plus an automatic llms.txt.
+* Redirects with a 404 log and one-click fixes, and automatic redirects when a URL changes.
+* Search snippets with a live preview and a bulk editor, social cards, verification codes and GA4 when no SEO plugin is active.
+* A setup check in plain words, a settings backup, and IndexNow.
 
-= AI revenue attribution (WooCommerce) =
+= Built for =
 
-* See the orders and revenue that came from ChatGPT, Perplexity, Gemini, Claude, Copilot and other assistants, for the last 30 or 90 days.
-* AI share of orders and sales, average order value from AI compared with other channels, a breakdown by assistant, the landing pages that sold and the products bought.
-* Uses the traffic source WooCommerce Order Attribution already records on each order. No extra cookies and no new visitor data.
+* **Local businesses:** dentists, clinics, lawyers, restaurants, salons, plumbers and agencies that want to be the name AI recommends nearby.
+* **Online stores:** WooCommerce shops that want their products recommended when people ask AI what to buy, and to see the revenue it brings.
+* **Bloggers and publishers:** sites that want their articles quoted as sources instead of summarised without credit.
+* **Agencies and freelancers:** a clear task list, before-and-after scores and backups you can move between client sites.
 
-= AI Visibility monitoring =
+= Honest by design =
 
-* Save the questions buyers ask, other spellings of your brand (abbreviations, local-language or other-script versions) and up to 10 competitors.
-* Each check stores the full answers and measures **mentions, recommendations, citations, position and share of voice**, compared with the previous check.
-* Shows the **sources assistants cited** and labels them as yours, a competitor or an opportunity.
-* Questions where competitors appear and you do not become tasks, with a one-click **draft page** outline.
-* **Brand facts accuracy check**: enter your official phone numbers, emails, domains, founding year and statements that are outdated. Every answer that mentions you is checked, and wrong details (an old phone number, a lookalike domain, a wrong founding year) become a high-priority task. Create a “key facts” page draft from your facts in one click.
-* Answers from providers without live web search are labelled as model knowledge, not web citations.
-* Brand matching ignores letter case, accents, spacing and hyphens, and works with non-Latin scripts.
-
-= AI Traffic (Bot & Referral Intelligence) =
-
-* Three separate layers: bots that claim to be AI bots, **verified bots** (optional reverse-DNS and published IP-range checks), and **visitors from AI answers** (Referer or utm_source such as chatgpt.com).
-* Bots are grouped by purpose: reading pages for a user right now, AI search indexing, or model training.
-* Lists the pages assistants fetched for users and the **missing pages (404) AI bots requested**.
-* Raw logs are kept for a period you choose, then summarised into daily totals.
-* **CDN and firewall check**: OmniGEO requests your homepage as a browser and as AI search crawlers. If Cloudflare, Sucuri, Imperva, CloudFront, Akamai or another edge network blocks or challenges the crawlers that your robots.txt allows, you get a task with where to change it. It also warns when no AI search crawler has visited for three weeks.
-* Ready-made GA4 channel regex.
-
-= Toolbox =
-
-One page with four tabs and plain on/off switches, so the extras never get in the way.
-
-* **AI access**: four presets (open, be found but don't train, closed, choose per crawler) and a switch for every known AI crawler, with how often each one visited. Optional **Content Signals** line in robots.txt (search, AI answers, training) and your own robots.txt lines, checked so a typo cannot break the file.
-* **Markdown copies for AI**: every public page is also available as clean Markdown at its address plus ?format=markdown, and **/llms-full.txt** bundles your main pages. Same words as the page, never indexed, with a canonical link to the real page.
-* **Redirects and 404 log**: 301, 302, 307 and 410 rules, chains flattened and loops refused, automatic redirect when a slug, parent page or date changes, and a log of broken addresses people and AI bots tried, each with a suggested page and one-click fix. CSV import and export.
-* **Search and social** (when no SEO plugin is active): a snippet box with a live Google-style preview, a bulk snippet editor, Open Graph and X cards, last-updated dates in the WordPress sitemap. Titles and descriptions left by a removed SEO plugin are used automatically.
-* **Verification and analytics**: Google, Bing, Yandex, Baidu and Pinterest codes (paste the code or the whole meta tag), GA4 or Google Tag Manager. Skipped when Site Kit is active.
-* **Tools**: a setup check that explains problems in plain words and repairs the safe ones, external link options (new tab, nofollow), duplicate as draft, and a settings backup file you can restore on any site.
-
-= Technical and schema =
-
-* Organization, WebSite, Person and Article schema linked with @id and sameAs; FAQ and Product on demand. Steps aside when Yoast, Rank Math, SEOPress or All in One SEO already output a graph, and never prints a second FAQ when an SEO plugin FAQ block is present.
-* Reads focus keywords, titles, descriptions, noindex and canonical settings from Yoast, Rank Math, SEOPress and All in One SEO.
-* robots.txt modes: allow all, **allow AI search but block AI training**, or block all AI crawlers. Never loosens a site that discourages search engines.
-* Optional meta description fallback when no SEO plugin is active.
-* URL audit of any page's live HTML, site health checks, IndexNow (manual or automatic on publish) and an optional llms.txt.
-
-= Who it is for =
-
-Bloggers, publishers, agencies, shop owners and anyone who wants to be the source an AI quotes. It pairs well with classic SEO work, since answer engine optimization and generative engine optimization build on the same foundation.
+* No plugin can guarantee that AI will cite you, and we never claim that. OmniGEO removes the blockers and measures the result.
+* No fake reviews, no hidden text for bots, no cloaking. Bots and people see the same content.
+* Works in any language, including right-to-left languages and scripts without spaces.
 
 == External Services ==
 
 This plugin connects to third-party services only when you turn on or use the related feature. Nothing is sent in the background unless you enable a schedule or option listed here.
 
-AI features (optional, off until you add your own API key): AI visibility checks, direct-answer drafts and product summaries send the question or the page/product text you chose to the provider you select. Scheduled visibility checks run only if you enable them, and every request counts against the monthly limit you set.
+AI features (optional, off until you add your own API key): AI visibility checks, AI Autopilot suggestions, direct-answer drafts and product summaries send the question or the text of the pages or products you chose to the provider you select. Scheduled visibility checks run only if you enable them, and every request counts against the monthly limit you set.
 
 * OpenAI: https://api.openai.com. Terms: https://openai.com/policies/terms-of-use Privacy: https://openai.com/policies/privacy-policy
 * Google Gemini: https://generativelanguage.googleapis.com. Terms: https://ai.google.dev/gemini-api/terms Privacy: https://policies.google.com/privacy
@@ -147,43 +107,51 @@ IndexNow (optional): when you submit a URL, or when you enable automatic pings, 
 
 == Installation ==
 
-1. Upload the plugin folder to /wp-content/plugins/ or install it from the Plugins screen.
-2. Activate it.
-3. Open OmniGEO Ai SEO → Settings and fill in your brand details.
-4. On the Growth Center, click Scan site, then work through the Action Center.
-5. Open any post or product to use the Answer Optimizer while you write.
+1. In WordPress, go to Plugins → Add New, search for "OmniGEO" and click Install, then Activate.
+2. Open OmniGEO → Settings and add your brand name, industry and location (five minutes; it shapes every suggestion).
+3. On the Growth Center, click **Scan site**.
+4. Work through the Action Center, or open **AI Autopilot** and let AI write the fixes. Adding an API key is optional and takes about two minutes.
 
 == Frequently Asked Questions ==
 
 = What is the difference between SEO, GEO and AEO? =
-SEO helps you rank in classic search results. GEO (generative engine optimization) and AEO (answer engine optimization) help AI tools understand and quote your content. They overlap a lot, and this plugin focuses on the AI side while staying friendly to your normal SEO setup.
+SEO helps you rank in Google's classic results. GEO (generative engine optimization) and AEO (answer engine optimization) help AI assistants understand, trust and quote your content. They build on the same foundation. OmniGEO focuses on the AI side and works alongside your current SEO plugin.
 
-= Will this make ChatGPT or Perplexity cite my site? =
-Nothing can guarantee that. What this plugin does is find and help you remove the technical and structural blockers, so your content is easy to read, trust and quote, and then measure what changes. The rest is good content and a real, findable brand.
+= Can you guarantee that ChatGPT or Perplexity will cite my site? =
+No one can. OmniGEO finds and removes what stops AI from reading and quoting your pages, helps you write answer-ready content, and measures what changes. Good content and a real, findable brand do the rest.
 
-= Is the scan heavy for my hosting? =
-No. It reads content from WordPress directly instead of crawling your site over HTTP, processes a dozen pages per request, and skips pages that did not change since the last scan. You can turn the weekly background scan off in Settings.
+= Why do I use my own AI API key? =
+Because it is cheaper and you stay in control. Plugins that sell AI credits add their margin on top of the same providers. With your own key you pay the provider's price, usually less than one cent per page with small models, you choose the model, and a local model (Ollama or LM Studio) costs nothing. A monthly request limit you set protects you from surprises.
+
+= Do I need an API key at all? =
+No. The scan, Action Center, Answer Optimizer checks, schema, internal links, AI Traffic, redirects, llms.txt and the Toolbox work without AI. A key adds AI Autopilot, answer drafts, product summaries and AI visibility checks.
+
+= Will AI change my content without asking? =
+Never. Every suggestion waits for your approval, can be edited first, and can be undone. Content changes also go through WordPress revisions.
+
+= Does it work with Yoast SEO, Rank Math, SEOPress or All in One SEO? =
+Yes. OmniGEO reads their focus keywords, titles, descriptions, noindex and canonical settings, writes AI titles and descriptions into Yoast, Rank Math and SEOPress fields, and steps aside on schema and social tags so nothing is duplicated.
+
+= Will it slow down my site? =
+No. Scans run in the admin in small batches and read content from the database instead of crawling your site. On the front end it adds a little schema, records AI bot visits with one small database write, and prints a few meta tags only if you turn them on.
+
+= Is it heavy for shared hosting? =
+No. The scan processes about a dozen pages per request and skips pages that did not change. The weekly background scan can be turned off.
 
 = Does llms.txt help me appear in Google AI Overviews? =
-Google says no special files or AI-specific markup are needed for AI Overviews and AI Mode; normal SEO fundamentals apply. OmniGEO keeps llms.txt as an optional extra for tools that read it, and does not treat it as a ranking factor.
-
-= Which AI providers can I use? =
-OpenAI, Anthropic, Perplexity, Google Gemini, OpenRouter, Mistral, DeepSeek, or any OpenAI-compatible endpoint such as a company gateway or a local Ollama / LM Studio server. AI is optional: scanning, the Action Center, internal links, schema and bot tracking work without it.
+Google says no special files are needed for AI Overviews; normal SEO fundamentals apply. OmniGEO generates llms.txt as a useful extra for tools that read it, not as a ranking trick, and puts most of its effort into your actual content.
 
 = My robots.txt allows AI bots. Why don't they visit? =
-Often a CDN or firewall (for example Cloudflare's AI bot blocking or Bot Fight Mode) stops them before WordPress sees the request. OmniGEO's CDN check tests this and tells you where to change it.
-
-= Does it work with Yoast SEO and Rank Math? =
-Yes. It reads your focus keyword from Yoast, Rank Math, SEOPress or All in One SEO, and it steps aside on schema so you never get a duplicate entity graph.
+Often a CDN or firewall, such as Cloudflare's AI bot blocking or Bot Fight Mode, stops them before WordPress sees the request. The CDN check tests this and tells you where to change it.
 
 = Does it support WooCommerce? =
-Yes. On product pages it lets WooCommerce own the Product schema to avoid conflicts, and it adds product specific extractability checks.
+Yes: product data checks with bulk fixes and undo, brand in Product schema, and a report of the orders and revenue AI assistants sent you.
 
-= Does it cost money or need a cloud account? =
-No. Everything runs on your own site. The only outside calls are the optional AI features, which use your own API key and a monthly limit you set, the optional bot verification, and IndexNow.
+= Does it need a cloud account or send my data anywhere? =
+No account and no OmniGEO server. Everything runs and is stored on your site. Outside calls happen only for features you turn on: your AI provider, optional bot verification and IndexNow (details below).
 
 = Does it work for content that is not in English? =
-Yes. Word counts and brand matching work across languages and scripts, including accented Latin languages, right-to-left languages such as Arabic and Hebrew, and Chinese and Japanese, which are written without spaces. Questions are recognised by their question mark in any language, and by question words in several languages. The admin supports right-to-left layouts, and the interface is fully translatable.
+Yes. Word counts, question detection and brand matching work across languages and scripts, including right-to-left languages such as Arabic and Hebrew, and Chinese and Japanese. AI suggestions are written in the language of each page.
 
 == Screenshots ==
 
